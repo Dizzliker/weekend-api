@@ -1,0 +1,35 @@
+import React, { Component } from 'react';
+import { Routes, Route, useParams } from "react-router-dom";
+import Friend from '../friend/friend';
+import Message from '../message/message';
+import Music from '../music';
+import Profile from '../profile/profile';
+import Sidebar from '../sidebar';
+import bg from '../../img/bg.png';
+import ProfileContainer from '../profile/profile-container';
+import User from '../user';
+
+export default class Main extends Component {
+    render() {
+        const bgStyle = {
+            width: '100%', 
+            height: '100vh',  
+            backgroundImage:`url(${bg})`,
+        };
+
+        return (
+            <div className="bg" style={bgStyle}>
+                <div className="main flex">
+                    <Sidebar />
+                    <Routes>
+                        <Route path="profile/:id" element={<ProfileContainer />}/>
+                        <Route path="message" element={<Message />}/>
+                        <Route path="friend"  element={<Friend/>}/>
+                        <Route path="users"  element={<User/>}/>
+                        <Route path="music"   element={<Music/>}/>
+                    </Routes>
+                </div>
+            </div>
+        );
+    }
+}
