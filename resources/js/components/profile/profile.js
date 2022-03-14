@@ -135,12 +135,10 @@ class Profile extends Component {
                 </div>
             </div>
             <div className="posts">
-                <PostForm user = {this.state.profile} />
-                <PostList user_id = {this.props.user_id} user = {this.state.profile} />
+                <PostForm user_id = {this.props.user_id} user = {this.state.profile} />
             </div>
         </div> 
             </>
-            
         );
     }
 }

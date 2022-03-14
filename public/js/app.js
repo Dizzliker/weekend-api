@@ -2085,7 +2085,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 /* harmony import */ var _services_Session__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../services/Session */ "./resources/js/services/Session.js");
 /* harmony import */ var _services_Post__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../services/Post */ "./resources/js/services/Post.js");
-/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
+/* harmony import */ var _post_list__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./post-list */ "./resources/js/components/profile/post-list/post-list.js");
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
 function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -2116,6 +2117,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 
 
+
+
 var PostForm = /*#__PURE__*/function (_Component) {
   _inherits(PostForm, _Component);
 
@@ -2139,7 +2142,8 @@ var PostForm = /*#__PURE__*/function (_Component) {
       _this.post.postData('post/create', _this.getFormData(), true).then(function (res) {
         if (res) {
           _this.setState({
-            text: ''
+            text: '',
+            reload: true
           });
         }
       })["catch"](function (error) {
@@ -2169,63 +2173,68 @@ var PostForm = /*#__PURE__*/function (_Component) {
     value: function render() {
       var avatar = this.props.user.avatar;
       var text = this.state.text;
-      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
-        className: "posts__add-post flex",
-        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("div", {
-          className: "posts__add-post-avatar",
-          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("a", {
-            href: "#",
-            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("img", {
-              src: avatar,
-              className: "ava-50",
-              alt: "User avatar"
+      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.Fragment, {
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
+          className: "posts__add-post flex",
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+            className: "posts__add-post-avatar",
+            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("a", {
+              href: "#",
+              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("img", {
+                src: avatar,
+                className: "ava-50",
+                alt: "User avatar"
+              })
             })
-          })
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("textarea", {
-          name: "text",
-          onChange: this.handleInputChange,
-          value: text,
-          className: "posts__add-input",
-          placeholder: "What's news?",
-          id: "",
-          cols: "30",
-          rows: "10"
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
-          className: "posts__post-actions flex jc_space-between",
-          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("a", {
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("textarea", {
+            name: "text",
+            onChange: this.handleInputChange,
+            value: text,
+            className: "posts__add-input",
+            placeholder: "What's news?",
+            id: "",
+            cols: "30",
+            rows: "10"
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
+            className: "posts__post-actions flex jc_space-between",
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("a", {
+              href: "#",
+              className: "link-attach",
+              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("img", {
+                src: "../images/music.svg",
+                className: "icon-attach",
+                alt: "Attach music"
+              })
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("a", {
+              href: "#",
+              className: "link-attach",
+              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("img", {
+                src: "../images/photo.svg",
+                className: "icon-attach",
+                alt: "Attach photo"
+              })
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("a", {
+              href: "#",
+              className: "link-attach",
+              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("img", {
+                src: "../images/video.svg",
+                className: "icon-attach",
+                alt: "Attach video"
+              })
+            })]
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("a", {
             href: "#",
-            className: "link-attach",
-            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("img", {
-              src: "../images/music.svg",
-              className: "icon-attach",
-              alt: "Attach music"
-            })
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("a", {
-            href: "#",
-            className: "link-attach",
-            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("img", {
-              src: "../images/photo.svg",
-              className: "icon-attach",
-              alt: "Attach photo"
-            })
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("a", {
-            href: "#",
-            className: "link-attach",
-            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("img", {
-              src: "../images/video.svg",
-              className: "icon-attach",
-              alt: "Attach video"
+            className: "posts__add-btn-link",
+            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("img", {
+              src: "../images/icon-send(purple).svg",
+              onClick: this.addPost,
+              className: "posts__add-btn",
+              alt: "Add post"
             })
           })]
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("a", {
-          href: "#",
-          className: "posts__add-btn-link",
-          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("img", {
-            src: "../images/icon-send(purple).svg",
-            onClick: this.addPost,
-            className: "posts__add-btn",
-            alt: "Add post"
-          })
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_post_list__WEBPACK_IMPORTED_MODULE_3__["default"], {
+          user_id: this.props.user_id,
+          user: this.props.user
         })]
       });
     }
@@ -2784,14 +2793,12 @@ var Profile = /*#__PURE__*/function (_Component) {
                 })]
               })]
             })]
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsxs)("div", {
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)("div", {
             className: "posts",
-            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)(_post_list_post_form__WEBPACK_IMPORTED_MODULE_4__["default"], {
-              user: this.state.profile
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)(_post_list_post_list__WEBPACK_IMPORTED_MODULE_5__["default"], {
+            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)(_post_list_post_form__WEBPACK_IMPORTED_MODULE_4__["default"], {
               user_id: this.props.user_id,
               user: this.state.profile
-            })]
+            })
           })]
         })]
       });
@@ -3899,7 +3906,7 @@ var Weekend = /*#__PURE__*/_createClass(function Weekend() {
     };
   }());
 
-  this._api = 'http://127.0.0.1:8080/public/api/';
+  this._api = 'http://api/api/';
   this.csrf_token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 });
 

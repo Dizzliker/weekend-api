@@ -15,6 +15,14 @@ class Post extends Model
         'likes',
         'reposts',
         'comments',
+<<<<<<< HEAD
+=======
+    ];
+
+    protected $casts = [
+        'created_at' => 'datetime:d.m.Y H:i',
+        'updated_at' => 'datetime:d.m.Y H:i',
+>>>>>>> d54ce1f043f48b3916c0640048d6d1f40934688e
     ];
 
     public function user() {

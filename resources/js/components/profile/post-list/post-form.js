@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import Session from '../../../services/Session';
 import Post from '../../../services/Post';
+import PostList from './post-list';
 
 export default class PostForm extends Component {
     constructor(props) {
@@ -24,7 +25,7 @@ export default class PostForm extends Component {
         this.post.postData('post/create', this.getFormData(), true)
             .then(res => {
                 if (res) {
-                    this.setState({text: ''});
+                    this.setState({text: '', reload: true,});
                 }
             })
             .catch(error => {
@@ -47,6 +48,7 @@ export default class PostForm extends Component {
         const {text} = this.state;
 
         return (
+            <>
             <div className="posts__add-post flex">
                 <div className="posts__add-post-avatar">
                     <a href="#">
@@ -69,6 +71,8 @@ export default class PostForm extends Component {
                     <img src="../images/icon-send(purple).svg" onClick={this.addPost} className="posts__add-btn" alt="Add post" />
                 </a>
             </div>
+            <PostList user_id = {this.props.user_id} user = {this.props.user} />
+            </>
         );
     }
 }
