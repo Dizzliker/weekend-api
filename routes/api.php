@@ -22,6 +22,7 @@ Route::group(['middleware' => ['auth:sanctum']], function() {
     Route::get('/users', [UserApiController::class, 'index']);
     Route::get('/post/{id}', [PostApiController::class, 'index']);
     Route::post('/post/create', [PostApiController::class, 'store']);
+    Route::get('/post/{id}/delete', [PostApiController::class, 'delete']);
     Route::get('/profile/{id}', [ProfileApiController::class, 'profile']);
     Route::post('/logout', [AuthApiController::class, 'logout']);
 });

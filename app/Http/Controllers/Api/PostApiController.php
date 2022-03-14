@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 class PostApiController extends Controller
 {
     public function index($id) {
-        $posts = Post::find($id);
+        $posts = Post::where('user_id', $id)->orderBy('created_at', 'DESC')->get();
         return $posts;
     }
 
@@ -29,5 +29,19 @@ class PostApiController extends Controller
         ]);
 
         return new PostResource($post);
+    }
+
+    public function delete($id) {
+        $post = Post::find($id);
+        if ($post) {
+            $post->delete();
+            return response([
+                "messages" => [
+                    "success" => true,
+                ],
+                "post" => $post,
+            ], 201);
+        }
+        return response(["messages" => "Post with this id is not found"], 400);
     }
 }

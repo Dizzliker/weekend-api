@@ -1,8 +1,13 @@
 import React, { Component } from 'react';
 import Menu from '../menu';
 import { Link } from 'react-router-dom';
+import Session from '../../services/Session';
 
 export default class Sidebar extends Component {
+    componentDidMount() {
+        
+    }
+
     render() {
         return (
             <div className="sidebar flex_column ai_center">
@@ -18,7 +23,7 @@ export default class Sidebar extends Component {
                 </div>
 
                 <div className="sidebar__user-info flex_column">
-                    <Link to="profile">
+                    <Link to={`profile/${Session.getId()}`}>
                         <h2 className="username">Kirill Sabaev</h2>
                     </Link>
                     <span className="sidebar__my-profile">My profile</span>

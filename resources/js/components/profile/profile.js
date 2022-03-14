@@ -4,6 +4,7 @@ import {ProfileService} from '../../services/Profile';
 import Weekend from '../../services/Weekend';
 import Spinner from '../spinner';
 import PostForm from './post-list/post-form';
+import PostList from './post-list/post-list';
 
 class Profile extends Component {
     constructor(props) {
@@ -135,60 +136,7 @@ class Profile extends Component {
             </div>
             <div className="posts">
                 <PostForm user = {this.state.profile} />
-                <div className="post">
-                    <a href="#">
-                        <img src={avatar} className="ava-70" alt="User avatar" srcset="" />
-                    </a>
-                    <div className="post__container">
-                        <div className="post__header flex jc_space-between">
-                            <div className="post__username flex jc_space-between">
-                                <a href="#">
-                                    <span className="username">Kirill Sabaev</span>
-                                </a>
-                                <span className="date">today at 13:57</span>
-                            </div>
-                            <div className="post__actions flex_center_space-between">
-                                <div className="kebab">
-                                    <div className="circle"></div>
-                                    <div className="circle"></div>
-                                    <div className="circle"></div>
-                                </div>
-                                <a href="#">
-                                    <img src="../images/edit.svg" className="icon-edit" alt="Edit post" title="Edit post" />
-                                </a>
-                                <a href="#">
-                                    <img src="../images/close.svg" className="icon-delete" alt="Delete post" title="Delete post" />
-                                </a>
-                            </div>
-                        </div>
-                        <div className="post__body">
-                            Каждый день похож на предыдущий. Я встаю с кровати, собака уже давно бодрствует. Я неспешно одеваясь
-                            прохожу в подобие ванной и умываюсь. Закончив приводить себя в подобие человека, захожу на кухню, смотрю
-                            в потухшие глаза собаки и говорю "да, я тоже скучаю по ней, дружок". После этого насыпаю корм моему
-                            другу и завариваю себе кофе, иду с чашкой к столу, невольно бросая взгляд на диск с фильмом.  нас карантин. Надеюсь мы все умрём.
-                        </div>
-                        <div className="post__footer flex jc_space-between">
-                            <div className="post__like">
-                                <a href="#" className="link flex ai_center">
-                                    <img src="../images/like.svg" className="icon-like" alt="Like" />
-                                    <span className="text">1000</span>
-                                </a>
-                            </div>
-                            <div className="post__repost">
-                                <a href="#" className="link flex ai_center">
-                                    <img src="../images/repost.svg" className="icon-repost" alt="Repost" />
-                                    <span className="text">0</span>
-                                </a>
-                            </div>
-                            <div className="post__comment">
-                                <a href="#" className="link flex ai_center">
-                                    <img src="../images/comment.svg" className="icon-comment" alt="Comment" />
-                                    <span className="text">25000</span>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <PostList user_id = {this.props.user_id} user = {this.state.profile} />
             </div>
         </div> 
             </>

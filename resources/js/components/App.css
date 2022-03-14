@@ -870,6 +870,7 @@ a {
   border-radius: 15px;
   box-shadow: var(--shadow);
   padding: 25px 25px 0 25px;
+  margin-bottom: 25px;
 }
 
 .profile .post .post__container {
