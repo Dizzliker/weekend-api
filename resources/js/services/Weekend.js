@@ -3,6 +3,7 @@ import Session from "./Session";
 export default class Weekend {
     constructor() {
         this._api = 'http://api/api/';
+        this.csrf_token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
     }
 
     getData = async (url) => {
@@ -24,4 +25,21 @@ export default class Weekend {
             console.warn(error);
         }
     }
+
+    postData = async (url, data, auth = false) => {
+        try {
+            const response = fetch(`${this._api}${url}`, {
+                method: 'POST',
+                headers: {
+                    "Accept": "application/json",
+                    "X-CSRF-TOKEN": this.csrf_token,
+                    "Authorization": auth ? `Bearer ${Session.getToken()}` : "",
+                },
+                body: data,
+            })
+            return (await response).json();
+        } catch (error) {
+            console.warn(error);
+        }
+    };
 }

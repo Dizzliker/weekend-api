@@ -4,7 +4,7 @@ export default class Session {
     }
 
     static getId = () => {
-        return JSON.parse(sessionStorage.getItem('user')).user_id;
+        return JSON.parse(sessionStorage.getItem('user')).user.id;
     }
 
     static getToken = () => {
@@ -14,7 +14,7 @@ export default class Session {
     static fill = (session) => {
         const user_info = {
             user: session.user,
-            token: session.token
+            token: session.token    
         }
         sessionStorage.setItem('user', JSON.stringify(user_info));
     }

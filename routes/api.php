@@ -19,10 +19,16 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::group(['middleware' => ['auth:sanctum']], function() {
-    Route::get('/users', [UserApiController::class, 'index']);
+    // Друзья
+    Route::get('/friends/{id}', [UserApiController::class, 'friends']);
+    Route::post('/addFriend/{id}', [UserApiController::class, 'addFriend']);
+    // Посты
     Route::get('/post/{id}', [PostApiController::class, 'index']);
     Route::post('/post/create', [PostApiController::class, 'store']);
+    Route::get('/post/{id}/delete', [PostApiController::class, 'delete']);
+    // Профиль
     Route::get('/profile/{id}', [ProfileApiController::class, 'profile']);
+    // Выход
     Route::post('/logout', [AuthApiController::class, 'logout']);
 });
 
