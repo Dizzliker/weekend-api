@@ -2071,6 +2071,98 @@ var Music = /*#__PURE__*/function (_Component) {
 
 /***/ }),
 
+/***/ "./resources/js/components/popup/popup.js":
+/*!************************************************!*\
+  !*** ./resources/js/components/popup/popup.js ***!
+  \************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ Popup)
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var _popup_css__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./popup.css */ "./resources/js/components/popup/popup.css");
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+
+
+
+
+
+var Popup = /*#__PURE__*/function (_Component) {
+  _inherits(Popup, _Component);
+
+  var _super = _createSuper(Popup);
+
+  function Popup() {
+    _classCallCheck(this, Popup);
+
+    return _super.apply(this, arguments);
+  }
+
+  _createClass(Popup, [{
+    key: "render",
+    value: function render() {
+      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
+        className: "popup__wrapper",
+        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+          className: "popup flex ai_center jc_center",
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+            className: "popup__header flex ai_center jc_center",
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
+              className: "popup__logo",
+              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("img", {
+                src: "../images/logo.svg",
+                className: "logo",
+                alt: "Weekend"
+              })
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
+              className: "popup__close",
+              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("img", {
+                src: "../images/close.svg",
+                className: "icon-close",
+                alt: "Close"
+              })
+            })]
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
+            className: "popup__body",
+            children: this.props.children
+          })]
+        })
+      });
+    }
+  }]);
+
+  return Popup;
+}(react__WEBPACK_IMPORTED_MODULE_0__.Component);
+
+
+
+/***/ }),
+
 /***/ "./resources/js/components/profile/post-list/post-form.js":
 /*!****************************************************************!*\
   !*** ./resources/js/components/profile/post-list/post-form.js ***!
@@ -2512,12 +2604,15 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-/* harmony import */ var _services_Profile__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../services/Profile */ "./resources/js/services/Profile.js");
-/* harmony import */ var _services_Weekend__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../services/Weekend */ "./resources/js/services/Weekend.js");
-/* harmony import */ var _spinner__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../spinner */ "./resources/js/components/spinner/index.js");
-/* harmony import */ var _post_list_post_form__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./post-list/post-form */ "./resources/js/components/profile/post-list/post-form.js");
-/* harmony import */ var _post_list_post_list__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./post-list/post-list */ "./resources/js/components/profile/post-list/post-list.js");
-/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
+/* harmony import */ var _services_Friend__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../services/Friend */ "./resources/js/services/Friend.js");
+/* harmony import */ var _services_Profile__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../services/Profile */ "./resources/js/services/Profile.js");
+/* harmony import */ var _services_Session__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../services/Session */ "./resources/js/services/Session.js");
+/* harmony import */ var _services_Weekend__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../services/Weekend */ "./resources/js/services/Weekend.js");
+/* harmony import */ var _popup_popup__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../popup/popup */ "./resources/js/components/popup/popup.js");
+/* harmony import */ var _spinner__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../spinner */ "./resources/js/components/spinner/index.js");
+/* harmony import */ var _post_list_post_form__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./post-list/post-form */ "./resources/js/components/profile/post-list/post-form.js");
+/* harmony import */ var _post_list_post_list__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./post-list/post-list */ "./resources/js/components/profile/post-list/post-list.js");
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
 function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -2553,6 +2648,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 
 
+
+
 var Profile = /*#__PURE__*/function (_Component) {
   _inherits(Profile, _Component);
 
@@ -2565,16 +2662,41 @@ var Profile = /*#__PURE__*/function (_Component) {
 
     _this = _super.call(this, props);
 
-    _defineProperty(_assertThisInitialized(_this), "user", new _services_Profile__WEBPACK_IMPORTED_MODULE_1__.ProfileService());
+    _defineProperty(_assertThisInitialized(_this), "addFriend", function () {
+      _this.friend.add(_this.getFormData()).then(function (res) {
+        if (res.messages) {
+          _this.setState({
+            messages: res.messages
+          });
+        } else if (res.success) {
+          _this.setState({
+            messages: ['Friend request sent']
+          });
+        }
+      })["catch"](function (error) {
+        console.warn(error);
+      });
+    });
 
     _this.state = {
       loading: true,
-      profile: []
+      profile: [],
+      messages: []
     };
+    _this.user = new _services_Profile__WEBPACK_IMPORTED_MODULE_2__.ProfileService();
+    _this.friend = new _services_Friend__WEBPACK_IMPORTED_MODULE_1__["default"]();
     return _this;
   }
 
   _createClass(Profile, [{
+    key: "getFormData",
+    value: function getFormData() {
+      var formData = new FormData();
+      formData.append('user_id', _services_Session__WEBPACK_IMPORTED_MODULE_3__["default"].getId());
+      formData.append('friend_id', this.props.user_id);
+      return formData;
+    }
+  }, {
     key: "componentDidMount",
     value: function componentDidMount() {
       var _this2 = this;
@@ -2598,193 +2720,196 @@ var Profile = /*#__PURE__*/function (_Component) {
           name = _this$state$profile.name,
           surname = _this$state$profile.surname,
           avatar = _this$state$profile.avatar;
-      var loading = this.state.loading;
-      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.Fragment, {
-        children: [loading ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)(_spinner__WEBPACK_IMPORTED_MODULE_3__["default"], {}) : null, /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsxs)("div", {
+      var _this$state = this.state,
+          loading = _this$state.loading,
+          messages = _this$state.messages;
+      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.Fragment, {
+        children: [loading ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)(_spinner__WEBPACK_IMPORTED_MODULE_6__["default"], {}) : null, messages[0] && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)(_popup_popup__WEBPACK_IMPORTED_MODULE_5__["default"], {
+          children: messages[0]
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsxs)("div", {
           className: "profile flex_column ai_flex-start",
-          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsxs)("div", {
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsxs)("div", {
             className: "profile__user-container flex",
-            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsxs)("div", {
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsxs)("div", {
               className: "profile__user-avatar flex_center_center",
-              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)("a", {
-                href: "#",
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)("span", {
                 className: "link-btn__left-circle",
-                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsxs)("span", {
+                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsxs)("span", {
                   className: "left-circle flex ai_center",
-                  children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)("img", {
+                  children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)("img", {
                     src: "../images/message.svg",
                     className: "icon-msg",
                     alt: "Send message"
-                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)("img", {
+                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)("img", {
                     src: "../images/left-circle.svg",
                     className: "icon-circle",
                     alt: ""
                   })]
                 })
-              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)("div", {
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)("div", {
                 className: "profile__avatar",
-                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)("img", {
+                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)("img", {
                   src: avatar,
                   className: "avatar-img",
                   alt: "User avatar"
                 })
-              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)("a", {
-                href: "#",
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)("span", {
                 className: "link-btn__right-circle",
-                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsxs)("span", {
+                onClick: this.addFriend,
+                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsxs)("span", {
                   className: "right-circle flex_center_flex-end",
-                  children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)("img", {
+                  children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)("img", {
                     src: "../images/friends.svg",
                     className: "icon-friend",
                     alt: ""
-                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)("img", {
+                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)("img", {
                     src: "../images/right-circle.svg",
                     className: "icon-circle",
                     alt: ""
                   })]
                 })
               })]
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsxs)("div", {
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsxs)("div", {
               className: "profile__user-info",
-              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsxs)("div", {
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsxs)("div", {
                 className: "profile__name-container flex_center_space-between",
-                children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsxs)("h1", {
+                children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsxs)("h1", {
                   className: "profile__username",
                   children: [name, " ", surname]
-                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsxs)("div", {
+                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsxs)("div", {
                   className: "online-status flex_center_space-between",
-                  children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)("div", {
+                  children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)("div", {
                     className: "online-circle"
-                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)("span", {
+                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)("span", {
                     className: "online-text",
                     children: "Online"
                   })]
                 })]
-              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)("div", {
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)("div", {
                 className: "profile__user-status flex ai_center",
-                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)("span", {
+                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)("span", {
                   className: "profile__status-text",
                   children: "Dead inside"
                 })
-              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsxs)("div", {
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsxs)("div", {
                 className: "profile__more-info flex_center_space-between",
-                children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsxs)("div", {
+                children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsxs)("div", {
                   className: "profile__list-info flex_column jc_space-between",
-                  children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsxs)("div", {
+                  children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsxs)("div", {
                     className: "profile__list-item",
-                    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)("span", {
+                    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)("span", {
                       className: "profile__item-caption",
                       children: "Sex:"
-                    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)("div", {
+                    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)("div", {
                       className: "profile__item-value",
-                      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)("span", {
+                      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)("span", {
                         className: "profile__item-text",
                         children: "Male"
                       })
                     })]
-                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsxs)("div", {
+                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsxs)("div", {
                     className: "profile__list-item",
-                    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)("span", {
+                    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)("span", {
                       className: "profile__item-caption",
                       children: "Birthday:"
-                    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)("div", {
+                    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)("div", {
                       className: "profile__item-value",
-                      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)("span", {
+                      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)("span", {
                         className: "profile__item-text",
                         children: "18.11.02"
                       })
                     })]
-                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsxs)("div", {
+                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsxs)("div", {
                     className: "profile__list-item",
-                    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)("span", {
+                    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)("span", {
                       className: "profile__item-caption",
                       children: "Language:"
-                    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)("div", {
+                    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)("div", {
                       className: "profile__item-value",
-                      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)("span", {
+                      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)("span", {
                         className: "profile__item-text",
                         children: "Russian"
                       })
                     })]
-                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsxs)("div", {
+                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsxs)("div", {
                     className: "profile__list-item",
-                    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)("span", {
+                    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)("span", {
                       className: "profile__item-caption",
                       children: "Relationship:"
-                    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)("div", {
+                    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)("div", {
                       className: "profile__item-value",
-                      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)("span", {
+                      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)("span", {
                         className: "profile__item-text",
                         children: "None"
                       })
                     })]
                   })]
-                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsxs)("div", {
+                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsxs)("div", {
                   className: "profile__personal-info flex jc_space-between",
-                  children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)("div", {
+                  children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)("div", {
                     className: "profile__info-item",
-                    children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsxs)("a", {
+                    children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsxs)("a", {
                       href: "#",
                       className: "profile__item-link",
-                      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)("img", {
+                      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)("img", {
                         src: "../images/friends(purple).svg",
                         className: "icon-item",
                         alt: "Friends"
-                      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)("span", {
+                      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)("span", {
                         className: "item-text",
                         children: "Friends"
-                      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)("span", {
+                      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)("span", {
                         className: "item-count",
                         children: "35"
                       })]
                     })
-                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)("div", {
+                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)("div", {
                     className: "profile__info-item",
-                    children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsxs)("a", {
+                    children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsxs)("a", {
                       href: "#",
                       className: "profile__item-link",
-                      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)("img", {
+                      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)("img", {
                         src: "../images/music(purple).svg",
                         className: "icon-item",
                         alt: "Music"
-                      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)("span", {
+                      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)("span", {
                         className: "item-text",
                         children: "Music"
-                      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)("span", {
+                      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)("span", {
                         className: "item-count",
                         children: "137"
                       })]
                     })
-                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)("div", {
+                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)("div", {
                     className: "profile__info-item",
-                    children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsxs)("a", {
+                    children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsxs)("a", {
                       href: "#",
                       className: "profile__item-link",
-                      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)("img", {
+                      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)("img", {
                         src: "../images/photo(purple).svg",
                         className: "icon-item",
                         alt: "Photos"
-                      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)("span", {
+                      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)("span", {
                         className: "item-text",
                         children: "Photos"
-                      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)("span", {
+                      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)("span", {
                         className: "item-count",
                         children: "17"
                       })]
                     })
-                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)("div", {
+                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)("div", {
                     className: "profile__info-item",
-                    children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsxs)("a", {
+                    children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsxs)("a", {
                       href: "#",
                       className: "profile__item-link",
-                      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)("img", {
+                      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)("img", {
                         src: "../images/video(purple).svg",
                         className: "icon-item",
                         alt: "Videos"
-                      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)("span", {
+                      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)("span", {
                         className: "item-text",
                         children: "Videos"
-                      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)("span", {
+                      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)("span", {
                         className: "item-count",
                         children: "35"
                       })]
@@ -2793,9 +2918,9 @@ var Profile = /*#__PURE__*/function (_Component) {
                 })]
               })]
             })]
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)("div", {
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)("div", {
             className: "posts",
-            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)(_post_list_post_form__WEBPACK_IMPORTED_MODULE_4__["default"], {
+            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)(_post_list_post_form__WEBPACK_IMPORTED_MODULE_7__["default"], {
               user_id: this.props.user_id,
               user: this.state.profile
             })
@@ -3403,18 +3528,109 @@ var Form = /*#__PURE__*/function (_Weekend) {
 
   var _super = _createSuper(Form);
 
-  function Form(form) {
-    var _this;
-
+  function Form() {
     _classCallCheck(this, Form);
 
-    _this = _super.call(this);
-    _this.form = form;
-    return _this;
+    return _super.call(this);
   }
 
   return _createClass(Form);
 }(_Weekend__WEBPACK_IMPORTED_MODULE_0__["default"]);
+
+
+
+/***/ }),
+
+/***/ "./resources/js/services/Friend.js":
+/*!*****************************************!*\
+  !*** ./resources/js/services/Friend.js ***!
+  \*****************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ Friend)
+/* harmony export */ });
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _Weekend__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Weekend */ "./resources/js/services/Weekend.js");
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+
+
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+
+
+var Friend = /*#__PURE__*/function (_Weekend) {
+  _inherits(Friend, _Weekend);
+
+  var _super = _createSuper(Friend);
+
+  function Friend() {
+    var _this;
+
+    _classCallCheck(this, Friend);
+
+    _this = _super.call(this);
+
+    _defineProperty(_assertThisInitialized(_this), "add", /*#__PURE__*/function () {
+      var _ref = _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().mark(function _callee(data) {
+        var friend;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().wrap(function _callee$(_context) {
+          while (1) {
+            switch (_context.prev = _context.next) {
+              case 0:
+                _context.next = 2;
+                return _this.postData("addFriend", data, true);
+
+              case 2:
+                friend = _context.sent;
+                return _context.abrupt("return", friend);
+
+              case 4:
+              case "end":
+                return _context.stop();
+            }
+          }
+        }, _callee);
+      }));
+
+      return function (_x) {
+        return _ref.apply(this, arguments);
+      };
+    }());
+
+    return _this;
+  }
+
+  return _createClass(Friend);
+}(_Weekend__WEBPACK_IMPORTED_MODULE_1__["default"]);
 
 
 
@@ -3932,6 +4148,30 @@ __webpack_require__.r(__webpack_exports__);
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
 ___CSS_LOADER_EXPORT___.push([module.id, "* {\n  margin: 0;\n  padding: 0;\n  box-sizing: border-box;\n}\n\n:root {\n  --purple: #BD2A6C;\n  --pink: #D592FF;\n  --white: #fff;\n  --black: #000;\n  --gray: #444;\n  --dark-gray: #181818;\n  --white-gray: #fafafa;\n  --light-gray: #e6e6e6;\n  --shadow: 0px 0px 4px rgba(138, 138, 138, 0.25);\n  --hover-shadow: 0px 0px 4px rgba(138, 138, 138, 0.40);\n  --animate-transition: .4s ease;\n  --online-status: #44C959;\n  --offline-status: #D63737;\n  --c4: #c4c4c4;\n}\n\n/* Стили лоудера */\n\n.loader-wrapper {\n  position: absolute;\n  z-index: 10;\n  width: 100%;\n  height: 100vh;\n  top: 0;\n  left: 0;\n  background-color: rgba(0, 0, 0, 0.4);\n  display: flex;\n  align-items: center;\n  justify-content: center;\n}\n\n.loader-wrapper.hide {\n  display: none;\n}\n\n.loader-box {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  width: 150px;\n  height: 150px;\n  position: absolute;\n  left: 50%;\n  top: 50%;\n  transform: translate(-50%, -50%);\n}\n\n.loader {\n  border: 12px solid #f3f3f3;\n  border-radius: 50%;\n  border-top: 12px solid #BD2A6C;\n  width: 100px;\n  height: 100px;\n  -webkit-animation: spin 2s linear infinite; /* Safari */\n  animation: spin 2s linear infinite;\n}\n\n/* Safari */\n@-webkit-keyframes spin {\n0% { -webkit-transform: rotate(0deg); }\n100% { -webkit-transform: rotate(360deg); }\n}\n\n@keyframes spin {\n0% { transform: rotate(0deg); }\n100% { transform: rotate(360deg); }\n}\n\n/* Стили скроллбара */\n\n::-webkit-scrollbar {\n  width: 4px;\n}\n\n::-webkit-scrollbar-thumb {\n  background-color: #e6e6e6;\n  border-radius: 3px;\n}\n\n::-webkit-scrollbar-thumb:hover {\n  background-color: #c4c4c4;\n}\n\n::-webkit-scrollbar-track {\n  background-color: white;\n}\n\ninput::-moz-placeholder {\n  font-weight: 300;\n  font-size: 16px;\n  color: var(--light-gray);\n}\n\ninput:-ms-input-placeholder {\n  font-weight: 300;\n  font-size: 16px;\n  color: var(--light-gray);\n}\n\ninput::placeholder {\n  font-weight: 300;\n  font-size: 16px;\n  color: var(--light-gray);\n}\n\n/* Стили ползунка для музыки */\n\n.input-range {\n  -webkit-appearance: none;\n  background: #e6e6e6;\n  width: 100%;\n  height: 3px;\n  outline: none;\n  border: none;\n  border-radius: 5px;\n  margin-top: 5px;\n  padding: 0;\n  transition: 1s ease;\n  cursor: pointer;\n}\n\n.input-range::-webkit-slider-thumb {\n  -webkit-appearance: none;\n  border-radius: 50%;\n  background-color: #B60F46;\n  width: 12px;\n  height: 12px;\n  cursor: pointer;\n}\n\n.input-range::-webkit-slider-thumb:hover,\n.input-range::-webkit-slider-thumb:active {\n  background-color: #8A1F4F;\n  -webkit-transition: 1s ease;\n  transition: 1s ease;\n}\n\n.input-range::-moz-range-thumb:hover,\n.input-range::-moz-range-thumb:active {\n  background-color: #8A1F4F;\n  -moz-transition: 1s ease;\n  transition: 1s ease;\n}\n\n.input-range::-moz-range-track {\n  -moz-appearance: none;\n  border-radius: 50%;\n  background-color: #B60F46;\n  width: 12px;\n  height: 12px;\n  cursor: pointer;\n}\n\n.input-range::-moz-range-thumb {\n  -moz-appearance: none;\n  border-radius: 50%;\n  background-color: #B60F46;\n  width: 12px;\n  height: 12px;\n  cursor: pointer;\n}\n\n/* Стили поиска */\n\n.search-box {\n  position: relative;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  height: 55px;\n  margin: 5px 5px 10px 5px;\n}\n\n.search-box .input-search {\n  width: 100%;\n  height: 100%;\n  border: none;\n  text-align: center;\n  padding: 5px 5px 5px 10px;\n  outline: 1px dashed #e6e6e6;\n  border-radius: 5px;\n}\n\n.search-box .icon-search {\n  position: absolute;\n  right: 0;\n  margin-right: 10px;\n}\n\n.flex {\n  display: flex;\n}\n\n.flex_column {\n  display: flex;\n  flex-direction: column;\n}\n\n.flex_center_center {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n}\n\n.flex_center_flex-end {\n  display: flex;\n  align-items: center;\n  justify-content: flex-end;\n}\n\n.flex_center_space-between {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n}\n\n.ai_center {\n  align-items: center;\n}\n\n.ai_flex-start {\n  align-items: flex-start;\n}\n\n.ai_flex-end {\n  align-items: flex-end;\n}\n\n.jc_center {\n  justify-content: center;\n}\n\n.jc_space-between {\n  justify-content: space-between;\n}\n\n/* Общий стиль для кебаб с 3 точками */\n\n.kebab {\n  width: 5px;\n  height: 20px;\n  display: flex;\n  flex-direction: column;\n  justify-content: space-between;\n}\n\n.kebab .circle {\n  width: 5px;\n  height: 5px;\n  background-color: var(--black);\n  border-radius: 50%;\n}\n\n.kebab.gray{\n  height: 20px;\n}\n\n.kebab.gray .circle {\n  background-color: var(--light-gray);\n}\n\n.cur_pointer {\n  cursor: pointer;\n}\n\n.no-select {\n  user-select: none;\n  -webkit-touch-callout: none; /* iOS Safari */\n  -webkit-user-select: none; /* Safari */\n  -khtml-user-select: none; /* Konqueror HTML */\n  -moz-user-select: none; /* Old versions of Firefox */\n  -ms-user-select: none; /* Internet Explorer/Edge */\n}\n\n/* Обнуление стилей списков */\n\nul {\n  list-style-type: none;\n}\n\n/* Стили для аватарок разных размеров */\n\n.ava-35, .ava-50, .ava-60, .ava-70 {\n  border-radius: 50%;\n  box-shadow: var(--shadow);\n  -o-object-fit: cover;\n     object-fit: cover;\n}\n\n.ava-35 {\n  width: 35px;\n  height: 35px;\n}\n\n.ava-50 {\n  width: 50px;\n  height: 50px;\n}\n\n.ava-60 {\n  width: 60px;\n  height: 60px;\n}\n\n.ava-70 {\n  width: 70px;\n  height: 70px;\n}\n\n/* Общие стили для имени пользователя */\n\n.username {\n  color: var(--black);\n  cursor: pointer;\n  transition: var(--animate-transition);\n}\n\n.username:hover {\n  color: var(--purple);\n  transition: var(--animate-transition);\n}\n\n/* Общие стили для ссылок */\n\n.link {\n  cursor: pointer;\n  transition: var(--animate-transition);\n}\n\n.link:hover {\n  color: var(--purple);\n  transition: var(--animate-transition);\n}\n\nbody {\n  font-family: 'Roboto';\n}\n\na {\n  text-decoration: none;\n  color: black;\n}\n\n#app {\n  width: 100%;\n  height: 100%;\n}\n\n.main {\n  width: 1220px;\n  height: 100vh;\n  margin: 0 auto;\n}\n\n.auth {\n  width: 100%;\n  height: 100vh;\n  background-size: 100% 100%;\n  font-family: 'Roboto', sans-serif;\n}\n\n.login {\n  width: 331px;\n  position: absolute;\n  left: 50%;\n  top: 50%;\n  transform: translate(-50%, -50%);\n  height: auto;\n  background: rgba(255, 255, 255, 0.9);\n  border-radius: 15px;\n}\n\n.login .login__form  {\n  border: none;\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  text-align: center;\n}\n\n.input {\n  width: 250px;\n  height: 45px;\n  padding-left: 15px;\n  background: #FFFFFF;\n  border: 1px solid #C4C4C4;\n  box-sizing: border-box;\n  border-radius: 15px;\n  outline: none;\n  margin-bottom: 20px;\n  transition: .2s ease;\n}\n\n.input::-webkit-input-placeholder {\n  font-weight: 300;\n  font-size: 16px;\n  color: var(--c4);\n}\n\n.input::-moz-placeholder {\n  font-weight: 300;\n  font-size: 16px;\n  color: var(--c4);\n}\n\n.login .login__form  .input.empty {\n  border: 1px solid #B60F46;\n  transition: .2s ease;\n}\n\n.input.empty::-webkit-input-placeholder {\n  color: #B60F46;\n}\n\n.input.empty::-moz-placeholder {\n  color: #B60F46;\n}\n\n.login form  .input:focus {\n  border-color: #777;\n}\n\n.btn-auth {\n  width: 251px;\n  height: 44px;\n  border: none;\n  margin: 18px auto;\n  font-family: Pacifico;\n  font-size: 18px;\n  line-height: 32px;\n  color: #FFFFFF;\n  background: #B60F46;\n  border-radius: 15px;\n  outline: none;\n  cursor: pointer;\n}\n\n.auth .link { \n  margin-bottom: 30px;\n  font-size: 12px;\n  line-height: 14px;\n  color: #3D3AD4;\n  cursor: pointer;\n  text-decoration: underline;\n}\n\n.error-box {\n  display: flex;\n  border: 1px solid #B60F46;\n  color:#B60F46;\n  border-radius: 10px;\n  width: 250px;\n  min-height: 45px;\n  height: auto;\n  margin-bottom: 20px;\n  align-items: center;\n  justify-content: center;\n}\n\n.error-box.hide {\n  display: none;\n}\n\n.register {\n  width: 331px;\n  position: absolute;\n  left: 50%;\n  top: 50%;\n  transform: translate(-50%, -50%);\n  height: auto;\n  background: rgba(255, 255, 255, 0.9);\n  border-radius: 15px;\n}\n\n.register .register-form  {\n  border: none;\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  text-align: center;\n}\n\n.register .register-form  .input.empty {\n  border: 1px solid #B60F46;\n  transition: .2s ease;\n}\n\n.register .register-form  .input.empty-date {\n  color: #B60F46;\n  border: 1px solid #B60F46;\n  transition: .2s ease;\n}\n\n.input.empty::-webkit-input-placeholder {\n  color: #B60F46;\n}\n\n.input.empty::-moz-placeholder {\n  color: #B60F46;\n}\n\n.register .register-form  .input:focus {\n  border-color: #777;\n}\n\n.login .login-form .link,\n.register .register-form .link {\n  margin-bottom: 30px;\n  font-size: 12px;\n  line-height: 14px;\n  color: #3D3AD4;\n}\n\n.logo {\n  margin: 30px auto;  \n  width: 141px;\n  height: 35px;\n}\n\n.sidebar {\n  padding-top: 30px;\n  width: 300px;\n  height: 100vh;\n  background-color: var(--white);\n  box-shadow: var(--shadow);\n  z-index: 10;\n}\n\n.sidebar .sidebar__user-container {\n  width: 245px;\n  margin: 50px 0 40px 0;\n}\n\n.sidebar .sidebar__user-container .sidebar__user-ava {\n  margin-right: 15px;\n}\n\n.sidebar .sidebar__user-info {\n  margin-right: 20px;\n}\n\n.sidebar .sidebar__user-actions {\n  width: 60px;\n  padding-top: 1px;\n}\n\n.sidebar .sidebar__user-actions .icon-settings,\n.sidebar .sidebar__user-actions .icon-logout {\n  cursor: pointer;\n  transition: var(--animate-transition);\n}\n\n.sidebar .sidebar__user-actions .icon-settings:hover {\n  transition: var(--animate-transition);\n  transform: rotate(360deg);\n}\n\n.sidebar .sidebar__user-actions .icon-logout:hover {\n  transform: scale(1.1);\n  transition: var(--animate-transition);\n}\n\n.sidebar .sidebar__user-info .username {\n  font-weight: 500;\n  font-size: 18px;\n}\n\n.sidebar .sidebar__user-info .sidebar__my-profile {\n  font-weight: 300;\n  font-size: 13px;\n  color: var(--gray);\n}\n\n.sidebar .sidebar__menu-container .sidebar__menu {\n  height: 340px;\n}\n\n.sidebar .sidebar__menu-container .sidebar__menu .sidebar__menu-item {\n  cursor: pointer;\n  transition: var(--animate-transition);\n}\n\n.sidebar .sidebar__menu-container .sidebar__menu .sidebar__item-link:hover {\n  color: var(--purple);\n  transition: var(--animate-transition);\n}\n\n.sidebar__item-link:hover > .sidebar__item-icon {\n  transform: rotate(180deg);\n  transition: var(--animate-transition);\n}\n\n.sidebar .sidebar__menu-container .sidebar__menu .sidebar__item-link .sidebar__item-text {\n  margin-left: 10px;\n  font-size: 20px;\n}\n\n.sidebar .sidebar__audio {\n  width: 95%;\n  margin-top: 55px;\n  padding: 3px; \n}\n\n.sidebar .sidebar__audio-cover {\n  width: 50px;\n  height: 50px;\n  border-radius: 50%;\n  -o-object-fit: cover;\n     object-fit: cover;\n  margin-right: 15px;\n}\n\n.sidebar .sidebar__audio .sidebar__track-info .sidebar__audio-artist {\n  font-weight: 300;\n  font-size: 13px;\n}\n\n.sidebar .sidebar__audio .sidebar__track-info .sidebar__audio-name {\n  font-weight: 500;\n  font-size: 13px;\n}\n\n.sidebar .sidebar__audio .sidebar__audio-actions {\n  width: 70px;\n}\n\n.sidebar .sidebar__audio-duration .text-duration {\n  font-style: normal;\n  font-weight: 300;\n  font-size: 13px;\n  color: var(--gray);\n  margin-top: 5px;\n}\n\n/* Верстка профиля пользователя */\n\n.profile {\n  width: 920px;\n  padding: 30px 0 0 30px;\n  background-color: var(--white);\n}\n\n.profile .profile__user-avatar .left-circle {\n  padding-left: 3px;\n  border-radius: 164px 0 0 164px;\n  box-shadow: var(--shadow);\n}\n\n.profile .profile__user-avatar .left-circle .icon-msg {\n  position: absolute;\n}\n\n.profile .profile__user-avatar .right-circle {\n  border-radius: 0 164px 164px 0;\n  box-shadow: var(--shadow);\n  padding-right: 3px;\n}\n\n.profile .profile__user-avatar .right-circle .icon-friend {\n  position: absolute;\n}\n\n.profile .profile__user-avatar .profile__avatar {\n  position: absolute;\n  width: 280px;\n  height: 280px;\n  -o-object-fit: cover;\n     object-fit: cover;\n  border-radius: 50%;\n}\n\n.profile .profile__user-avatar .profile__avatar .avatar-img {\n  width: 280px;\n  height: 280px;\n  -o-object-fit: cover;\n     object-fit: cover;\n  border-radius: 50%;\n}\n\n.profile .profile__user-avatar .link-btn__left-circle,\n.profile .profile__user-avatar .link-btn__right-circle {\n  transition: var(--animate-transition);\n  cursor: pointer;\n}\n\n.profile .profile__user-container .profile__user-avatar .icon-circle {\n  width: 100%;\n  height: 100%;\n}\n\n.profile .profile__user-avatar .link-btn__left-circle {\n  border-radius: 164px 0 0 164px;\n  \n}\n\n.profile .profile__user-avatar .link-btn__right-circle {\n  border-radius: 0 164px 164px 0; \n}\n\n.profile .profile__user-avatar .link-btn__left-circle:hover,\n.profile .profile__user-avatar .link-btn__right-circle:hover {\n  box-shadow: var(--hover-shadow);\n  transition: var(--animate-transition);\n}\n\n.profile .profile__user-info {\n  width: 470px;\n  margin-left: 30px;\n}\n\n.profile .profile__user-info .profile__name-container {\n  width: 100%;\n}\n\n.profile .profile__user-info .profile__name-container .profile__username {\n  font-size: 30px;\n  font-weight: normal;\n  font-family: 'Pacifico';\n  color: var(--purple);\n}\n\n.profile .profile__user-info .profile__name-container .online-status {\n  width: 45px;\n}\n\n.profile .profile__user-info .profile__name-container .online-status .online-circle {\n  width: 5px;\n  height: 5px;\n  border-radius: 50%;\n  background-color: var(--online-status);\n}\n\n.profile .profile__user-info .profile__name-container .online-status .online-text {\n  font-size: 12px;\n  color: #181818;\n}\n\n.profile .profile__user-info .profile__user-status {\n  width: 100%;\n  height: 35px;\n  background-color: var(--white-gray);\n  border-radius: 10px;\n  padding-left: 10px;\n  margin: 5px 0 20px 0;\n}\n\n.profile .profile__user-info .profile__user-status .profile__status-text {\n  font-size: 18px;\n  font-weight: 300;\n  color: var(--black);\n}\n\n.profile .profile__user-info .profile__more-info {\n  width: 415px;\n}\n\n.profile .profile__user-info .profile__list-info {\n  width: 215px;\n  height: 170px;\n  padding-left: 10px;\n}\n\n.profile .profile__user-info .profile__list-info .profile__list-item {\n  width: 100%;\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n}\n\n.profile .profile__user-info .profile__list-info .profile__list-item .profile__item-caption {\n  font-size: 18px;\n  color: #515151;\n  font-weight: 300;\n}\n\n.profile .profile__user-info .profile__list-info .profile__list-item .profile__item-value {\n  width: 90px;\n  height: 35px;\n  display: flex;\n  align-items: center;\n  background-color: var(--white-gray);\n  border-radius: 10px;\n  padding-left: 10px;\n}\n\n.profile .profile__personal-info {\n  width: 170px;\n  height: 170px;\n  flex-wrap: wrap;\n}\n\n.profile .profile__user-info .profile__info-item  {\n  width: 50%;\n}\n\n.profile .profile__user-info .profile__info-item .profile__item-link {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  cursor: pointer;\n  transition: var(--animate-transition);\n}\n\n.profile .profile__user-info .profile__info-item .profile__item-link .icon-item:hover {\n  transform: scale(1.1);\n  transition: var(--animate-transition);\n}\n\n.profile .profile__personal-info .profile__info-item .profile__item-link .item-text {\n  font-size: 13px;\n  color: #181818;\n  font-weight: 300;\n}\n\n.profile .profile__personal-info .profile__info-item .profile__item-link .item-count {\n  font-size: 20px;\n  color: var(--purple);\n  font-weight: normal;\n}\n\n/* Верстка блока постов пользователя */\n\n.profile .posts .posts__add-post {\n  width: 825px;\n  height: -webkit-fit-content;\n  height: -moz-fit-content;\n  height: fit-content;\n  box-shadow: var(--shadow);\n  border-radius: 15px;\n  margin: 25px 0;\n}\n\n.profile .posts .posts__add-post-avatar {\n  margin: 5px 10px 0 35px;\n}\n\n.profile .posts .posts__add-input {\n  width: 65%;\n  height: 65px;\n  resize: none;\n  outline: var(--white-gray);\n  border: none;\n  padding-top: 22px;\n}\n\n.profile .posts__add-post .posts__post-actions {\n  width: 115px;\n  height: 20px;\n  margin-top: 20px;\n}\n\n.profile .posts__add-post .posts__post-actions .icon-attach {\n  cursor: pointer;\n  transition: var(--animate-transition);\n}\n\n.profile .posts__add-post .posts__post-actions .icon-attach:hover {\n  transform: scale(1.1);\n  transition: var(--animate-transition);\n}\n\n.profile .posts__add-post .posts__add-btn-link {\n  width: 20px;\n  height: 20px;\n}\n\n.profile .posts__add-post .posts__add-btn {\n  margin: 20px 0 0 35px;\n  width: 20px;\n  height: 20px;\n  cursor: pointer;\n  transition: var(--animate-transition);\n}\n\n.profile .posts__add-post .posts__add-btn:hover {\n  transform: scale(1.1);\n  transition: var(--animate-transition);\n}\n\n.profile .posts .post {\n  width: 825px;\n  display: flex;\n  border-radius: 15px;\n  box-shadow: var(--shadow);\n  padding: 25px 25px 0 25px;\n  margin-bottom: 25px;\n}\n\n.profile .post .post__container {\n  width: 100%;\n  margin-left: 15px;\n}\n\n.profile .post .post__container .post__header {\n  width: 100%;\n}\n\n.profile .post .post__container .post__header .post__username {\n  width: -webkit-fit-content;\n  width: -moz-fit-content;\n  width: fit-content;\n}\n\n.profile .post .post__container .post__header .post__username .username {\n  font-weight: 500;\n  font-size: 18px;\n}\n\n.profile .post .post__container .post__header .post__username .date {\n  font-weight: 300;\n  font-size: 12px;\n  margin-left: 10px;\n  padding-top: 5px;\n}\n\n.profile .post .post__actions {\n  width: 85px;\n}\n\n.profile .post .post__actions .icon-delete,\n.profile .post .post__actions .icon-edit {\n  cursor: pointer;\n  transition: var(--animate-transition);\n} \n\n.profile .post .post__actions .icon-delete:hover {\n  transform: rotate(360deg);\n  transition: var(--animate-transition);\n}\n\n.profile .post .post__actions .icon-edit:hover {\n  transform: scale(1.1);\n  transition: var(--animate-transition);\n}\n\n.profile .post .post__body {\n  font-weight: 300;\n  font-size: 15px;\n  margin-top: 15px;\n}\n\n.profile .post .post__footer {\n  width: 100%;\n  border-top: 1px solid var(--light-gray);\n  margin-top: 10px;\n  padding: 10px 0;\n}\n\n.profile .post .post__footer .post__like .link .icon-like, \n.profile .post .post__footer .post__repost .link .icon-repost,\n.profile .post .post__footer .post__comment .link .icon-comment {\n  margin-right: 5px;\n}\n\n.profile .post .post__footer .post__like .link .text, \n.profile .post .post__footer .post__repost .link .text,\n.profile .post .post__footer .post__comment .link .text {\n  font-weight: 300;\n  font-size: 16px;\n}\n\n/* Верстка страницы сообщений */\n\n.message {\n  width: 920px;\n  display: flex;\n  background-color: var(--white);\n}\n\n.message .message__user-list {\n  width: 300px;\n  height: 100vh;\n  box-shadow: var(--shadow);\n}\n\n.message .message__user-list .message__user-body {\n  width: 100%;\n  padding: 7px 10px;\n  border-top: 1px dashed var(--light-gray);\n  transition: var(--animate-transition);\n}\n\n.message .message__user-list .message__user-body:last-child {\n  border-bottom: 1px dashed var(--light-gray);\n}\n\n.message .message__user-list .message__user-body:hover {\n  background-color: #fafafa;\n  transition: var(--animate-transition);\n}\n\n.message .message__user-list .message__user-body .message__user-container {\n  display: flex;\n  align-items: center;\n}\n\n.message .message__user-list .message__user-body .message__user-container .message__user-ava {\n  margin-right: 10px;\n}\n\n.message .message__user-list .message__user-body .message__user-container .message__user-info {\n  display: flex;\n  justify-content: space-between;\n}\n\n.message .message__user-list .message__user-body .message__user-container .message__user-info .message__name-container {\n  display: flex;\n  flex-direction: column;\n}\n\n.message .message__user-list .message__user-body .message__user-container .message__user-name {\n  font-weight: 300;\n  font-size: 13px;\n  color: var(--gray);\n}\n\n.message .message__user-list .message__user-body .message__user-container .message__last-message {\n  font-style: normal;\n  font-weight: normal;\n  font-size: 15px;\n  color: var(--black);\n}\n\n.message .message__user-list .message__user-body .message__user-container .message__user-ava {\n  margin-right: 10px;\n}\n\n.message .message__user-list .message__user-body .message__user-container .message__send-time {\n  font-weight: 300;\n  font-size: 12px;\n  color: var(--gray);\n  margin-left: 5px;\n}\n\n.message .message__chat-container {\n  width: 620px;\n  position: relative;\n}\n\n.message .message__chat-header {\n  border-bottom: 1px dashed var(--light-gray);\n  padding: 10px 0;\n}\n\n.message .message__chat-header .message__header-container {\n  width: 585px;\n}\n\n.message .message__chat-header .message__header-info .message__header-user {\n  width: 420px;\n}\n\n.message .message__chat-header .message__header-info .message__header-actions {\n  width: 75px;\n}\n\n.message .message__chat-header .message__header-info .message__header-actions .icon-search {\n  width: 20px;\n  height: 20px;\n}\n\n.message .message__chat-header .message__header-ava {\n  position: relative;\n  width: 50px;\n  height: 50px;\n  margin-right: 25px;\n}\n\n.message .message__chat-header .message__header-ava .online-status {\n  width: 13px;\n  height: 13px;  \n  border: 1px solid var(--white);\n  border-radius: 50%;\n  background-color: var(--offline-status);\n  position: absolute;\n  right: 0;\n  top: 70%;\n}\n\n.message .message__chat-header .message__header-info .message__header-user .username {\n  font-style: normal;\n  font-weight: 300;\n  font-size: 24px;\n}\n\n.message .message__chat-box {\n  height: 620px;\n  padding: 0 25px;\n  overflow-y: auto;\n}\n\n.message .message__chat-container .message__chat-header .message__header-info .message__header-user .message__header-online {\n  font-style: normal;\n  font-weight: 300;\n  font-size: 12px;\n  color: var(--dark-gray);\n}\n\n.message .message__chat-container .message__msg {\n  margin: 15px 0;\n}\n\n.message .message__chat-container .message__msg .msg-text {\n  word-wrap: break-word;\n  padding: 8px 16px;\n  box-shadow: 0 0 32px rgb(0, 0, 0/8%) 0 16px 16px -16px rgb(0, 0, 0/10%);\n}\n\n.message .message__chat-container .message__msg-outgoing {\n  display: flex;\n}\n\n.message .message__msg-outgoing .details {\n  max-width: calc(100% - 130px);\n}\n\n.message .message__msg-outgoing .details .msg-text {\n  background: #e6e6e6;\n  color: black;\n  border-radius: 18px 18px 0 18px;\n}\n\n.message .message__msg-outgoing .msg-time,\n.message .message__msg-incoming .msg-time {\n  display: flex;\n  justify-content: flex-end;\n  flex-direction: column;\n  font-weight: 300;\n  font-size: 12px;\n  color: #444;\n}\n\n.message .message__msg-outgoing .msg-time {\n  margin: 0 10px 0 auto;\n}\n\n.message .message__chat-container .message__msg-incoming {\n  display: flex;\n  align-items: flex-end;\n}\n\n.message .message__msg-incoming .details {\n  margin-left: 10px;\n  max-width: calc(100% - 130px);\n}\n\n.message .message__msg-incoming .msg-time {\n  margin: 0 auto 0 10px;\n}\n\n.message .message__msg-incoming .details .msg-text {\n  background: #fff;\n  border-radius: 18px 18px 18px 0;\n  box-shadow: 0px 0px 4px rgba(138, 138, 138, 0.25);\n}\n\n.message .message__form-send-msg {\n  width: 100%;\n  position: absolute;\n  bottom: 15px;\n}\n\n.message .message__form-container {\n  width: 585px;\n  height: 40px;\n  background-color: var(--white);\n  box-shadow: var(--shadow);\n  border-radius: 15px;\n  padding-left: 40px;\n}\n\n.message .message__form-send-msg .message__form-container .message__input-field {\n  width: 80%;\n  height: inherit;\n  resize: none;\n  border: none; \n  outline: none;\n  border-radius: 1px;\n  padding-top: 11px;\n}\n\n.message .message__form-container .message__form-details {\n  width: 110px;\n  margin-right: 20px;\n}\n\n.message .message__form-container .message__btn-send {\n  width: 65px;\n  height: 40px;\n  background-color: var(--purple);\n  border-radius: 15px;\n}\n\n/* Верстка страницы друзей */\n\n.friend {\n  width: 920px;\n  height: 100vh;\n  display: flex;\n  background-color: var(--white);\n}\n\n.friend .friend__friend-list {\n  width: 620px;\n}\n\n.friend .friend__friend-list .friend__search-container {\n  width: 100%;\n  margin-bottom: 30px;\n}\n\n.friend .friend__friend-list .friend__user {\n  width: 550px;   \n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  margin-bottom: 30px;\n}\n\n.friend .friend__friend-list .friend__users-container {\n  width: 100%;\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  overflow-y: hidden;\n} \n\n.friend .friend__friend-list .friend__users-container:hover {\n  overflow-y: auto;\n}\n\n.friend .friend__friend-list .friend__user .friend__user-info {\n  display: flex;\n  align-items: center;\n}\n\n.friend .friend__friend-list .friend__user .friend__user-info .friend__user-ava {\n  margin-right: 15px;\n}\n\n.friend .friend__friend-list .friend__user .friend__user-info .friend__user-name {\n  display: flex;\n  flex-direction: column;\n}\n\n.friend .friend__friend-list .friend__user .friend__user-info .friend__user-name .username {\n  font-style: normal;\n  font-weight: normal;\n  font-size: 20px;\n}\n\n.friend .friend__friend-list .friend__user .friend__user-info .friend__user-name .online-status {\n  font-style: normal;\n  font-weight: 300;\n  font-size: 15px;\n  color: var(--gray);\n}\n\n.friend .friend__user .friend__user-actions {\n  width: 75px;\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n}\n\n.friend .friend__right-side {\n  width: 300px;\n  box-shadow: var(--shadow);\n}\n\n.friend .friend__right-side .friend__header {\n  width: 100%;\n  text-align: center;\n  color: var(--gray);\n  font-style: normal;\n  font-weight: 500;\n  font-size: 24px;\n  border-bottom: 1px dashed var(--light-gray);\n  padding: 20px 0;\n}\n\n.friend .friend__right-side .link-all-users {\n  padding: 25px 0;\n}\n\n.friend .friend__right-side .friend__all-users {\n  font-style: normal;\n  font-weight: normal;\n  font-size: 20px;\n}\n\n.friend .friend__right-side .friend__friend-request {\n  width: 250px;\n}\n\n.friend .friend__right-side .friend__friend-request .friend__request-header {\n  width: 100%;\n}\n\n.friend .friend__right-side .friend__friend-request .friend__request-header .title {\n  font-style: normal;\n  font-weight: normal;\n  font-size: 20px;\n  color: var(--black);\n}\n\n.friend .friend__right-side .friend__friend-request .friend__request-list {\n  max-height: 315px;\n  border-top: 1px dashed var(--light-gray);\n  border-bottom: 1px dashed var(--light-gray);\n  margin-top: 15px;\n  padding: 0 5px 5px 0;\n  overflow-y: auto;\n}\n\n.friend .friend__right-side .friend__friend-request .friend__request-list .friend__user-request {\n  width: 100%;\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  margin-top: 5px;\n}\n\n.friend .friend__right-side  .friend__request-list .friend__user-request .friend__user-info {\n  display: flex;\n  align-items: center;\n}\n\n.friend .friend__right-side  .friend__request-list .friend__user-request .friend__user-info .link-ava {\n  margin-right: 15px;\n}\n\n.friend .friend__right-side  .friend__request-list .friend__user-request .friend__user-info .username {\n  font-style: normal;\n  font-weight: 500;\n  font-size: 18px;\n}\n\n.friend .friend__right-side  .friend__request-list .friend__user-request .friend__request-actions {\n  width: 45px;\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n}\n\n/* Верстка страницы с музыкой */\n\n.music {\n  width: 920px;\n  height: 100vh;\n  display: flex;\n  background-color: var(--white);\n}\n\n.music .music__search-container {\n  width: 100%;\n}\n\n.music .music__playlist {\n  width: 620px;\n}\n\n.music .music__playlist .music__now-playing {\n  width: 550px;\n}\n\n.music .music__playlist .music__now-playing .music__track-header {\n  width: 100%;\n  margin-bottom: 10px;\n}\n\n.music .music__playlist .music__now-playing .music__track-header .music__actions {\n  width: 200px;\n}\n\n.music .music__playlist .music__now-playing .music__track-header .music__actions .text {\n  font-style: normal;\n  font-weight: 500;\n  font-size: 12px;\n}\n\n.music .music__playlist .music__now-playing .music__now-track-info {\n  width: 255px;\n  margin: 0 10px;\n}\n\n.music .music__playlist .track-artist {\n  font-style: normal;\n  font-weight: 300;\n  font-size: 12px;\n  color: var(--dark-gray);\n}\n\n.music .music__playlist .track-name {\n  font-style: normal;\n  font-weight: 500;\n  font-size: 12px;\n  color: var(--dark-gray);\n}\n\n.music .music__playlist .music__now-playing .music__now-track-info .track-time {\n  font-style: normal;\n  font-weight: 300;\n  font-size: 13px;\n  color: var(--gray);\n}\n\n.music .music__playlist .music__now-playing .music__now-track-info .music__track-input .input-range {\n  width: 100%;\n}\n\n.music .music__playlist .music__now-playing .music__now-track {\n  width: 550px;\n  height: 60px;\n  border-radius: 15px;\n  box-shadow: var(--shadow);\n}\n\n.music .music__playlist .music__now-playing .music__now-track .music__track-controls {\n  width: 55px;\n  margin: 0 10px;\n}\n\n.music .music__playlist .track-actions {\n  width: 130px;\n}\n\n.music .music__playlist .music__title {\n  font-style: normal;\n  font-weight: 300;\n  font-size: 15px;\n  color: var(--gray);\n}\n\n.music .music__playlist .music__track-list .music__track-list-header {\n  margin: 20px 0 10px 0;\n}\n\n.music .music__playlist .music__track {\n  width: 550px;\n  height: 65px;\n  border-radius: 15px;\n  cursor: pointer;\n  transition: var(--animate-transition);\n  margin-bottom: 10px;\n  padding: 0 20px;\n}\n\n.music .music__playlist .music__track:hover {\n  background-color: var(--white-gray);\n  transition: var(--animate-transition);\n}\n\n.music .music__playlist .music__track-info .music__track-desc {\n  margin-left: 15px;\n}\n\n.music .music__right-side {\n  width: 300px;\n  box-shadow: var(--shadow);\n}\n\n.music .music__right-side .music__album {\n  width: 120px;\n  height: 120px;\n  border-radius: 15px;\n  /* background-image: url('./img/Audio.jpg'); */\n  background-size: 100% 100%;\n  margin-bottom: 15px;\n}\n\n.music .music__right-side .music__album:hover > .music__album-container {\n  display: flex;\n  transition: var(--animate-transition);\n  opacity: 1;\n}\n\n.music .music__right-side .music__album .music__album-container {\n  opacity: 0;\n  position: relative;\n  width: 100%;\n  height: 100%;\n  border-radius: 15px;\n  background:rgba(0,0,0,0.4);\n  padding: 10px;\n  cursor: pointer;\n  transition: var(--animate-transition);\n}\n\n.music .music__right-side .music__album .music__album-info .album-name {\n  font-style: normal;\n  font-weight: bold;\n  font-size: 15px;\n  color: var(--white);\n}\n\n.music .music__right-side .music__album .music__album-info .album-artist {\n  font-style: normal;\n  font-weight: 300;\n  font-size: 12px;\n  color: var(--white);\n}\n\n.music .music__right-side .music__album .album-year {\n  position: absolute;\n  right: 10px;\n  bottom: 10px;\n  font-style: normal;\n  font-weight: 300;\n  font-size: 10px;\n  color: var(--white);\n  -webkit-user-select: none;\n     -moz-user-select: none;\n      -ms-user-select: none;\n          user-select: none;\n}\n\n.music .music__right-side .music__albums {\n  width: 255px;\n  flex-wrap: wrap;\n}", ""]);
+// Exports
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
+
+
+/***/ }),
+
+/***/ "./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[6].oneOf[1].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[6].oneOf[1].use[2]!./resources/js/components/popup/popup.css":
+/*!***********************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[6].oneOf[1].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[6].oneOf[1].use[2]!./resources/js/components/popup/popup.css ***!
+  \***********************************************************************************************************************************************************************************************************/
+/***/ ((module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0__);
+// Imports
+
+var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
+// Module
+___CSS_LOADER_EXPORT___.push([module.id, ".popup__wrapper {\r\n    width: 100%;\r\n    height: 100%;\r\n    position: absolute;\r\n    z-index: 10;\r\n    top: 0;\r\n    left: 0;\r\n    background-color: rgba(0,0,0,0.8);\r\n}\r\n\r\n.popup {\r\n    width: -webkit-fit-content;\r\n    width: -moz-fit-content;\r\n    width: fit-content;\r\n    height: -webkit-fit-content;\r\n    height: -moz-fit-content;\r\n    height: fit-content;\r\n    position: absolute;\r\n    top: 50%;\r\n    left: 50%;\r\n    transform: translate(-50%, -50%);\r\n    flex-flow: column;\r\n    background: rgba(255, 255, 255, 0.9);\r\n    border-radius: 15px;\r\n    color: #444;\r\n    padding: 30px 30px 60px 30px;\r\n}\r\n\r\n.popup .popup__header {\r\n    width: 100%;\r\n}\r\n\r\n.popup .popup__header .popup__logo {\r\n    margin-left: auto;\r\n}\r\n\r\n.popup .popup__header .popup__close {\r\n    margin-left: auto;\r\n}\r\n\r\n.popup .popup__header .popup__close .icon-close,\r\n.popup .popup__header .popup__close .icon-close:hover {\r\n    transition: .4s ease;\r\n}\r\n\r\n.popup .popup__body {\r\n    border: 2px dashed #000;\r\n    width: 640px;\r\n    height: 300px;\r\n    border-radius: 15px;\r\n    display: flex;\r\n    flex-direction: column;\r\n    align-items: center;\r\n    justify-content: center;\r\n}\r\n", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -37384,6 +37624,36 @@ var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js
 
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_css_loader_dist_cjs_js_ruleSet_1_rules_6_oneOf_1_use_1_node_modules_postcss_loader_dist_cjs_js_ruleSet_1_rules_6_oneOf_1_use_2_App_css__WEBPACK_IMPORTED_MODULE_1__["default"].locals || {});
+
+/***/ }),
+
+/***/ "./resources/js/components/popup/popup.css":
+/*!*************************************************!*\
+  !*** ./resources/js/components/popup/popup.css ***!
+  \*************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! !../../../../node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js */ "./node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js");
+/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _node_modules_css_loader_dist_cjs_js_ruleSet_1_rules_6_oneOf_1_use_1_node_modules_postcss_loader_dist_cjs_js_ruleSet_1_rules_6_oneOf_1_use_2_popup_css__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! !!../../../../node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[6].oneOf[1].use[1]!../../../../node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[6].oneOf[1].use[2]!./popup.css */ "./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[6].oneOf[1].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[6].oneOf[1].use[2]!./resources/js/components/popup/popup.css");
+
+            
+
+var options = {};
+
+options.insert = "head";
+options.singleton = false;
+
+var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default()(_node_modules_css_loader_dist_cjs_js_ruleSet_1_rules_6_oneOf_1_use_1_node_modules_postcss_loader_dist_cjs_js_ruleSet_1_rules_6_oneOf_1_use_2_popup_css__WEBPACK_IMPORTED_MODULE_1__["default"], options);
+
+
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_css_loader_dist_cjs_js_ruleSet_1_rules_6_oneOf_1_use_1_node_modules_postcss_loader_dist_cjs_js_ruleSet_1_rules_6_oneOf_1_use_2_popup_css__WEBPACK_IMPORTED_MODULE_1__["default"].locals || {});
 
 /***/ }),
 

@@ -1,8 +1,7 @@
 import Weekend from "./Weekend";
 
 export default class Form extends Weekend {
-    constructor(form) {
+    constructor() {
         super();
-        this.form = form; 
     };
 }

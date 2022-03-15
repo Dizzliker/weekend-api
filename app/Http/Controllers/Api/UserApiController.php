@@ -38,11 +38,24 @@ class UserApiController extends Controller
             'user_id' => 'integer|required',
             'friend_id' => 'integer|required',
         ]);
-
-        return DB::table('friends')->insert([
+        $is_friends = DB::select(
+            'select (case when f.status = 0
+                         then "Friend request already sent"
+                         when f.status = 1
+                         then "Unable to send request, you are already friends"
+                    end) message    
+              from friends f
+             where (f.user_id = '.$fields['user_id'].' and f.friend_id = '.$fields['friend_id'].')
+                or (f.user_id = '.$fields['friend_id'].' and f.friend_id = '.$fields['user_id'].')'
+        );
+        if ($is_friends) {
+            return response(['messages' => [$is_friends[0]->message]]);
+        }
+        DB::table('friends')->insert([
             'user_id' => $fields['user_id'],
             'friend_id' => $fields['friend_id'],
             'status' => false,
         ]);
+        return response(['success' => true]);
     }
 }

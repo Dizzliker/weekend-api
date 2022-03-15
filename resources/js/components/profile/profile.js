@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
-import { useParams } from 'react-router-dom';
+import Friend from '../../services/Friend';
 import {ProfileService} from '../../services/Profile';
+import Session from '../../services/Session';
 import Weekend from '../../services/Weekend';
+import Popup from '../popup/popup';
 import Spinner from '../spinner';
 import PostForm from './post-list/post-form';
 import PostList from './post-list/post-list';
@@ -11,11 +13,33 @@ class Profile extends Component {
         super(props);
         this.state = {
             loading: true,
-            profile: []
+            profile: [],
+            messages: [],
         }
+        this.user = new ProfileService();
+        this.friend = new Friend();
     }
     
-    user = new ProfileService();
+    getFormData() {
+        let formData = new FormData();
+        formData.append('user_id', Session.getId());
+        formData.append('friend_id', this.props.user_id);
+        return formData;
+    }
+
+    addFriend = () => {
+        this.friend.add(this.getFormData())
+            .then(res => {
+                if (res.messages) {
+                   this.setState({messages: res.messages});
+                } else if (res.success) {
+                    this.setState({messages: ['Friend request sent']});
+                }
+            })
+            .catch(error => {
+                console.warn(error);
+            });
+    }
 
     componentDidMount() {
         const {user_id} = this.props;
@@ -31,29 +55,33 @@ class Profile extends Component {
 
     render() {
         const {name, surname, avatar} = this.state.profile;
-        const {loading} = this.state;
+        const {loading, messages} = this.state;
 
         return(
             <>
             {loading ? <Spinner /> : null}
+            {messages[0] &&
+            <Popup>
+                {messages[0]}
+            </Popup>}
             <div className="profile flex_column ai_flex-start">
             <div className="profile__user-container flex">
                 <div className="profile__user-avatar flex_center_center">
-                    <a href="#" className="link-btn__left-circle">
+                    <span className="link-btn__left-circle">
                         <span className="left-circle flex ai_center">
                             <img src="../images/message.svg" className="icon-msg" alt="Send message" />
                             <img src="../images/left-circle.svg" className="icon-circle" alt="" />
                         </span>
-                    </a>
+                    </span>
                     <div className="profile__avatar">
                         <img src={avatar} className="avatar-img" alt="User avatar" />
                     </div>
-                    <a href="#" className="link-btn__right-circle">
+                    <span className="link-btn__right-circle" onClick={this.addFriend}>
                         <span className="right-circle flex_center_flex-end">
                             <img src="../images/friends.svg" className="icon-friend" alt="" />
                             <img src="../images/right-circle.svg" className="icon-circle" alt="" />
-                        </span> 
-                    </a>
+                        </span>
+                    </span>
                 </div>
                 <div className="profile__user-info">
                     <div className="profile__name-container flex_center_space-between">
