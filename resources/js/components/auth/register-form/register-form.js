@@ -45,7 +45,7 @@ export default class RegisterForm extends Component {
         .then(res => {
             if (res.user) {
                 Session.fill(res);
-                console.log(Session.get());
+                location.href = `${location.origin}/profile/${Session.getId()}`;
             } else {
                 this.setState({error: res.errors[Object.keys(res.errors)[0]][0]});
             }
