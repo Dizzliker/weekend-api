@@ -25,4 +25,8 @@ export default class Session {
         }
         return false;
     }
+
+    static clear = () => {
+        sessionStorage.clear();
+    }
 }

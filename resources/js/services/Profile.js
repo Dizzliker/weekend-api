@@ -6,7 +6,7 @@ class Profile extends Weekend {
     }
 
     logout = async () => {
-        
+        return await this.postData(`/logout`);
     }
 }
 

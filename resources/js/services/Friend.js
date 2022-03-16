@@ -11,6 +11,9 @@ export default class Friend extends Weekend {
     }
 
     get  = async (id) => {
-        const friends = await this.getData(``);
+        const friends = await this.getData(`/friends/${id}`);
+        return friends;
     }
 }
+
+export {Friend as FriendService};

@@ -1,12 +1,10 @@
 import React, { Component } from 'react';
-import Friend from '../../services/Friend';
 import {ProfileService} from '../../services/Profile';
 import Session from '../../services/Session';
-import Weekend from '../../services/Weekend';
 import Popup from '../popup/popup';
 import Spinner from '../spinner';
 import PostForm from './post-list/post-form';
-import PostList from './post-list/post-list';
+import {FriendService} from '../../services/Friend';
 
 class Profile extends Component {
     constructor(props) {
@@ -17,7 +15,7 @@ class Profile extends Component {
             messages: [],
         }
         this.user = new ProfileService();
-        this.friend = new Friend();
+        this.friend = new FriendService();
     }
     
     getFormData() {

@@ -2,10 +2,22 @@ import React, { Component } from 'react';
 import Menu from '../menu';
 import { Link } from 'react-router-dom';
 import Session from '../../services/Session';
+import { ProfileService } from '../../services/Profile';
 
 export default class Sidebar extends Component {
-    componentDidMount() {
-        
+    profile = new ProfileService();
+
+    logout = () => {
+        this.profile.logout()
+            .then(res => {
+                if (res) {
+                    location.href = location.origin + '/';
+                    Session.clear();
+                }
+            })
+            .catch(error => {
+                console.warn(error);
+            })
     }
 
     render() {
@@ -33,9 +45,7 @@ export default class Sidebar extends Component {
                     <a href="#">
                         <img src="../images/settings.svg" alt="Settings" className="icon-settings" />
                     </a>
-                    <a href="#">
-                        <img src="../images/logout.svg" alt="Logout" className="icon-logout" />
-                    </a>
+                    <img src="../images/logout.svg" alt="Logout" onClick={this.logout} className="icon-logout" title="logout"/>
                 </div>
             </div>
 

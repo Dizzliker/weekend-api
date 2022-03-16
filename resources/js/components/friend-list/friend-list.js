@@ -1,37 +1,21 @@
 import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
 
 export default class FriendList extends Component {
-    state = {
-        friends: [
-            {
-                avatar: '../images/Ava.jpg',
-                username: 'Kirill Sabaev',
-                online: 'Was online 1 hours ago',
-
-            },
-            {
-                avatar: '../images/Ava.jpg',
-                username: 'Elena Sabaeva',
-                online: 'Was online 2 hours ago',
-
-            }
-        ],
-    };
-
     render() {
-        const friendList = this.state.friends.map(friend => {
+        const friendList = this.props.friends.map(friend => {
             return (
-                <div className="friend__user">
+                <div className="friend__user" key={friend.user_id}>
                     <div className="friend__user-info">
                         <div className="friend__user-ava">
-                            <a href="#">
+                            <Link to={`/profile/${friend.user_id}`}>
                                 <img src={friend.avatar} className="ava-60" alt="User avatar" />
-                            </a>
+                            </Link>
                         </div>
                         <div className="friend__user-name">
-                            <a href="#">
-                                <span className="username">{friend.username}</span>
-                            </a>
+                            <Link to={`/profile/${friend.user_id}`}>
+                                <span className="username">{friend.name} {friend.surname}</span>
+                            </Link>
                             <span className="online-status">{friend.online}</span>
                         </div>
                     </div>
