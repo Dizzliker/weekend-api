@@ -13,7 +13,10 @@ class UserApiController extends Controller
 {
     public function friends($id) {
         $friends = DB::select('
-            select *
+            select u.id,
+                   u.name,
+                   u.surname,
+                   u.avatar
               from users u 
              where u.id in (
                 select (case when f.user_id = '.$id.' 
@@ -22,8 +25,32 @@ class UserApiController extends Controller
                              then f.user_id
                         end) user_id
                    from friends f
-                  where f.user_id   = '.$id.'
-                     or f.friend_id = '.$id.'
+                  where (f.user_id   = '.$id.'
+                     or f.friend_id = '.$id.')
+                    and f.status = 1
+            ) 
+        ');
+
+        return UserResource::collection($friends);
+    }
+
+    public function friend_requests($id) {
+        $friends = DB::select('
+            select u.id,
+                   u.name,
+                   u.surname,
+                   u.avatar
+              from users u 
+             where u.id in (
+                select (case when f.user_id = '.$id.' 
+                             then f.friend_id
+                             when f.friend_id = '.$id.'
+                             then f.user_id
+                        end) user_id
+                   from friends f
+                  where (f.user_id   = '.$id.'
+                     or f.friend_id = '.$id.')
+                    and f.status = 0
             ) 
         ');
 
