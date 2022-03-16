@@ -38,7 +38,7 @@ export default class LoginForm extends Component {
 
     login = (e) => {
         e.preventDefault();
-        this.form.postData('login', this.getFormData())
+        this.form.postData('/login', this.getFormData())
         .then(res => {
             if (res.user) {
                 Session.fill(res);

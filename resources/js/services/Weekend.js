@@ -2,7 +2,7 @@ import Session from "./Session";
 
 export default class Weekend {
     constructor() {
-        this._api = 'http://api/api/';
+        this._api = 'http://127.0.0.1:8000/api';
         this.csrf_token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
     }
 

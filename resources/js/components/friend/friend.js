@@ -5,6 +5,10 @@ import UserList from '../user-list';
 import RightSide from './right-side';
 
 export default class Friend extends Component {
+    componentDidMount() {
+        
+    }
+
     render() {
         return (
         <div className="friend">

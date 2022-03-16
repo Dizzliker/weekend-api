@@ -6,7 +6,11 @@ export default class Friend extends Weekend {
     }
 
     add = async (data) => {
-        const friend = await this.postData(`addFriend`, data, true);
+        const friend = await this.postData(`/addFriend`, data, true);
         return friend;
+    }
+
+    get  = async (id) => {
+        const friends = await this.getData(``);
     }
 }

@@ -22,7 +22,7 @@ export default class PostForm extends Component {
     }
 
     addPost = () => {
-        this.post.postData('post/create', this.getFormData(), true)
+        this.post.postData('/post/create', this.getFormData(), true)
             .then(res => {
                 if (res) {
                     this.setState({text: '', reload: true,});

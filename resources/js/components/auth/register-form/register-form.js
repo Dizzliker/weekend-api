@@ -41,7 +41,7 @@ export default class RegisterForm extends Component {
     
     register = (e) => {
         e.preventDefault();
-        this.form.postData('register', this.getFormData())
+        this.form.postData('/register', this.getFormData())
         .then(res => {
             if (res.user) {
                 Session.fill(res);
