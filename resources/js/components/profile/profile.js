@@ -25,8 +25,8 @@ class Profile extends Component {
         return formData;
     }
 
-    addFriend = () => {
-        this.friend.add(this.getFormData())
+    sendRequest = () => {
+        this.friend.sendRequest(this.getFormData())
             .then(res => {
                 if (res.messages) {
                    this.setState({messages: res.messages});
@@ -74,7 +74,7 @@ class Profile extends Component {
                     <div className="profile__avatar">
                         <img src={avatar} className="avatar-img" alt="User avatar" />
                     </div>
-                    <span className="link-btn__right-circle" onClick={this.addFriend}>
+                    <span className="link-btn__right-circle" onClick={this.sendRequest}>
                         <span className="right-circle flex_center_flex-end">
                             <img src="../images/friends.svg" className="icon-friend" alt="" />
                             <img src="../images/right-circle.svg" className="icon-circle" alt="" />

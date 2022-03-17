@@ -587,6 +587,15 @@ a {
   font-size: 20px;
 }
 
+.sidebar__menu-item .sidebar__count-body {
+  padding: 3px 5px;
+  font-size: 12px;
+  font-weight: bold;
+  background-color: var(--purple);
+  color: var(--white);
+  border-radius: 50%;
+}
+
 .sidebar .sidebar__audio {
   width: 95%;
   margin-top: 55px;

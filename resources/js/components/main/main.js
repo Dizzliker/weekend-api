@@ -7,7 +7,6 @@ import Profile from '../profile/profile';
 import Sidebar from '../sidebar';
 import bg from '../../img/bg.png';
 import ProfileContainer from '../profile/profile-container';
-import User from '../user';
 
 export default class Main extends Component {
     render() {
@@ -20,12 +19,11 @@ export default class Main extends Component {
         return (
             <div className="bg" style={bgStyle}>
                 <div className="main flex">
-                    <Sidebar />
+                    <Sidebar countFriendRequests = {this.props.countFriendRequests}/>
                     <Routes>
                         <Route path="profile/:id" element={<ProfileContainer />}/>
                         <Route path="message" element={<Message />}/>
-                        <Route path="friend"  element={<Friend/>}/>
-                        <Route path="users"  element={<User/>}/>
+                        <Route path="friends"  element={<Friend countFriendRequests = {this.props.countFriendRequests}/>}/>
                         <Route path="music"   element={<Music/>}/>
                     </Routes>
                 </div>

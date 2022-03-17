@@ -49,7 +49,7 @@ export default class Sidebar extends Component {
                 </div>
             </div>
 
-            <Menu />
+            <Menu countFriendRequests = {this.props.countFriendRequests}/>
 
             <div className="sidebar__audio flex_column">
                 <input type="range" className="input-range" min="0" max="100" step="1" />

@@ -1,9 +1,28 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
+import { FriendService } from '../../services/Friend';
+import Session from '../../services/Session';
 
 export default class FriendList extends Component {
+    state = {
+        friends: [],
+    };
+    friend = new FriendService();
+
+    componentDidMount() {
+        this.friend.get(Session.getId())
+            .then(res => {
+                if (res.data) {
+                    this.setState({friends: res.data});
+                }
+            })
+            .catch(error => {
+                console.warn(error);
+            })
+    }
+
     render() {
-        const friendList = this.props.friends.map(friend => {
+        const friendList = this.state.friends.map(friend => {
             return (
                 <div className="friend__user" key={friend.user_id}>
                     <div className="friend__user-info">

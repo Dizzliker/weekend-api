@@ -4,15 +4,35 @@ import Main from './main/main';
 import ReactDOM from 'react-dom';
 import { BrowserRouter } from 'react-router-dom';
 import Session from '../services/Session';
+import { Component } from 'react';
+import { FriendService } from '../services/Friend';
 
-function App() {
-  const Page = () => {
-    return Session.check() ? <Main /> : <Auth />;
+class App extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      countFriendRequests: 0,
+    };
+    this.friend = new FriendService();
   }
 
-  return (
-    <Page></Page>
-  );
+  componentDidMount() {
+    if (Session.check()) {
+      this.friend.getCountRequests(Session.getId())
+          .then(res => {
+            if (res.count) {
+              this.setState({countFriendRequests: res.count});
+            }
+          })
+          .catch(error => {
+            console.warn(error);
+          });
+    }
+  }   
+
+  render() {
+    return Session.check() ? <Main countFriendRequests = {this.state.countFriendRequests}/> : <Auth />
+  }
 }
 
 export default App;

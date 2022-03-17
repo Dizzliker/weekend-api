@@ -1,8 +1,55 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
+import { FriendService } from '../../services/Friend';
+import Session from '../../services/Session';
 
 export default class RightSide extends Component {
+    state = {
+        requests: [],
+    };
+    request = new FriendService();
+
+    componentDidMount() {
+        this.request.getRequests(Session.getId())
+            .then(res => {
+                if (res) {
+                    this.setState({requests: res.requests, countRequests: res.count});
+                }
+            })
+            .catch(error => {
+                console.warn(error);
+            });
+    }
+
+    addFriend = (e) => {
+        console.log(e.target.getAttribute('data-request_id'));
+    }
+
     render() {
+        const {requests} = this.state;
+        const requestList = requests.map(request => {
+            return (
+                <li className="friend__user-request" key={request.request_id}>
+                    <div className="friend__user-info flex ai_center">
+                        <Link to={`/profile/${request.user_id}`} className="link-ava">
+                            <img src={request.avatar} className="ava-50" alt="User avatar" />
+                        </Link>
+                        <Link to={`/profile/${request.user_id}`}> 
+                            <span className="username">{request.name} {request.surname}</span>
+                        </Link>
+                    </div>
+                    <div className="friend__request-actions">
+                        <img src="../images/plus.svg" onClick={this.addFriend} data-request_id={request.request_id} className="icon-plus" alt="Add friend" />
+                        <div className="kebab gray">
+                            <div className="circle"></div>
+                            <div className="circle"></div>
+                            <div className="circle"></div>
+                        </div>
+                    </div>
+                </li>
+            );
+        });
+
         return (
             <div className="friend__right-side flex_column ai_center">
                 <h3 className="friend__header">User actions</h3>
@@ -14,112 +61,13 @@ export default class RightSide extends Component {
                 <div className="friend__friend-request">
                     <div className="friend__request-header flex_center_space-between">
                         <div className="friend__count-request">
-                            +5
+                            +{this.props.countRequests}
                         </div>
                         <span className="title">Friend requests</span>
                         <img src="../images/arrow-down.svg" className="icon-toggle-arrow" alt="Show all requests" />
                     </div>
                     <ul className="friend__request-list">
-                        <li className="friend__user-request">
-                            <div className="friend__user-info flex ai_center">
-                                <a href="#" className="link-ava">
-                                    <img src="../images/Ava.jpg" className="ava-50" alt="User avatar" />
-                                </a>
-                                <a href="#">
-                                    <span className="username">Kirill Sabaev</span>
-                                </a>
-                            </div>
-                            <div className="friend__request-actions">
-                                <a href="#">
-                                    <img src="../images/plus.svg" className="icon-plus" alt="Add friend" />
-                                </a>
-                                <div className="kebab gray">
-                                    <div className="circle"></div>
-                                    <div className="circle"></div>
-                                    <div className="circle"></div>
-                                </div>
-                            </div>
-                        </li>
-                        <li className="friend__user-request">
-                            <div className="friend__user-info">
-                                <a href="#" className="link-ava">
-                                    <img src="../images/Ava.jpg" className="ava-50" alt="User avatar" />
-                                </a>
-                                <a href="#">
-                                    <span className="username">Kirill Sabaev</span>
-                                </a>
-                            </div>
-                            <div className="friend__request-actions">
-                                <a href="#">
-                                    <img src="../images/plus.svg" className="icon-plus" alt="Add friend" />
-                                </a>
-                                <div className="kebab gray">
-                                    <div className="circle"></div>
-                                    <div className="circle"></div>
-                                    <div className="circle"></div>
-                                </div>
-                            </div>
-                        </li>
-                        <li className="friend__user-request">
-                            <div className="friend__user-info">
-                                <a href="#" className="link-ava">
-                                    <img src="../images/Ava.jpg" className="ava-50" alt="User avatar" />
-                                </a>
-                                <a href="#">
-                                    <span className="username">Kirill Sabaev</span>
-                                </a>
-                            </div>
-                            <div className="friend__request-actions">
-                                <a href="#">
-                                    <img src="../images/plus.svg" className="icon-plus" alt="Add friend" />
-                                </a>
-                                <div className="kebab gray">
-                                    <div className="circle"></div>
-                                    <div className="circle"></div>
-                                    <div className="circle"></div>
-                                </div>
-                            </div>
-                        </li>
-                        <li className="friend__user-request">
-                            <div className="friend__user-info">
-                                <a href="#" className="link-ava">
-                                    <img src="../images/Ava.jpg" className="ava-50" alt="User avatar" />
-                                </a>
-                                <a href="#">
-                                    <span className="username">Kirill Sabaev</span>
-                                </a>
-                            </div>
-                            <div className="friend__request-actions">
-                                <a href="#">
-                                    <img src="../images/plus.svg" className="icon-plus" alt="Add friend" />
-                                </a>
-                                <div className="kebab gray">
-                                    <div className="circle"></div>
-                                    <div className="circle"></div>
-                                    <div className="circle"></div>
-                                </div>
-                            </div>
-                        </li>
-                        <li className="friend__user-request">
-                            <div className="friend__user-info">
-                                <a href="#" className="link-ava">
-                                    <img src="../images/Ava.jpg" className="ava-50" alt="User avatar" />
-                                </a>
-                                <a href="#">
-                                    <span className="username">Kirill Sabaev</span>
-                                </a>
-                            </div>
-                            <div className="friend__request-actions">
-                                <a href="#">
-                                    <img src="../images/plus.svg" className="icon-plus" alt="Add friend" />
-                                </a>
-                                <div className="kebab gray">
-                                    <div className="circle"></div>
-                                    <div className="circle"></div>
-                                    <div className="circle"></div>
-                                </div>
-                            </div>
-                        </li>
+                        {requestList}
                     </ul>
                 </div>
             </div>

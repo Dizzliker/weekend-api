@@ -34,30 +34,40 @@ class UserApiController extends Controller
         return UserResource::collection($friends);
     }
 
+    public function count_friend_requests($id) {
+        $countRequests = DB::select('
+            select count(*) count
+              from friends f 
+             where f.friend_id = '.$id.'
+               and f.status = 0 
+        ');
+
+       return response(['count' => $countRequests[0]->count]);
+    }
+
     public function friend_requests($id) {
-        $friends = DB::select('
+        $requests = DB::select('
             select u.id,
                    u.name,
                    u.surname,
-                   u.avatar
+                   u.avatar,
+                   (select f.id
+                      from friends f
+                     where f.user_id = u.id
+                       and f.friend_id = '.$id.') request_id
               from users u 
-             where u.id in (
-                select (case when f.user_id = '.$id.' 
-                             then f.friend_id
-                             when f.friend_id = '.$id.'
-                             then f.user_id
-                        end) user_id
-                   from friends f
-                  where (f.user_id   = '.$id.'
-                     or f.friend_id = '.$id.')
-                    and f.status = 0
-            ) 
+             where u.id in (    
+                select f.user_id
+                  from friends f
+                 where f.friend_id = '.$id.' 
+                   and f.status = 0
+             )
         ');
 
-        return UserResource::collection($friends);
+        return response(['requests' => $requests]);
     }
 
-    public function addFriend(Request $request) {
+    public function send_friend_request(Request $request) {
         if (Auth::id() == $request->get('user_id') && Auth::id() == $request->get('friend_id')) {
             return response(['messages' => ['Нельзя добавить себя в друзья']]);
         }

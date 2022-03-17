@@ -5,14 +5,24 @@ export default class Friend extends Weekend {
         super();
     }
 
-    add = async (data) => {
-        const friend = await this.postData(`/addFriend`, data, true);
-        return friend;
+    sendRequest = async (data) => {
+        return await this.postData(`/sendFriendRequest`, data, true);
     }
 
     get  = async (id) => {
-        const friends = await this.getData(`/friends/${id}`);
-        return friends;
+        return await this.getData(`/friends/${id}`);
+    }
+
+    getCountRequests = async (id) => {
+        return await this.getData(`/countFriendRequests/${id}`);
+    }
+
+    getRequests = async (id) => {
+        return await this.getData(`/friendRequests/${id}`);
+    }
+
+    addFriend = async (id) => {
+
     }
 }
 
