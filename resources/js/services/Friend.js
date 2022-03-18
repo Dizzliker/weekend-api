@@ -22,7 +22,7 @@ export default class Friend extends Weekend {
     }
 
     addFriend = async (id) => {
-
+        return await this.getData(`/addFriend/${id}`);
     }
 }
 

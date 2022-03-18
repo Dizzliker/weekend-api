@@ -875,7 +875,13 @@ var RightSide = /*#__PURE__*/function (_Component) {
     _defineProperty(_assertThisInitialized(_this), "request", new _services_Friend__WEBPACK_IMPORTED_MODULE_1__.FriendService());
 
     _defineProperty(_assertThisInitialized(_this), "addFriend", function (e) {
-      console.log(e.target.getAttribute('data-request_id'));
+      e.preventDefault();
+
+      _this.request.addFriend(e.target.querySelector('.request_id').value).then(function (res) {
+        console.log(res);
+      })["catch"](function (error) {
+        console.warn(error);
+      });
     });
 
     return _this;
@@ -925,12 +931,20 @@ var RightSide = /*#__PURE__*/function (_Component) {
             })]
           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
             className: "friend__request-actions",
-            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("img", {
-              src: "../images/plus.svg",
-              onClick: _this3.addFriend,
-              "data-request_id": request.request_id,
-              className: "icon-plus",
-              alt: "Add friend"
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("form", {
+              onSubmit: _this3.addFriend,
+              method: "get",
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("input", {
+                type: "hidden",
+                className: "request_id",
+                value: request.request_id
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("button", {
+                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("img", {
+                  src: "../images/plus.svg",
+                  className: "icon-plus",
+                  alt: "Add friend"
+                })
+              })]
             }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
               className: "kebab gray",
               children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("div", {
@@ -2099,6 +2113,9 @@ var Popup = /*#__PURE__*/function (_Component) {
   _createClass(Popup, [{
     key: "render",
     value: function render() {
+      var _this = this;
+
+      var show = this.props.show;
       return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
         className: "popup__wrapper",
         children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
@@ -2116,6 +2133,9 @@ var Popup = /*#__PURE__*/function (_Component) {
               className: "popup__close",
               children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("img", {
                 src: "../images/close.svg",
+                onClick: function onClick() {
+                  _this.props.onClose();
+                },
                 className: "icon-close",
                 alt: "Close"
               })
@@ -2635,7 +2655,8 @@ var Profile = /*#__PURE__*/function (_Component) {
       _this.friend.sendRequest(_this.getFormData()).then(function (res) {
         if (res.messages) {
           _this.setState({
-            messages: res.messages
+            messages: res.messages,
+            popup: true
           });
         } else if (res.success) {
           _this.setState({
@@ -2650,7 +2671,8 @@ var Profile = /*#__PURE__*/function (_Component) {
     _this.state = {
       loading: true,
       profile: [],
-      messages: []
+      messages: [],
+      popup: false
     };
     _this.user = new _services_Profile__WEBPACK_IMPORTED_MODULE_1__.ProfileService();
     _this.friend = new _services_Friend__WEBPACK_IMPORTED_MODULE_6__.FriendService();
@@ -2685,15 +2707,23 @@ var Profile = /*#__PURE__*/function (_Component) {
   }, {
     key: "render",
     value: function render() {
+      var _this3 = this;
+
       var _this$state$profile = this.state.profile,
           name = _this$state$profile.name,
           surname = _this$state$profile.surname,
           avatar = _this$state$profile.avatar;
       var _this$state = this.state,
           loading = _this$state.loading,
-          messages = _this$state.messages;
+          messages = _this$state.messages,
+          popup = _this$state.popup;
       return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_7__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_7__.Fragment, {
-        children: [loading ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_7__.jsx)(_spinner__WEBPACK_IMPORTED_MODULE_4__["default"], {}) : null, messages[0] && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_7__.jsx)(_popup_popup__WEBPACK_IMPORTED_MODULE_3__["default"], {
+        children: [loading ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_7__.jsx)(_spinner__WEBPACK_IMPORTED_MODULE_4__["default"], {}) : null, popup && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_7__.jsx)(_popup_popup__WEBPACK_IMPORTED_MODULE_3__["default"], {
+          onClose: function onClose() {
+            return _this3.setState({
+              popup: false
+            });
+          },
           children: messages[0]
         }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_7__.jsxs)("div", {
           className: "profile flex_column ai_flex-start",
@@ -3432,6 +3462,13 @@ var Friend = /*#__PURE__*/function (_Weekend) {
           while (1) {
             switch (_context5.prev = _context5.next) {
               case 0:
+                _context5.next = 2;
+                return _this.getData("/addFriend/".concat(id));
+
+              case 2:
+                return _context5.abrupt("return", _context5.sent);
+
+              case 3:
               case "end":
                 return _context5.stop();
             }
@@ -3908,7 +3945,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, ".popup__wrapper {\n    width: 100%;\n    height: 100%;\n    position: absolute;\n    z-index: 10;\n    top: 0;\n    left: 0;\n    background-color: rgba(0,0,0,0.8);\n}\n\n.popup {\n    width: -webkit-fit-content;\n    width: -moz-fit-content;\n    width: fit-content;\n    height: -webkit-fit-content;\n    height: -moz-fit-content;\n    height: fit-content;\n    position: absolute;\n    top: 50%;\n    left: 50%;\n    transform: translate(-50%, -50%);\n    flex-flow: column;\n    background: rgba(255, 255, 255, 0.9);\n    border-radius: 15px;\n    color: #444;\n    padding: 30px 30px 60px 30px;\n}\n\n.popup .popup__header {\n    width: 100%;\n}\n\n.popup .popup__header .popup__logo {\n    margin-left: auto;\n}\n\n.popup .popup__header .popup__close {\n    margin-left: auto;\n}\n\n.popup .popup__header .popup__close .icon-close,\n.popup .popup__header .popup__close .icon-close:hover {\n    transition: .4s ease;\n}\n\n.popup .popup__body {\n    border: 2px dashed #000;\n    width: -webkit-fit-content;\n    width: -moz-fit-content;\n    width: fit-content;\n    height: -webkit-fit-content;\n    height: -moz-fit-content;\n    height: fit-content;\n    padding: 3px;\n    border-radius: 15px;\n}\n", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, ".popup__wrapper {\n    width: 100%;\n    height: 100%;\n    position: absolute;\n    z-index: 10;\n    top: 0;\n    left: 0;\n    background-color: rgba(0,0,0,0.8);\n}\n\n.popup {\n    width: -webkit-fit-content;\n    width: -moz-fit-content;\n    width: fit-content;\n    height: -webkit-fit-content;\n    height: -moz-fit-content;\n    height: fit-content;\n    position: absolute;\n    top: 50%;\n    left: 50%;\n    transform: translate(-50%, -50%);\n    flex-flow: column;\n    background: rgba(255, 255, 255, 0.9);\n    border-radius: 15px;\n    color: #444;\n    padding: 30px 30px 60px 30px;\n}\n\n.popup .popup__header {\n    width: 100%;\n}\n\n.popup .popup__header .popup__logo {\n    margin-left: auto;\n}\n\n.popup .popup__header .popup__close {\n    margin-left: auto;\n}\n\n.popup .popup__header .popup__close .icon-close,\n.popup .popup__header .popup__close .icon-close:hover {\n    transition: .4s ease;\n}\n\n.popup .popup__body {\n    border: 2px dashed #000;\n    width: -webkit-fit-content;\n    width: -moz-fit-content;\n    width: fit-content;\n    height: -webkit-fit-content;\n    height: -moz-fit-content;\n    height: fit-content;\n    padding: 30px;\n    border-radius: 15px;\n}\n", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 

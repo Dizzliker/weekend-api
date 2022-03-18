@@ -47,7 +47,7 @@ class UserApiController extends Controller
 
     public function friend_requests($id) {
         $requests = DB::select('
-            select u.id,
+            select u.id user_id,
                    u.name,
                    u.surname,
                    u.avatar,
@@ -94,5 +94,21 @@ class UserApiController extends Controller
             'status' => false,
         ]);
         return response(['success' => true]);
+    }
+
+    public function add_friend($id) {
+        $request = DB::table('friends')->where('id', $id);
+        $response = '';
+        if ($friend = $request->get()) {
+            if ($friend[0]->friend_id == Auth::id()) {
+                $request->update(['status' => 1]);
+                $response = ['success' => true];
+            } else {
+                $response = ['messages' => ['Friend request for you is not found']];
+            }
+        } else {
+            $response = ['messages' => ['Request is not found']];
+        }
+        return response([$response]);
     }
 }

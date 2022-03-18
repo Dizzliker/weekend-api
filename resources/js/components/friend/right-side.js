@@ -22,7 +22,14 @@ export default class RightSide extends Component {
     }
 
     addFriend = (e) => {
-        console.log(e.target.getAttribute('data-request_id'));
+        e.preventDefault();
+        this.request.addFriend(e.target.querySelector('.request_id').value)
+            .then(res => {
+                console.log(res);
+            })
+            .catch(error => {
+                console.warn(error);
+            });
     }
 
     render() {
@@ -39,7 +46,13 @@ export default class RightSide extends Component {
                         </Link>
                     </div>
                     <div className="friend__request-actions">
-                        <img src="../images/plus.svg" onClick={this.addFriend} data-request_id={request.request_id} className="icon-plus" alt="Add friend" />
+                        <form onSubmit={this.addFriend} method="get">
+                            <input type="hidden" className="request_id" value={request.request_id} />
+                            <button>
+                                <img src="../images/plus.svg" className="icon-plus" alt="Add friend" />
+                            </button>
+                        </form>
+                        
                         <div className="kebab gray">
                             <div className="circle"></div>
                             <div className="circle"></div>

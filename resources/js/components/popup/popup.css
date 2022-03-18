@@ -32,6 +32,7 @@
 
 .popup .popup__header .popup__close {
     margin-left: auto;
+    cursor: pointer;
 }
 
 .popup .popup__header .popup__close .icon-close,
@@ -43,6 +44,6 @@
     border: 2px dashed #000;
     width: fit-content;
     height: fit-content;
-    padding: 3px;
+    padding: 30px;
     border-radius: 15px;
 }

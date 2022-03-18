@@ -24,6 +24,7 @@ Route::group(['middleware' => ['auth:sanctum']], function() {
     Route::post('/sendFriendRequest', [UserApiController::class, 'send_friend_request']);
     Route::get('/friendRequests/{id}', [UserApiController::class, 'friend_requests']);
     Route::get('/countFriendRequests/{id}', [UserApiController::class, 'count_friend_requests']);
+    Route::get('/addFriend/{id}', [UserApiController::class, 'add_friend']);
     // Посты
     Route::get('/post/{id}', [PostApiController::class, 'index']);
     Route::post('/post/create', [PostApiController::class, 'store']);

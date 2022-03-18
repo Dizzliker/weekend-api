@@ -13,6 +13,7 @@ class Profile extends Component {
             loading: true,
             profile: [],
             messages: [],
+            popup: false,
         }
         this.user = new ProfileService();
         this.friend = new FriendService();
@@ -29,7 +30,7 @@ class Profile extends Component {
         this.friend.sendRequest(this.getFormData())
             .then(res => {
                 if (res.messages) {
-                   this.setState({messages: res.messages});
+                   this.setState({messages: res.messages, popup: true});
                 } else if (res.success) {
                     this.setState({messages: ['Friend request sent']});
                 }
@@ -53,13 +54,13 @@ class Profile extends Component {
 
     render() {
         const {name, surname, avatar} = this.state.profile;
-        const {loading, messages} = this.state;
+        const {loading, messages, popup} = this.state;
 
         return(
             <>
             {loading ? <Spinner /> : null}
-            {messages[0] &&
-            <Popup>
+            {popup &&
+            <Popup onClose = {() => this.setState({popup: false})}>
                 {messages[0]}
             </Popup>}
             <div className="profile flex_column ai_flex-start">
