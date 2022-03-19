@@ -7,6 +7,7 @@ import Profile from '../profile/profile';
 import Sidebar from '../sidebar';
 import bg from '../../img/bg.png';
 import ProfileContainer from '../profile/profile-container';
+import User from '../user/user';
 
 export default class Main extends Component {
     render() {
@@ -24,6 +25,7 @@ export default class Main extends Component {
                         <Route path="profile/:id" element={<ProfileContainer />}/>
                         <Route path="message" element={<Message />}/>
                         <Route path="friends"  element={<Friend countFriendRequests = {this.props.countFriendRequests}/>}/>
+                        <Route path="users" element={<User />}/>
                         <Route path="music"   element={<Music/>}/>
                     </Routes>
                 </div>
