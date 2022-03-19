@@ -58,7 +58,7 @@ class Profile extends Component {
 
         return(
             <>
-            {loading ? <Spinner /> : null}
+            {loading && <Spinner />}
             {popup &&
             <Popup onClose = {() => this.setState({popup: false})}>
                 {messages[0]}

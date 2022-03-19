@@ -69,7 +69,7 @@ class UserApiController extends Controller
 
     public function send_friend_request(Request $request) {
         if (Auth::id() == $request->get('user_id') && Auth::id() == $request->get('friend_id')) {
-            return response(['messages' => ['Нельзя добавить себя в друзья']]);
+            return response(['messages' => ["You can't add yourself as a friend"]]);
         }
         $fields = $request->validate([
             'user_id' => 'integer|required',
@@ -110,5 +110,43 @@ class UserApiController extends Controller
             $response = ['messages' => ['Request is not found']];
         }
         return response([$response]);
+    }
+
+    public function search_friends(Request $request) {
+        $fields = $request->validate([
+            'user_id' => 'integer|required',
+            'text' => 'required',
+        ]);
+
+        $friends = DB::select('
+        select u.id,
+               u.name,
+               u.surname,
+               u.avatar
+          from     
+        (select u.id,
+               concat(u.name, " ", u.surname) username,
+               u.name,
+               u.surname,
+               u.avatar
+          from users u 
+         where u.id in (
+            select (case when f.user_id = '.$fields['user_id'].' 
+                      then f.friend_id
+                      when f.friend_id = '.$fields['user_id'].'
+                      then f.user_id
+                    end) user_id
+              from friends f
+             where (f.user_id   = '.$fields['user_id'].'
+                or f.friend_id = '.$fields['user_id'].')
+               and f.status = 1   
+            )) u
+           where (lower(u.username) like lower("%'.$fields['text'].'%"))        
+        ');
+
+        if (!empty($friends)) {
+            return response(['friends' => UserResource::collection($friends)]);
+        }
+        return response(['message' => 'Users is not found']);
     }
 }

@@ -3,9 +3,9 @@ import React, { Component } from 'react';
 export default class Spinner extends Component {
     render() {
         return (
-        <div class="loader-wrapper">
-            <div class="loader-box">
-                <div class="loader"></div>
+        <div className="loader-wrapper">
+            <div className="loader-box">
+                <div className="loader"></div>
             </div>
         </div>
         );

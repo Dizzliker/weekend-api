@@ -2,18 +2,25 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import { FriendService } from '../../services/Friend';
 import Session from '../../services/Session';
+import Spinner from '../spinner';
 
 export default class FriendList extends Component {
-    state = {
-        friends: [],
-    };
-    friend = new FriendService();
-
+    constructor(props) {
+        super(props);
+        this.state = {
+            loading: true,
+            friends: [],
+            text: '',
+        };
+        this.friend = new FriendService();
+        this.handleInputChange = this.handleInputChange.bind(this);
+    }
+    
     componentDidMount() {
         this.friend.get(Session.getId())
             .then(res => {
                 if (res.data) {
-                    this.setState({friends: res.data});
+                    this.setState({friends: res.data, loading: false,});
                 }
             })
             .catch(error => {
@@ -21,8 +28,43 @@ export default class FriendList extends Component {
             })
     }
 
+    getFormData = () => {
+        let formData = new FormData();
+        formData.append("user_id", Session.getId());
+        formData.append("text", this.state.text);
+        return formData;
+    }
+
+    handleInputChange(event) {
+        const target = event.target;
+        const value = target.value;
+        const name = target.name;
+    
+        this.setState({
+          [name]: value
+        });
+    }
+
+    searchFriends = (event) => {
+        this.handleInputChange(event);
+        if (this.state.text.trim() != '') {
+            setTimeout(() => {
+                this.friend.searchFriends(this.getFormData())
+                    .then(res => {
+                        if (res.friends) {
+                            this.setState({friends: res.friends});
+                        }
+                    })
+                    .catch(error => {
+                        console.warn(error);
+                    });
+            }, 1000);
+        }
+    }
+
     render() {
-        const friendList = this.state.friends.map(friend => {
+        const {friends, loading} = this.state;
+        const friendList = friends ? friends.map(friend => {
             return (
                 <div className="friend__user" key={friend.user_id}>
                     <div className="friend__user-info">
@@ -50,13 +92,15 @@ export default class FriendList extends Component {
                     </div>
                 </div>
             );
-        });
+        }) : <h3>No friends found</h3>;
 
         return (
+            <>
+            {loading && <Spinner />}
             <div className="friend__friend-list flex_column ai_center">
                 <div className="friend__search-container">
                     <div className="search-box">
-                        <input type="text" className="input-search" placeholder="Search" />
+                        <input type="text" value={this.state.text} onChange={(event) => {this.searchFriends(event)}} name="text" className="input-search" placeholder="Search" />
                         <img src="../images/search.svg" className="icon-search" alt="Search" />
                     </div> 
                 </div>
@@ -64,6 +108,7 @@ export default class FriendList extends Component {
                     {friendList}
                 </div>
             </div>
+            </>
         );
     }
 }

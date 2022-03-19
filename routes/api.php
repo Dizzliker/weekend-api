@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\AuthApiController;
 use App\Http\Controllers\Api\PostApiController;
 use App\Http\Controllers\Api\ProfileApiController;
 use App\Http\Controllers\Api\UserApiController;
+use Faker\Provider\UserAgent;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -25,6 +26,7 @@ Route::group(['middleware' => ['auth:sanctum']], function() {
     Route::get('/friendRequests/{id}', [UserApiController::class, 'friend_requests']);
     Route::get('/countFriendRequests/{id}', [UserApiController::class, 'count_friend_requests']);
     Route::get('/addFriend/{id}', [UserApiController::class, 'add_friend']);
+    Route::post('/searchFriends', [UserApiController::class, 'search_friends']);
     // Посты
     Route::get('/post/{id}', [PostApiController::class, 'index']);
     Route::post('/post/create', [PostApiController::class, 'store']);

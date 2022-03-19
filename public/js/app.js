@@ -570,10 +570,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (/* binding */ FriendList)
 /* harmony export */ });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-/* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router-dom/index.js");
+/* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router-dom/index.js");
 /* harmony import */ var _services_Friend__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../services/Friend */ "./resources/js/services/Friend.js");
 /* harmony import */ var _services_Session__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../services/Session */ "./resources/js/services/Session.js");
-/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
+/* harmony import */ var _spinner__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../spinner */ "./resources/js/components/spinner/index.js");
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
 function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -605,28 +606,52 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 
 
+
+
 var FriendList = /*#__PURE__*/function (_Component) {
   _inherits(FriendList, _Component);
 
   var _super = _createSuper(FriendList);
 
-  function FriendList() {
+  function FriendList(props) {
     var _this;
 
     _classCallCheck(this, FriendList);
 
-    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
+    _this = _super.call(this, props);
 
-    _this = _super.call.apply(_super, [this].concat(args));
-
-    _defineProperty(_assertThisInitialized(_this), "state", {
-      friends: []
+    _defineProperty(_assertThisInitialized(_this), "getFormData", function () {
+      var formData = new FormData();
+      formData.append("user_id", _services_Session__WEBPACK_IMPORTED_MODULE_2__["default"].getId());
+      formData.append("text", _this.state.text);
+      return formData;
     });
 
-    _defineProperty(_assertThisInitialized(_this), "friend", new _services_Friend__WEBPACK_IMPORTED_MODULE_1__.FriendService());
+    _defineProperty(_assertThisInitialized(_this), "searchFriends", function (event) {
+      _this.handleInputChange(event);
 
+      if (_this.state.text.trim() != '') {
+        setTimeout(function () {
+          _this.friend.searchFriends(_this.getFormData()).then(function (res) {
+            if (res.friends) {
+              _this.setState({
+                friends: res.friends
+              });
+            }
+          })["catch"](function (error) {
+            console.warn(error);
+          });
+        }, 1000);
+      }
+    });
+
+    _this.state = {
+      loading: true,
+      friends: [],
+      text: ''
+    };
+    _this.friend = new _services_Friend__WEBPACK_IMPORTED_MODULE_1__.FriendService();
+    _this.handleInputChange = _this.handleInputChange.bind(_assertThisInitialized(_this));
     return _this;
   }
 
@@ -638,7 +663,8 @@ var FriendList = /*#__PURE__*/function (_Component) {
       this.friend.get(_services_Session__WEBPACK_IMPORTED_MODULE_2__["default"].getId()).then(function (res) {
         if (res.data) {
           _this2.setState({
-            friends: res.data
+            friends: res.data,
+            loading: false
           });
         }
       })["catch"](function (error) {
@@ -646,76 +672,98 @@ var FriendList = /*#__PURE__*/function (_Component) {
       });
     }
   }, {
+    key: "handleInputChange",
+    value: function handleInputChange(event) {
+      var target = event.target;
+      var value = target.value;
+      var name = target.name;
+      this.setState(_defineProperty({}, name, value));
+    }
+  }, {
     key: "render",
     value: function render() {
-      var friendList = this.state.friends.map(function (friend) {
-        return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
+      var _this3 = this;
+
+      var _this$state = this.state,
+          friends = _this$state.friends,
+          loading = _this$state.loading;
+      var friendList = friends ? friends.map(function (friend) {
+        return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
           className: "friend__user",
-          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
             className: "friend__user-info",
-            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("div", {
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
               className: "friend__user-ava",
-              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_4__.Link, {
+              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_5__.Link, {
                 to: "/profile/".concat(friend.user_id),
-                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("img", {
+                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("img", {
                   src: friend.avatar,
                   className: "ava-60",
                   alt: "User avatar"
                 })
               })
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
               className: "friend__user-name",
-              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_4__.Link, {
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_5__.Link, {
                 to: "/profile/".concat(friend.user_id),
-                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("span", {
+                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("span", {
                   className: "username",
                   children: [friend.name, " ", friend.surname]
                 })
-              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("span", {
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("span", {
                 className: "online-status",
                 children: friend.online
               })]
             })]
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
             className: "friend__user-actions",
-            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("a", {
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("a", {
               href: "#",
-              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("img", {
+              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("img", {
                 src: "../images/message.svg",
                 alt: "Send message"
               })
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
               className: "kebab",
-              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("div", {
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
                 className: "circle"
-              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("div", {
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
                 className: "circle"
-              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("div", {
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
                 className: "circle"
               })]
             })]
           })]
         }, friend.user_id);
+      }) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("h3", {
+        children: "No friends found"
       });
-      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
-        className: "friend__friend-list flex_column ai_center",
-        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("div", {
-          className: "friend__search-container",
-          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
-            className: "search-box",
-            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("input", {
-              type: "text",
-              className: "input-search",
-              placeholder: "Search"
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("img", {
-              src: "../images/search.svg",
-              className: "icon-search",
-              alt: "Search"
-            })]
-          })
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("div", {
-          className: "friend__users-container",
-          children: friendList
+      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.Fragment, {
+        children: [loading && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_spinner__WEBPACK_IMPORTED_MODULE_3__["default"], {}), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
+          className: "friend__friend-list flex_column ai_center",
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+            className: "friend__search-container",
+            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
+              className: "search-box",
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("input", {
+                type: "text",
+                value: this.state.text,
+                onChange: function onChange(event) {
+                  _this3.searchFriends(event);
+                },
+                name: "text",
+                className: "input-search",
+                placeholder: "Search"
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("img", {
+                src: "../images/search.svg",
+                className: "icon-search",
+                alt: "Search"
+              })]
+            })
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+            className: "friend__users-container",
+            children: friendList
+          })]
         })]
       });
     }
@@ -2115,7 +2163,6 @@ var Popup = /*#__PURE__*/function (_Component) {
     value: function render() {
       var _this = this;
 
-      var show = this.props.show;
       return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
         className: "popup__wrapper",
         children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
@@ -2131,6 +2178,7 @@ var Popup = /*#__PURE__*/function (_Component) {
               })
             }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
               className: "popup__close",
+              title: "close",
               children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("img", {
                 src: "../images/close.svg",
                 onClick: function onClick() {
@@ -2237,9 +2285,9 @@ var PostForm = /*#__PURE__*/function (_Component) {
     });
 
     _this.state = {
-      text: ''
+      text: '',
+      reload: false
     };
-    _this.reload = false;
     _this.handleInputChange = _this.handleInputChange.bind(_assertThisInitialized(_this));
     _this.post = new _services_Post__WEBPACK_IMPORTED_MODULE_2__["default"]();
     return _this;
@@ -2256,8 +2304,12 @@ var PostForm = /*#__PURE__*/function (_Component) {
   }, {
     key: "render",
     value: function render() {
+      var _this2 = this;
+
       var avatar = this.props.user.avatar;
-      var text = this.state.text;
+      var _this$state = this.state,
+          text = _this$state.text,
+          reload = _this$state.reload;
       return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.Fragment, {
         children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
           className: "posts__add-post flex",
@@ -2319,6 +2371,12 @@ var PostForm = /*#__PURE__*/function (_Component) {
           })]
         }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_post_list__WEBPACK_IMPORTED_MODULE_3__["default"], {
           user_id: this.props.user_id,
+          afterUpdatePosts: function afterUpdatePosts() {
+            return _this2.setState({
+              reload: false
+            });
+          },
+          reload: reload,
           user: this.props.user
         })]
       });
@@ -2400,34 +2458,44 @@ var PostList = /*#__PURE__*/function (_Component) {
 
     _defineProperty(_assertThisInitialized(_this), "post", new _services_Post__WEBPACK_IMPORTED_MODULE_1__["default"]());
 
+    _defineProperty(_assertThisInitialized(_this), "updatePosts", function () {
+      var user_id = _this.props.user_id;
+
+      _this.post.getUserPosts(user_id).then(function (res) {
+        _this.setState({
+          posts: res
+        });
+      })["catch"](function (error) {
+        console.warn(error);
+      });
+    });
+
     return _this;
   }
 
   _createClass(PostList, [{
     key: "componentDidMount",
     value: function componentDidMount() {
-      var _this2 = this;
-
-      var user_id = this.props.user_id;
-      this.post.getUserPosts(user_id).then(function (res) {
-        _this2.setState({
-          posts: res
-        });
-      })["catch"](function (error) {
-        console.warn(error);
-      });
+      this.updatePosts();
+    }
+  }, {
+    key: "componentDidUpdate",
+    value: function componentDidUpdate() {
+      if (this.props.reload) {
+        this.updatePosts();
+        this.props.afterUpdatePosts();
+      }
     }
   }, {
     key: "render",
     value: function render() {
-      var _this3 = this;
+      var _this2 = this;
 
-      var postsInfo = this.state.posts;
-      var postsList = postsInfo.map(function (post) {
-        var _this3$props$user = _this3.props.user,
-            avatar = _this3$props$user.avatar,
-            name = _this3$props$user.name,
-            surname = _this3$props$user.surname;
+      var postsList = this.state.posts.map(function (post) {
+        var _this2$props$user = _this2.props.user,
+            avatar = _this2$props$user.avatar,
+            name = _this2$props$user.name,
+            surname = _this2$props$user.surname;
         var id = post.id,
             user_id = post.user_id,
             text = post.text,
@@ -3481,6 +3549,31 @@ var Friend = /*#__PURE__*/function (_Weekend) {
       };
     }());
 
+    _defineProperty(_assertThisInitialized(_this), "searchFriends", /*#__PURE__*/function () {
+      var _ref6 = _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().mark(function _callee6(data) {
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().wrap(function _callee6$(_context6) {
+          while (1) {
+            switch (_context6.prev = _context6.next) {
+              case 0:
+                _context6.next = 2;
+                return _this.postData("/searchFriends", data, true);
+
+              case 2:
+                return _context6.abrupt("return", _context6.sent);
+
+              case 3:
+              case "end":
+                return _context6.stop();
+            }
+          }
+        }, _callee6);
+      }));
+
+      return function (_x6) {
+        return _ref6.apply(this, arguments);
+      };
+    }());
+
     return _this;
   }
 
@@ -3945,7 +4038,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, ".popup__wrapper {\n    width: 100%;\n    height: 100%;\n    position: absolute;\n    z-index: 10;\n    top: 0;\n    left: 0;\n    background-color: rgba(0,0,0,0.8);\n}\n\n.popup {\n    width: -webkit-fit-content;\n    width: -moz-fit-content;\n    width: fit-content;\n    height: -webkit-fit-content;\n    height: -moz-fit-content;\n    height: fit-content;\n    position: absolute;\n    top: 50%;\n    left: 50%;\n    transform: translate(-50%, -50%);\n    flex-flow: column;\n    background: rgba(255, 255, 255, 0.9);\n    border-radius: 15px;\n    color: #444;\n    padding: 30px 30px 60px 30px;\n}\n\n.popup .popup__header {\n    width: 100%;\n}\n\n.popup .popup__header .popup__logo {\n    margin-left: auto;\n}\n\n.popup .popup__header .popup__close {\n    margin-left: auto;\n}\n\n.popup .popup__header .popup__close .icon-close,\n.popup .popup__header .popup__close .icon-close:hover {\n    transition: .4s ease;\n}\n\n.popup .popup__body {\n    border: 2px dashed #000;\n    width: -webkit-fit-content;\n    width: -moz-fit-content;\n    width: fit-content;\n    height: -webkit-fit-content;\n    height: -moz-fit-content;\n    height: fit-content;\n    padding: 30px;\n    border-radius: 15px;\n}\n", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, ".popup__wrapper {\n    width: 100%;\n    height: 100%;\n    position: absolute;\n    z-index: 10;\n    top: 0;\n    left: 0;\n    background-color: rgba(0,0,0,0.8);\n}\n\n.popup {\n    width: -webkit-fit-content;\n    width: -moz-fit-content;\n    width: fit-content;\n    height: -webkit-fit-content;\n    height: -moz-fit-content;\n    height: fit-content;\n    position: absolute;\n    top: 50%;\n    left: 50%;\n    transform: translate(-50%, -50%);\n    flex-flow: column;\n    background: rgba(255, 255, 255, 0.9);\n    border-radius: 15px;\n    color: #444;\n    padding: 30px 30px 60px 30px;\n}\n\n.popup .popup__header {\n    width: 100%;\n}\n\n.popup .popup__header .popup__logo {\n    margin-left: auto;\n}\n\n.popup .popup__header .popup__close {\n    margin-left: auto;\n    cursor: pointer;\n}\n\n.popup .popup__header .popup__close .icon-close,\n.popup .popup__header .popup__close .icon-close:hover {\n    transition: .4s ease;\n}\n\n.popup .popup__body {\n    border: 2px dashed #000;\n    width: -webkit-fit-content;\n    width: -moz-fit-content;\n    width: fit-content;\n    height: -webkit-fit-content;\n    height: -moz-fit-content;\n    height: fit-content;\n    padding: 30px;\n    border-radius: 15px;\n}\n", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 

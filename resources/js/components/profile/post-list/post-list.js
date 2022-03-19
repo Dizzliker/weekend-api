@@ -9,7 +9,7 @@ export default class PostList extends Component {
 
     post = new Post();
 
-    componentDidMount() {
+    updatePosts = () => {
         const {user_id} = this.props;
         this.post.getUserPosts(user_id)
             .then((res) => {
@@ -20,9 +20,19 @@ export default class PostList extends Component {
             });
     }
 
+    componentDidMount() {
+        this.updatePosts();
+    }
+
+    componentDidUpdate() {
+        if (this.props.reload) {
+            this.updatePosts();
+            this.props.afterUpdatePosts();
+        }
+    }
+
     render() {
-        const postsInfo = this.state.posts;
-        const postsList = postsInfo.map(post => {
+        const postsList = this.state.posts.map(post => {
             const {avatar, name, surname} = this.props.user;
             const {id, user_id, text, likes, reposts, comments, created_at} = post;
             return (

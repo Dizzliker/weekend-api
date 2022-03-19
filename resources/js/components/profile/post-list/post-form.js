@@ -8,8 +8,8 @@ export default class PostForm extends Component {
         super(props);
         this.state = {
             text: '',
+            reload: false,
         };
-        this.reload = false;
         this.handleInputChange = this.handleInputChange.bind(this);
         this.post = new Post();
     }
@@ -45,7 +45,7 @@ export default class PostForm extends Component {
 
     render() {
         const {avatar} = this.props.user;
-        const {text} = this.state;
+        const {text, reload} = this.state;
 
         return (
             <>
@@ -71,7 +71,7 @@ export default class PostForm extends Component {
                     <img src="../images/icon-send(purple).svg" onClick={this.addPost} className="posts__add-btn" alt="Add post" />
                 </a>
             </div>
-            <PostList user_id = {this.props.user_id} user = {this.props.user} />
+            <PostList user_id = {this.props.user_id} afterUpdatePosts = {() => this.setState({reload:false})} reload = {reload} user = {this.props.user} />
             </>
         );
     }
