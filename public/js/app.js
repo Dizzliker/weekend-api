@@ -4620,7 +4620,9 @@ var PopupEditAva = /*#__PURE__*/function (_Component) {
       input.preventDefault();
 
       _this.profile.changeAvatar(_this.getFormData()).then(function (res) {
-        console.log(res);
+        if (res.success) {
+          _this.props.afterImgLoaded();
+        }
       })["catch"](function (error) {
         console.warn(error);
       });
@@ -4745,7 +4747,8 @@ var PostForm = /*#__PURE__*/function (_Component) {
         if (res) {
           _this.setState({
             text: '',
-            reload: true
+            reload: true,
+            loading: true
           });
         }
       })["catch"](function (error) {
@@ -5244,6 +5247,7 @@ var Profile = /*#__PURE__*/function (_Component) {
         countVideos: 0
       },
       messages: [],
+      reload: false,
       popupAddFriend: false,
       popupEditAva: false
     };
@@ -5266,6 +5270,19 @@ var Profile = /*#__PURE__*/function (_Component) {
       var user_id = this.props.user_id;
       this.getUserInfo(user_id);
       this.getCountFriends(user_id);
+    }
+  }, {
+    key: "componentDidUpdate",
+    value: function componentDidUpdate() {
+      if (this.state.reload) {
+        var user_id = this.props.user_id;
+        this.setState({
+          loading: true,
+          popupEditAva: false,
+          reload: false
+        });
+        this.getUserInfo(user_id);
+      }
     }
   }, {
     key: "render",
@@ -5294,6 +5311,11 @@ var Profile = /*#__PURE__*/function (_Component) {
           onClose: function onClose() {
             return _this2.setState({
               popupEditAva: false
+            });
+          },
+          afterImgLoaded: function afterImgLoaded() {
+            _this2.setState({
+              reload: true
             });
           }
         }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_8__.jsxs)("div", {

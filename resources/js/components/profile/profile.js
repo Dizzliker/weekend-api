@@ -20,6 +20,7 @@ class Profile extends Component {
                 countVideos: 0, 
             },
             messages: [],
+            reload: false,
             popupAddFriend: false,
             popupEditAva: false,
         }
@@ -77,6 +78,14 @@ class Profile extends Component {
         this.getCountFriends(user_id);
     }
 
+    componentDidUpdate() {
+        if (this.state.reload) {
+            const {user_id} = this.props;
+            this.setState({loading: true, popupEditAva: false, reload: false});
+            this.getUserInfo(user_id);
+        }
+    }
+
     render() {
         const {name, surname, avatar} = this.state.profile;
         const {loading, messages, popupAddFriend, popupEditAva} = this.state;
@@ -89,7 +98,8 @@ class Profile extends Component {
             <Popup onClose = {() => this.setState({popupAddFriend: false})}>
                 {messages[0]}
             </Popup>}
-            {popupEditAva && <PopupEditAva onClose={() => this.setState({popupEditAva: false})}/>}
+            {popupEditAva && <PopupEditAva onClose={() => this.setState({popupEditAva: false})} 
+            afterImgLoaded={() => {this.setState({reload: true})}}></PopupEditAva>}
             <div className="profile flex_column ai_flex-start">
             <div className="profile__user-container flex">
                 <div className="profile__user-avatar flex_center_center">

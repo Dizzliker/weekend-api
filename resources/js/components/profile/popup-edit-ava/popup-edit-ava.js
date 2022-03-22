@@ -21,7 +21,9 @@ export default class PopupEditAva extends Component {
         input.preventDefault();
         this.profile.changeAvatar(this.getFormData())
             .then(res => {
-                console.log(res);
+                if (res.success) {
+                    this.props.afterImgLoaded();
+                }
             })
             .catch(error => {
                 console.warn(error);
