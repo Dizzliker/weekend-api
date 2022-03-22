@@ -11,11 +11,11 @@ export default class MenuItem extends Component {
                     <img className="sidebar__item-icon" src={img} alt="" />
                     <Link to={link} className="sidebar__item-link"><span className="sidebar__item-text">{text}</span></Link>
                 </div>
-                {countRequests && 
+                {countRequests ? 
                 <div className="sidebar__count-body">
                     <span className="sidebar__item-count">+{countRequests}</span>
                 </div>
-                }
+                : null}
             </li>
         );
     }

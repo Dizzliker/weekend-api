@@ -12,6 +12,2059 @@ module.exports = __webpack_require__(/*! regenerator-runtime */ "./node_modules/
 
 /***/ }),
 
+/***/ "./node_modules/axios/index.js":
+/*!*************************************!*\
+  !*** ./node_modules/axios/index.js ***!
+  \*************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+module.exports = __webpack_require__(/*! ./lib/axios */ "./node_modules/axios/lib/axios.js");
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/adapters/xhr.js":
+/*!************************************************!*\
+  !*** ./node_modules/axios/lib/adapters/xhr.js ***!
+  \************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+"use strict";
+
+
+var utils = __webpack_require__(/*! ./../utils */ "./node_modules/axios/lib/utils.js");
+var settle = __webpack_require__(/*! ./../core/settle */ "./node_modules/axios/lib/core/settle.js");
+var cookies = __webpack_require__(/*! ./../helpers/cookies */ "./node_modules/axios/lib/helpers/cookies.js");
+var buildURL = __webpack_require__(/*! ./../helpers/buildURL */ "./node_modules/axios/lib/helpers/buildURL.js");
+var buildFullPath = __webpack_require__(/*! ../core/buildFullPath */ "./node_modules/axios/lib/core/buildFullPath.js");
+var parseHeaders = __webpack_require__(/*! ./../helpers/parseHeaders */ "./node_modules/axios/lib/helpers/parseHeaders.js");
+var isURLSameOrigin = __webpack_require__(/*! ./../helpers/isURLSameOrigin */ "./node_modules/axios/lib/helpers/isURLSameOrigin.js");
+var createError = __webpack_require__(/*! ../core/createError */ "./node_modules/axios/lib/core/createError.js");
+
+module.exports = function xhrAdapter(config) {
+  return new Promise(function dispatchXhrRequest(resolve, reject) {
+    var requestData = config.data;
+    var requestHeaders = config.headers;
+    var responseType = config.responseType;
+
+    if (utils.isFormData(requestData)) {
+      delete requestHeaders['Content-Type']; // Let the browser set it
+    }
+
+    var request = new XMLHttpRequest();
+
+    // HTTP basic authentication
+    if (config.auth) {
+      var username = config.auth.username || '';
+      var password = config.auth.password ? unescape(encodeURIComponent(config.auth.password)) : '';
+      requestHeaders.Authorization = 'Basic ' + btoa(username + ':' + password);
+    }
+
+    var fullPath = buildFullPath(config.baseURL, config.url);
+    request.open(config.method.toUpperCase(), buildURL(fullPath, config.params, config.paramsSerializer), true);
+
+    // Set the request timeout in MS
+    request.timeout = config.timeout;
+
+    function onloadend() {
+      if (!request) {
+        return;
+      }
+      // Prepare the response
+      var responseHeaders = 'getAllResponseHeaders' in request ? parseHeaders(request.getAllResponseHeaders()) : null;
+      var responseData = !responseType || responseType === 'text' ||  responseType === 'json' ?
+        request.responseText : request.response;
+      var response = {
+        data: responseData,
+        status: request.status,
+        statusText: request.statusText,
+        headers: responseHeaders,
+        config: config,
+        request: request
+      };
+
+      settle(resolve, reject, response);
+
+      // Clean up request
+      request = null;
+    }
+
+    if ('onloadend' in request) {
+      // Use onloadend if available
+      request.onloadend = onloadend;
+    } else {
+      // Listen for ready state to emulate onloadend
+      request.onreadystatechange = function handleLoad() {
+        if (!request || request.readyState !== 4) {
+          return;
+        }
+
+        // The request errored out and we didn't get a response, this will be
+        // handled by onerror instead
+        // With one exception: request that using file: protocol, most browsers
+        // will return status as 0 even though it's a successful request
+        if (request.status === 0 && !(request.responseURL && request.responseURL.indexOf('file:') === 0)) {
+          return;
+        }
+        // readystate handler is calling before onerror or ontimeout handlers,
+        // so we should call onloadend on the next 'tick'
+        setTimeout(onloadend);
+      };
+    }
+
+    // Handle browser request cancellation (as opposed to a manual cancellation)
+    request.onabort = function handleAbort() {
+      if (!request) {
+        return;
+      }
+
+      reject(createError('Request aborted', config, 'ECONNABORTED', request));
+
+      // Clean up request
+      request = null;
+    };
+
+    // Handle low level network errors
+    request.onerror = function handleError() {
+      // Real errors are hidden from us by the browser
+      // onerror should only fire if it's a network error
+      reject(createError('Network Error', config, null, request));
+
+      // Clean up request
+      request = null;
+    };
+
+    // Handle timeout
+    request.ontimeout = function handleTimeout() {
+      var timeoutErrorMessage = 'timeout of ' + config.timeout + 'ms exceeded';
+      if (config.timeoutErrorMessage) {
+        timeoutErrorMessage = config.timeoutErrorMessage;
+      }
+      reject(createError(
+        timeoutErrorMessage,
+        config,
+        config.transitional && config.transitional.clarifyTimeoutError ? 'ETIMEDOUT' : 'ECONNABORTED',
+        request));
+
+      // Clean up request
+      request = null;
+    };
+
+    // Add xsrf header
+    // This is only done if running in a standard browser environment.
+    // Specifically not if we're in a web worker, or react-native.
+    if (utils.isStandardBrowserEnv()) {
+      // Add xsrf header
+      var xsrfValue = (config.withCredentials || isURLSameOrigin(fullPath)) && config.xsrfCookieName ?
+        cookies.read(config.xsrfCookieName) :
+        undefined;
+
+      if (xsrfValue) {
+        requestHeaders[config.xsrfHeaderName] = xsrfValue;
+      }
+    }
+
+    // Add headers to the request
+    if ('setRequestHeader' in request) {
+      utils.forEach(requestHeaders, function setRequestHeader(val, key) {
+        if (typeof requestData === 'undefined' && key.toLowerCase() === 'content-type') {
+          // Remove Content-Type if data is undefined
+          delete requestHeaders[key];
+        } else {
+          // Otherwise add header to the request
+          request.setRequestHeader(key, val);
+        }
+      });
+    }
+
+    // Add withCredentials to request if needed
+    if (!utils.isUndefined(config.withCredentials)) {
+      request.withCredentials = !!config.withCredentials;
+    }
+
+    // Add responseType to request if needed
+    if (responseType && responseType !== 'json') {
+      request.responseType = config.responseType;
+    }
+
+    // Handle progress if needed
+    if (typeof config.onDownloadProgress === 'function') {
+      request.addEventListener('progress', config.onDownloadProgress);
+    }
+
+    // Not all browsers support upload events
+    if (typeof config.onUploadProgress === 'function' && request.upload) {
+      request.upload.addEventListener('progress', config.onUploadProgress);
+    }
+
+    if (config.cancelToken) {
+      // Handle cancellation
+      config.cancelToken.promise.then(function onCanceled(cancel) {
+        if (!request) {
+          return;
+        }
+
+        request.abort();
+        reject(cancel);
+        // Clean up request
+        request = null;
+      });
+    }
+
+    if (!requestData) {
+      requestData = null;
+    }
+
+    // Send the request
+    request.send(requestData);
+  });
+};
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/axios.js":
+/*!*****************************************!*\
+  !*** ./node_modules/axios/lib/axios.js ***!
+  \*****************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+"use strict";
+
+
+var utils = __webpack_require__(/*! ./utils */ "./node_modules/axios/lib/utils.js");
+var bind = __webpack_require__(/*! ./helpers/bind */ "./node_modules/axios/lib/helpers/bind.js");
+var Axios = __webpack_require__(/*! ./core/Axios */ "./node_modules/axios/lib/core/Axios.js");
+var mergeConfig = __webpack_require__(/*! ./core/mergeConfig */ "./node_modules/axios/lib/core/mergeConfig.js");
+var defaults = __webpack_require__(/*! ./defaults */ "./node_modules/axios/lib/defaults.js");
+
+/**
+ * Create an instance of Axios
+ *
+ * @param {Object} defaultConfig The default config for the instance
+ * @return {Axios} A new instance of Axios
+ */
+function createInstance(defaultConfig) {
+  var context = new Axios(defaultConfig);
+  var instance = bind(Axios.prototype.request, context);
+
+  // Copy axios.prototype to instance
+  utils.extend(instance, Axios.prototype, context);
+
+  // Copy context to instance
+  utils.extend(instance, context);
+
+  return instance;
+}
+
+// Create the default instance to be exported
+var axios = createInstance(defaults);
+
+// Expose Axios class to allow class inheritance
+axios.Axios = Axios;
+
+// Factory for creating new instances
+axios.create = function create(instanceConfig) {
+  return createInstance(mergeConfig(axios.defaults, instanceConfig));
+};
+
+// Expose Cancel & CancelToken
+axios.Cancel = __webpack_require__(/*! ./cancel/Cancel */ "./node_modules/axios/lib/cancel/Cancel.js");
+axios.CancelToken = __webpack_require__(/*! ./cancel/CancelToken */ "./node_modules/axios/lib/cancel/CancelToken.js");
+axios.isCancel = __webpack_require__(/*! ./cancel/isCancel */ "./node_modules/axios/lib/cancel/isCancel.js");
+
+// Expose all/spread
+axios.all = function all(promises) {
+  return Promise.all(promises);
+};
+axios.spread = __webpack_require__(/*! ./helpers/spread */ "./node_modules/axios/lib/helpers/spread.js");
+
+// Expose isAxiosError
+axios.isAxiosError = __webpack_require__(/*! ./helpers/isAxiosError */ "./node_modules/axios/lib/helpers/isAxiosError.js");
+
+module.exports = axios;
+
+// Allow use of default import syntax in TypeScript
+module.exports["default"] = axios;
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/cancel/Cancel.js":
+/*!*************************************************!*\
+  !*** ./node_modules/axios/lib/cancel/Cancel.js ***!
+  \*************************************************/
+/***/ ((module) => {
+
+"use strict";
+
+
+/**
+ * A `Cancel` is an object that is thrown when an operation is canceled.
+ *
+ * @class
+ * @param {string=} message The message.
+ */
+function Cancel(message) {
+  this.message = message;
+}
+
+Cancel.prototype.toString = function toString() {
+  return 'Cancel' + (this.message ? ': ' + this.message : '');
+};
+
+Cancel.prototype.__CANCEL__ = true;
+
+module.exports = Cancel;
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/cancel/CancelToken.js":
+/*!******************************************************!*\
+  !*** ./node_modules/axios/lib/cancel/CancelToken.js ***!
+  \******************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+"use strict";
+
+
+var Cancel = __webpack_require__(/*! ./Cancel */ "./node_modules/axios/lib/cancel/Cancel.js");
+
+/**
+ * A `CancelToken` is an object that can be used to request cancellation of an operation.
+ *
+ * @class
+ * @param {Function} executor The executor function.
+ */
+function CancelToken(executor) {
+  if (typeof executor !== 'function') {
+    throw new TypeError('executor must be a function.');
+  }
+
+  var resolvePromise;
+  this.promise = new Promise(function promiseExecutor(resolve) {
+    resolvePromise = resolve;
+  });
+
+  var token = this;
+  executor(function cancel(message) {
+    if (token.reason) {
+      // Cancellation has already been requested
+      return;
+    }
+
+    token.reason = new Cancel(message);
+    resolvePromise(token.reason);
+  });
+}
+
+/**
+ * Throws a `Cancel` if cancellation has been requested.
+ */
+CancelToken.prototype.throwIfRequested = function throwIfRequested() {
+  if (this.reason) {
+    throw this.reason;
+  }
+};
+
+/**
+ * Returns an object that contains a new `CancelToken` and a function that, when called,
+ * cancels the `CancelToken`.
+ */
+CancelToken.source = function source() {
+  var cancel;
+  var token = new CancelToken(function executor(c) {
+    cancel = c;
+  });
+  return {
+    token: token,
+    cancel: cancel
+  };
+};
+
+module.exports = CancelToken;
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/cancel/isCancel.js":
+/*!***************************************************!*\
+  !*** ./node_modules/axios/lib/cancel/isCancel.js ***!
+  \***************************************************/
+/***/ ((module) => {
+
+"use strict";
+
+
+module.exports = function isCancel(value) {
+  return !!(value && value.__CANCEL__);
+};
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/core/Axios.js":
+/*!**********************************************!*\
+  !*** ./node_modules/axios/lib/core/Axios.js ***!
+  \**********************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+"use strict";
+
+
+var utils = __webpack_require__(/*! ./../utils */ "./node_modules/axios/lib/utils.js");
+var buildURL = __webpack_require__(/*! ../helpers/buildURL */ "./node_modules/axios/lib/helpers/buildURL.js");
+var InterceptorManager = __webpack_require__(/*! ./InterceptorManager */ "./node_modules/axios/lib/core/InterceptorManager.js");
+var dispatchRequest = __webpack_require__(/*! ./dispatchRequest */ "./node_modules/axios/lib/core/dispatchRequest.js");
+var mergeConfig = __webpack_require__(/*! ./mergeConfig */ "./node_modules/axios/lib/core/mergeConfig.js");
+var validator = __webpack_require__(/*! ../helpers/validator */ "./node_modules/axios/lib/helpers/validator.js");
+
+var validators = validator.validators;
+/**
+ * Create a new instance of Axios
+ *
+ * @param {Object} instanceConfig The default config for the instance
+ */
+function Axios(instanceConfig) {
+  this.defaults = instanceConfig;
+  this.interceptors = {
+    request: new InterceptorManager(),
+    response: new InterceptorManager()
+  };
+}
+
+/**
+ * Dispatch a request
+ *
+ * @param {Object} config The config specific for this request (merged with this.defaults)
+ */
+Axios.prototype.request = function request(config) {
+  /*eslint no-param-reassign:0*/
+  // Allow for axios('example/url'[, config]) a la fetch API
+  if (typeof config === 'string') {
+    config = arguments[1] || {};
+    config.url = arguments[0];
+  } else {
+    config = config || {};
+  }
+
+  config = mergeConfig(this.defaults, config);
+
+  // Set config.method
+  if (config.method) {
+    config.method = config.method.toLowerCase();
+  } else if (this.defaults.method) {
+    config.method = this.defaults.method.toLowerCase();
+  } else {
+    config.method = 'get';
+  }
+
+  var transitional = config.transitional;
+
+  if (transitional !== undefined) {
+    validator.assertOptions(transitional, {
+      silentJSONParsing: validators.transitional(validators.boolean, '1.0.0'),
+      forcedJSONParsing: validators.transitional(validators.boolean, '1.0.0'),
+      clarifyTimeoutError: validators.transitional(validators.boolean, '1.0.0')
+    }, false);
+  }
+
+  // filter out skipped interceptors
+  var requestInterceptorChain = [];
+  var synchronousRequestInterceptors = true;
+  this.interceptors.request.forEach(function unshiftRequestInterceptors(interceptor) {
+    if (typeof interceptor.runWhen === 'function' && interceptor.runWhen(config) === false) {
+      return;
+    }
+
+    synchronousRequestInterceptors = synchronousRequestInterceptors && interceptor.synchronous;
+
+    requestInterceptorChain.unshift(interceptor.fulfilled, interceptor.rejected);
+  });
+
+  var responseInterceptorChain = [];
+  this.interceptors.response.forEach(function pushResponseInterceptors(interceptor) {
+    responseInterceptorChain.push(interceptor.fulfilled, interceptor.rejected);
+  });
+
+  var promise;
+
+  if (!synchronousRequestInterceptors) {
+    var chain = [dispatchRequest, undefined];
+
+    Array.prototype.unshift.apply(chain, requestInterceptorChain);
+    chain = chain.concat(responseInterceptorChain);
+
+    promise = Promise.resolve(config);
+    while (chain.length) {
+      promise = promise.then(chain.shift(), chain.shift());
+    }
+
+    return promise;
+  }
+
+
+  var newConfig = config;
+  while (requestInterceptorChain.length) {
+    var onFulfilled = requestInterceptorChain.shift();
+    var onRejected = requestInterceptorChain.shift();
+    try {
+      newConfig = onFulfilled(newConfig);
+    } catch (error) {
+      onRejected(error);
+      break;
+    }
+  }
+
+  try {
+    promise = dispatchRequest(newConfig);
+  } catch (error) {
+    return Promise.reject(error);
+  }
+
+  while (responseInterceptorChain.length) {
+    promise = promise.then(responseInterceptorChain.shift(), responseInterceptorChain.shift());
+  }
+
+  return promise;
+};
+
+Axios.prototype.getUri = function getUri(config) {
+  config = mergeConfig(this.defaults, config);
+  return buildURL(config.url, config.params, config.paramsSerializer).replace(/^\?/, '');
+};
+
+// Provide aliases for supported request methods
+utils.forEach(['delete', 'get', 'head', 'options'], function forEachMethodNoData(method) {
+  /*eslint func-names:0*/
+  Axios.prototype[method] = function(url, config) {
+    return this.request(mergeConfig(config || {}, {
+      method: method,
+      url: url,
+      data: (config || {}).data
+    }));
+  };
+});
+
+utils.forEach(['post', 'put', 'patch'], function forEachMethodWithData(method) {
+  /*eslint func-names:0*/
+  Axios.prototype[method] = function(url, data, config) {
+    return this.request(mergeConfig(config || {}, {
+      method: method,
+      url: url,
+      data: data
+    }));
+  };
+});
+
+module.exports = Axios;
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/core/InterceptorManager.js":
+/*!***********************************************************!*\
+  !*** ./node_modules/axios/lib/core/InterceptorManager.js ***!
+  \***********************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+"use strict";
+
+
+var utils = __webpack_require__(/*! ./../utils */ "./node_modules/axios/lib/utils.js");
+
+function InterceptorManager() {
+  this.handlers = [];
+}
+
+/**
+ * Add a new interceptor to the stack
+ *
+ * @param {Function} fulfilled The function to handle `then` for a `Promise`
+ * @param {Function} rejected The function to handle `reject` for a `Promise`
+ *
+ * @return {Number} An ID used to remove interceptor later
+ */
+InterceptorManager.prototype.use = function use(fulfilled, rejected, options) {
+  this.handlers.push({
+    fulfilled: fulfilled,
+    rejected: rejected,
+    synchronous: options ? options.synchronous : false,
+    runWhen: options ? options.runWhen : null
+  });
+  return this.handlers.length - 1;
+};
+
+/**
+ * Remove an interceptor from the stack
+ *
+ * @param {Number} id The ID that was returned by `use`
+ */
+InterceptorManager.prototype.eject = function eject(id) {
+  if (this.handlers[id]) {
+    this.handlers[id] = null;
+  }
+};
+
+/**
+ * Iterate over all the registered interceptors
+ *
+ * This method is particularly useful for skipping over any
+ * interceptors that may have become `null` calling `eject`.
+ *
+ * @param {Function} fn The function to call for each interceptor
+ */
+InterceptorManager.prototype.forEach = function forEach(fn) {
+  utils.forEach(this.handlers, function forEachHandler(h) {
+    if (h !== null) {
+      fn(h);
+    }
+  });
+};
+
+module.exports = InterceptorManager;
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/core/buildFullPath.js":
+/*!******************************************************!*\
+  !*** ./node_modules/axios/lib/core/buildFullPath.js ***!
+  \******************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+"use strict";
+
+
+var isAbsoluteURL = __webpack_require__(/*! ../helpers/isAbsoluteURL */ "./node_modules/axios/lib/helpers/isAbsoluteURL.js");
+var combineURLs = __webpack_require__(/*! ../helpers/combineURLs */ "./node_modules/axios/lib/helpers/combineURLs.js");
+
+/**
+ * Creates a new URL by combining the baseURL with the requestedURL,
+ * only when the requestedURL is not already an absolute URL.
+ * If the requestURL is absolute, this function returns the requestedURL untouched.
+ *
+ * @param {string} baseURL The base URL
+ * @param {string} requestedURL Absolute or relative URL to combine
+ * @returns {string} The combined full path
+ */
+module.exports = function buildFullPath(baseURL, requestedURL) {
+  if (baseURL && !isAbsoluteURL(requestedURL)) {
+    return combineURLs(baseURL, requestedURL);
+  }
+  return requestedURL;
+};
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/core/createError.js":
+/*!****************************************************!*\
+  !*** ./node_modules/axios/lib/core/createError.js ***!
+  \****************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+"use strict";
+
+
+var enhanceError = __webpack_require__(/*! ./enhanceError */ "./node_modules/axios/lib/core/enhanceError.js");
+
+/**
+ * Create an Error with the specified message, config, error code, request and response.
+ *
+ * @param {string} message The error message.
+ * @param {Object} config The config.
+ * @param {string} [code] The error code (for example, 'ECONNABORTED').
+ * @param {Object} [request] The request.
+ * @param {Object} [response] The response.
+ * @returns {Error} The created error.
+ */
+module.exports = function createError(message, config, code, request, response) {
+  var error = new Error(message);
+  return enhanceError(error, config, code, request, response);
+};
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/core/dispatchRequest.js":
+/*!********************************************************!*\
+  !*** ./node_modules/axios/lib/core/dispatchRequest.js ***!
+  \********************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+"use strict";
+
+
+var utils = __webpack_require__(/*! ./../utils */ "./node_modules/axios/lib/utils.js");
+var transformData = __webpack_require__(/*! ./transformData */ "./node_modules/axios/lib/core/transformData.js");
+var isCancel = __webpack_require__(/*! ../cancel/isCancel */ "./node_modules/axios/lib/cancel/isCancel.js");
+var defaults = __webpack_require__(/*! ../defaults */ "./node_modules/axios/lib/defaults.js");
+
+/**
+ * Throws a `Cancel` if cancellation has been requested.
+ */
+function throwIfCancellationRequested(config) {
+  if (config.cancelToken) {
+    config.cancelToken.throwIfRequested();
+  }
+}
+
+/**
+ * Dispatch a request to the server using the configured adapter.
+ *
+ * @param {object} config The config that is to be used for the request
+ * @returns {Promise} The Promise to be fulfilled
+ */
+module.exports = function dispatchRequest(config) {
+  throwIfCancellationRequested(config);
+
+  // Ensure headers exist
+  config.headers = config.headers || {};
+
+  // Transform request data
+  config.data = transformData.call(
+    config,
+    config.data,
+    config.headers,
+    config.transformRequest
+  );
+
+  // Flatten headers
+  config.headers = utils.merge(
+    config.headers.common || {},
+    config.headers[config.method] || {},
+    config.headers
+  );
+
+  utils.forEach(
+    ['delete', 'get', 'head', 'post', 'put', 'patch', 'common'],
+    function cleanHeaderConfig(method) {
+      delete config.headers[method];
+    }
+  );
+
+  var adapter = config.adapter || defaults.adapter;
+
+  return adapter(config).then(function onAdapterResolution(response) {
+    throwIfCancellationRequested(config);
+
+    // Transform response data
+    response.data = transformData.call(
+      config,
+      response.data,
+      response.headers,
+      config.transformResponse
+    );
+
+    return response;
+  }, function onAdapterRejection(reason) {
+    if (!isCancel(reason)) {
+      throwIfCancellationRequested(config);
+
+      // Transform response data
+      if (reason && reason.response) {
+        reason.response.data = transformData.call(
+          config,
+          reason.response.data,
+          reason.response.headers,
+          config.transformResponse
+        );
+      }
+    }
+
+    return Promise.reject(reason);
+  });
+};
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/core/enhanceError.js":
+/*!*****************************************************!*\
+  !*** ./node_modules/axios/lib/core/enhanceError.js ***!
+  \*****************************************************/
+/***/ ((module) => {
+
+"use strict";
+
+
+/**
+ * Update an Error with the specified config, error code, and response.
+ *
+ * @param {Error} error The error to update.
+ * @param {Object} config The config.
+ * @param {string} [code] The error code (for example, 'ECONNABORTED').
+ * @param {Object} [request] The request.
+ * @param {Object} [response] The response.
+ * @returns {Error} The error.
+ */
+module.exports = function enhanceError(error, config, code, request, response) {
+  error.config = config;
+  if (code) {
+    error.code = code;
+  }
+
+  error.request = request;
+  error.response = response;
+  error.isAxiosError = true;
+
+  error.toJSON = function toJSON() {
+    return {
+      // Standard
+      message: this.message,
+      name: this.name,
+      // Microsoft
+      description: this.description,
+      number: this.number,
+      // Mozilla
+      fileName: this.fileName,
+      lineNumber: this.lineNumber,
+      columnNumber: this.columnNumber,
+      stack: this.stack,
+      // Axios
+      config: this.config,
+      code: this.code
+    };
+  };
+  return error;
+};
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/core/mergeConfig.js":
+/*!****************************************************!*\
+  !*** ./node_modules/axios/lib/core/mergeConfig.js ***!
+  \****************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+"use strict";
+
+
+var utils = __webpack_require__(/*! ../utils */ "./node_modules/axios/lib/utils.js");
+
+/**
+ * Config-specific merge-function which creates a new config-object
+ * by merging two configuration objects together.
+ *
+ * @param {Object} config1
+ * @param {Object} config2
+ * @returns {Object} New object resulting from merging config2 to config1
+ */
+module.exports = function mergeConfig(config1, config2) {
+  // eslint-disable-next-line no-param-reassign
+  config2 = config2 || {};
+  var config = {};
+
+  var valueFromConfig2Keys = ['url', 'method', 'data'];
+  var mergeDeepPropertiesKeys = ['headers', 'auth', 'proxy', 'params'];
+  var defaultToConfig2Keys = [
+    'baseURL', 'transformRequest', 'transformResponse', 'paramsSerializer',
+    'timeout', 'timeoutMessage', 'withCredentials', 'adapter', 'responseType', 'xsrfCookieName',
+    'xsrfHeaderName', 'onUploadProgress', 'onDownloadProgress', 'decompress',
+    'maxContentLength', 'maxBodyLength', 'maxRedirects', 'transport', 'httpAgent',
+    'httpsAgent', 'cancelToken', 'socketPath', 'responseEncoding'
+  ];
+  var directMergeKeys = ['validateStatus'];
+
+  function getMergedValue(target, source) {
+    if (utils.isPlainObject(target) && utils.isPlainObject(source)) {
+      return utils.merge(target, source);
+    } else if (utils.isPlainObject(source)) {
+      return utils.merge({}, source);
+    } else if (utils.isArray(source)) {
+      return source.slice();
+    }
+    return source;
+  }
+
+  function mergeDeepProperties(prop) {
+    if (!utils.isUndefined(config2[prop])) {
+      config[prop] = getMergedValue(config1[prop], config2[prop]);
+    } else if (!utils.isUndefined(config1[prop])) {
+      config[prop] = getMergedValue(undefined, config1[prop]);
+    }
+  }
+
+  utils.forEach(valueFromConfig2Keys, function valueFromConfig2(prop) {
+    if (!utils.isUndefined(config2[prop])) {
+      config[prop] = getMergedValue(undefined, config2[prop]);
+    }
+  });
+
+  utils.forEach(mergeDeepPropertiesKeys, mergeDeepProperties);
+
+  utils.forEach(defaultToConfig2Keys, function defaultToConfig2(prop) {
+    if (!utils.isUndefined(config2[prop])) {
+      config[prop] = getMergedValue(undefined, config2[prop]);
+    } else if (!utils.isUndefined(config1[prop])) {
+      config[prop] = getMergedValue(undefined, config1[prop]);
+    }
+  });
+
+  utils.forEach(directMergeKeys, function merge(prop) {
+    if (prop in config2) {
+      config[prop] = getMergedValue(config1[prop], config2[prop]);
+    } else if (prop in config1) {
+      config[prop] = getMergedValue(undefined, config1[prop]);
+    }
+  });
+
+  var axiosKeys = valueFromConfig2Keys
+    .concat(mergeDeepPropertiesKeys)
+    .concat(defaultToConfig2Keys)
+    .concat(directMergeKeys);
+
+  var otherKeys = Object
+    .keys(config1)
+    .concat(Object.keys(config2))
+    .filter(function filterAxiosKeys(key) {
+      return axiosKeys.indexOf(key) === -1;
+    });
+
+  utils.forEach(otherKeys, mergeDeepProperties);
+
+  return config;
+};
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/core/settle.js":
+/*!***********************************************!*\
+  !*** ./node_modules/axios/lib/core/settle.js ***!
+  \***********************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+"use strict";
+
+
+var createError = __webpack_require__(/*! ./createError */ "./node_modules/axios/lib/core/createError.js");
+
+/**
+ * Resolve or reject a Promise based on response status.
+ *
+ * @param {Function} resolve A function that resolves the promise.
+ * @param {Function} reject A function that rejects the promise.
+ * @param {object} response The response.
+ */
+module.exports = function settle(resolve, reject, response) {
+  var validateStatus = response.config.validateStatus;
+  if (!response.status || !validateStatus || validateStatus(response.status)) {
+    resolve(response);
+  } else {
+    reject(createError(
+      'Request failed with status code ' + response.status,
+      response.config,
+      null,
+      response.request,
+      response
+    ));
+  }
+};
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/core/transformData.js":
+/*!******************************************************!*\
+  !*** ./node_modules/axios/lib/core/transformData.js ***!
+  \******************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+"use strict";
+
+
+var utils = __webpack_require__(/*! ./../utils */ "./node_modules/axios/lib/utils.js");
+var defaults = __webpack_require__(/*! ./../defaults */ "./node_modules/axios/lib/defaults.js");
+
+/**
+ * Transform the data for a request or a response
+ *
+ * @param {Object|String} data The data to be transformed
+ * @param {Array} headers The headers for the request or response
+ * @param {Array|Function} fns A single function or Array of functions
+ * @returns {*} The resulting transformed data
+ */
+module.exports = function transformData(data, headers, fns) {
+  var context = this || defaults;
+  /*eslint no-param-reassign:0*/
+  utils.forEach(fns, function transform(fn) {
+    data = fn.call(context, data, headers);
+  });
+
+  return data;
+};
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/defaults.js":
+/*!********************************************!*\
+  !*** ./node_modules/axios/lib/defaults.js ***!
+  \********************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+"use strict";
+/* provided dependency */ var process = __webpack_require__(/*! process/browser.js */ "./node_modules/process/browser.js");
+
+
+var utils = __webpack_require__(/*! ./utils */ "./node_modules/axios/lib/utils.js");
+var normalizeHeaderName = __webpack_require__(/*! ./helpers/normalizeHeaderName */ "./node_modules/axios/lib/helpers/normalizeHeaderName.js");
+var enhanceError = __webpack_require__(/*! ./core/enhanceError */ "./node_modules/axios/lib/core/enhanceError.js");
+
+var DEFAULT_CONTENT_TYPE = {
+  'Content-Type': 'application/x-www-form-urlencoded'
+};
+
+function setContentTypeIfUnset(headers, value) {
+  if (!utils.isUndefined(headers) && utils.isUndefined(headers['Content-Type'])) {
+    headers['Content-Type'] = value;
+  }
+}
+
+function getDefaultAdapter() {
+  var adapter;
+  if (typeof XMLHttpRequest !== 'undefined') {
+    // For browsers use XHR adapter
+    adapter = __webpack_require__(/*! ./adapters/xhr */ "./node_modules/axios/lib/adapters/xhr.js");
+  } else if (typeof process !== 'undefined' && Object.prototype.toString.call(process) === '[object process]') {
+    // For node use HTTP adapter
+    adapter = __webpack_require__(/*! ./adapters/http */ "./node_modules/axios/lib/adapters/xhr.js");
+  }
+  return adapter;
+}
+
+function stringifySafely(rawValue, parser, encoder) {
+  if (utils.isString(rawValue)) {
+    try {
+      (parser || JSON.parse)(rawValue);
+      return utils.trim(rawValue);
+    } catch (e) {
+      if (e.name !== 'SyntaxError') {
+        throw e;
+      }
+    }
+  }
+
+  return (encoder || JSON.stringify)(rawValue);
+}
+
+var defaults = {
+
+  transitional: {
+    silentJSONParsing: true,
+    forcedJSONParsing: true,
+    clarifyTimeoutError: false
+  },
+
+  adapter: getDefaultAdapter(),
+
+  transformRequest: [function transformRequest(data, headers) {
+    normalizeHeaderName(headers, 'Accept');
+    normalizeHeaderName(headers, 'Content-Type');
+
+    if (utils.isFormData(data) ||
+      utils.isArrayBuffer(data) ||
+      utils.isBuffer(data) ||
+      utils.isStream(data) ||
+      utils.isFile(data) ||
+      utils.isBlob(data)
+    ) {
+      return data;
+    }
+    if (utils.isArrayBufferView(data)) {
+      return data.buffer;
+    }
+    if (utils.isURLSearchParams(data)) {
+      setContentTypeIfUnset(headers, 'application/x-www-form-urlencoded;charset=utf-8');
+      return data.toString();
+    }
+    if (utils.isObject(data) || (headers && headers['Content-Type'] === 'application/json')) {
+      setContentTypeIfUnset(headers, 'application/json');
+      return stringifySafely(data);
+    }
+    return data;
+  }],
+
+  transformResponse: [function transformResponse(data) {
+    var transitional = this.transitional;
+    var silentJSONParsing = transitional && transitional.silentJSONParsing;
+    var forcedJSONParsing = transitional && transitional.forcedJSONParsing;
+    var strictJSONParsing = !silentJSONParsing && this.responseType === 'json';
+
+    if (strictJSONParsing || (forcedJSONParsing && utils.isString(data) && data.length)) {
+      try {
+        return JSON.parse(data);
+      } catch (e) {
+        if (strictJSONParsing) {
+          if (e.name === 'SyntaxError') {
+            throw enhanceError(e, this, 'E_JSON_PARSE');
+          }
+          throw e;
+        }
+      }
+    }
+
+    return data;
+  }],
+
+  /**
+   * A timeout in milliseconds to abort a request. If set to 0 (default) a
+   * timeout is not created.
+   */
+  timeout: 0,
+
+  xsrfCookieName: 'XSRF-TOKEN',
+  xsrfHeaderName: 'X-XSRF-TOKEN',
+
+  maxContentLength: -1,
+  maxBodyLength: -1,
+
+  validateStatus: function validateStatus(status) {
+    return status >= 200 && status < 300;
+  }
+};
+
+defaults.headers = {
+  common: {
+    'Accept': 'application/json, text/plain, */*'
+  }
+};
+
+utils.forEach(['delete', 'get', 'head'], function forEachMethodNoData(method) {
+  defaults.headers[method] = {};
+});
+
+utils.forEach(['post', 'put', 'patch'], function forEachMethodWithData(method) {
+  defaults.headers[method] = utils.merge(DEFAULT_CONTENT_TYPE);
+});
+
+module.exports = defaults;
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/helpers/bind.js":
+/*!************************************************!*\
+  !*** ./node_modules/axios/lib/helpers/bind.js ***!
+  \************************************************/
+/***/ ((module) => {
+
+"use strict";
+
+
+module.exports = function bind(fn, thisArg) {
+  return function wrap() {
+    var args = new Array(arguments.length);
+    for (var i = 0; i < args.length; i++) {
+      args[i] = arguments[i];
+    }
+    return fn.apply(thisArg, args);
+  };
+};
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/helpers/buildURL.js":
+/*!****************************************************!*\
+  !*** ./node_modules/axios/lib/helpers/buildURL.js ***!
+  \****************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+"use strict";
+
+
+var utils = __webpack_require__(/*! ./../utils */ "./node_modules/axios/lib/utils.js");
+
+function encode(val) {
+  return encodeURIComponent(val).
+    replace(/%3A/gi, ':').
+    replace(/%24/g, '$').
+    replace(/%2C/gi, ',').
+    replace(/%20/g, '+').
+    replace(/%5B/gi, '[').
+    replace(/%5D/gi, ']');
+}
+
+/**
+ * Build a URL by appending params to the end
+ *
+ * @param {string} url The base of the url (e.g., http://www.google.com)
+ * @param {object} [params] The params to be appended
+ * @returns {string} The formatted url
+ */
+module.exports = function buildURL(url, params, paramsSerializer) {
+  /*eslint no-param-reassign:0*/
+  if (!params) {
+    return url;
+  }
+
+  var serializedParams;
+  if (paramsSerializer) {
+    serializedParams = paramsSerializer(params);
+  } else if (utils.isURLSearchParams(params)) {
+    serializedParams = params.toString();
+  } else {
+    var parts = [];
+
+    utils.forEach(params, function serialize(val, key) {
+      if (val === null || typeof val === 'undefined') {
+        return;
+      }
+
+      if (utils.isArray(val)) {
+        key = key + '[]';
+      } else {
+        val = [val];
+      }
+
+      utils.forEach(val, function parseValue(v) {
+        if (utils.isDate(v)) {
+          v = v.toISOString();
+        } else if (utils.isObject(v)) {
+          v = JSON.stringify(v);
+        }
+        parts.push(encode(key) + '=' + encode(v));
+      });
+    });
+
+    serializedParams = parts.join('&');
+  }
+
+  if (serializedParams) {
+    var hashmarkIndex = url.indexOf('#');
+    if (hashmarkIndex !== -1) {
+      url = url.slice(0, hashmarkIndex);
+    }
+
+    url += (url.indexOf('?') === -1 ? '?' : '&') + serializedParams;
+  }
+
+  return url;
+};
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/helpers/combineURLs.js":
+/*!*******************************************************!*\
+  !*** ./node_modules/axios/lib/helpers/combineURLs.js ***!
+  \*******************************************************/
+/***/ ((module) => {
+
+"use strict";
+
+
+/**
+ * Creates a new URL by combining the specified URLs
+ *
+ * @param {string} baseURL The base URL
+ * @param {string} relativeURL The relative URL
+ * @returns {string} The combined URL
+ */
+module.exports = function combineURLs(baseURL, relativeURL) {
+  return relativeURL
+    ? baseURL.replace(/\/+$/, '') + '/' + relativeURL.replace(/^\/+/, '')
+    : baseURL;
+};
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/helpers/cookies.js":
+/*!***************************************************!*\
+  !*** ./node_modules/axios/lib/helpers/cookies.js ***!
+  \***************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+"use strict";
+
+
+var utils = __webpack_require__(/*! ./../utils */ "./node_modules/axios/lib/utils.js");
+
+module.exports = (
+  utils.isStandardBrowserEnv() ?
+
+  // Standard browser envs support document.cookie
+    (function standardBrowserEnv() {
+      return {
+        write: function write(name, value, expires, path, domain, secure) {
+          var cookie = [];
+          cookie.push(name + '=' + encodeURIComponent(value));
+
+          if (utils.isNumber(expires)) {
+            cookie.push('expires=' + new Date(expires).toGMTString());
+          }
+
+          if (utils.isString(path)) {
+            cookie.push('path=' + path);
+          }
+
+          if (utils.isString(domain)) {
+            cookie.push('domain=' + domain);
+          }
+
+          if (secure === true) {
+            cookie.push('secure');
+          }
+
+          document.cookie = cookie.join('; ');
+        },
+
+        read: function read(name) {
+          var match = document.cookie.match(new RegExp('(^|;\\s*)(' + name + ')=([^;]*)'));
+          return (match ? decodeURIComponent(match[3]) : null);
+        },
+
+        remove: function remove(name) {
+          this.write(name, '', Date.now() - 86400000);
+        }
+      };
+    })() :
+
+  // Non standard browser env (web workers, react-native) lack needed support.
+    (function nonStandardBrowserEnv() {
+      return {
+        write: function write() {},
+        read: function read() { return null; },
+        remove: function remove() {}
+      };
+    })()
+);
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/helpers/isAbsoluteURL.js":
+/*!*********************************************************!*\
+  !*** ./node_modules/axios/lib/helpers/isAbsoluteURL.js ***!
+  \*********************************************************/
+/***/ ((module) => {
+
+"use strict";
+
+
+/**
+ * Determines whether the specified URL is absolute
+ *
+ * @param {string} url The URL to test
+ * @returns {boolean} True if the specified URL is absolute, otherwise false
+ */
+module.exports = function isAbsoluteURL(url) {
+  // A URL is considered absolute if it begins with "<scheme>://" or "//" (protocol-relative URL).
+  // RFC 3986 defines scheme name as a sequence of characters beginning with a letter and followed
+  // by any combination of letters, digits, plus, period, or hyphen.
+  return /^([a-z][a-z\d\+\-\.]*:)?\/\//i.test(url);
+};
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/helpers/isAxiosError.js":
+/*!********************************************************!*\
+  !*** ./node_modules/axios/lib/helpers/isAxiosError.js ***!
+  \********************************************************/
+/***/ ((module) => {
+
+"use strict";
+
+
+/**
+ * Determines whether the payload is an error thrown by Axios
+ *
+ * @param {*} payload The value to test
+ * @returns {boolean} True if the payload is an error thrown by Axios, otherwise false
+ */
+module.exports = function isAxiosError(payload) {
+  return (typeof payload === 'object') && (payload.isAxiosError === true);
+};
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/helpers/isURLSameOrigin.js":
+/*!***********************************************************!*\
+  !*** ./node_modules/axios/lib/helpers/isURLSameOrigin.js ***!
+  \***********************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+"use strict";
+
+
+var utils = __webpack_require__(/*! ./../utils */ "./node_modules/axios/lib/utils.js");
+
+module.exports = (
+  utils.isStandardBrowserEnv() ?
+
+  // Standard browser envs have full support of the APIs needed to test
+  // whether the request URL is of the same origin as current location.
+    (function standardBrowserEnv() {
+      var msie = /(msie|trident)/i.test(navigator.userAgent);
+      var urlParsingNode = document.createElement('a');
+      var originURL;
+
+      /**
+    * Parse a URL to discover it's components
+    *
+    * @param {String} url The URL to be parsed
+    * @returns {Object}
+    */
+      function resolveURL(url) {
+        var href = url;
+
+        if (msie) {
+        // IE needs attribute set twice to normalize properties
+          urlParsingNode.setAttribute('href', href);
+          href = urlParsingNode.href;
+        }
+
+        urlParsingNode.setAttribute('href', href);
+
+        // urlParsingNode provides the UrlUtils interface - http://url.spec.whatwg.org/#urlutils
+        return {
+          href: urlParsingNode.href,
+          protocol: urlParsingNode.protocol ? urlParsingNode.protocol.replace(/:$/, '') : '',
+          host: urlParsingNode.host,
+          search: urlParsingNode.search ? urlParsingNode.search.replace(/^\?/, '') : '',
+          hash: urlParsingNode.hash ? urlParsingNode.hash.replace(/^#/, '') : '',
+          hostname: urlParsingNode.hostname,
+          port: urlParsingNode.port,
+          pathname: (urlParsingNode.pathname.charAt(0) === '/') ?
+            urlParsingNode.pathname :
+            '/' + urlParsingNode.pathname
+        };
+      }
+
+      originURL = resolveURL(window.location.href);
+
+      /**
+    * Determine if a URL shares the same origin as the current location
+    *
+    * @param {String} requestURL The URL to test
+    * @returns {boolean} True if URL shares the same origin, otherwise false
+    */
+      return function isURLSameOrigin(requestURL) {
+        var parsed = (utils.isString(requestURL)) ? resolveURL(requestURL) : requestURL;
+        return (parsed.protocol === originURL.protocol &&
+            parsed.host === originURL.host);
+      };
+    })() :
+
+  // Non standard browser envs (web workers, react-native) lack needed support.
+    (function nonStandardBrowserEnv() {
+      return function isURLSameOrigin() {
+        return true;
+      };
+    })()
+);
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/helpers/normalizeHeaderName.js":
+/*!***************************************************************!*\
+  !*** ./node_modules/axios/lib/helpers/normalizeHeaderName.js ***!
+  \***************************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+"use strict";
+
+
+var utils = __webpack_require__(/*! ../utils */ "./node_modules/axios/lib/utils.js");
+
+module.exports = function normalizeHeaderName(headers, normalizedName) {
+  utils.forEach(headers, function processHeader(value, name) {
+    if (name !== normalizedName && name.toUpperCase() === normalizedName.toUpperCase()) {
+      headers[normalizedName] = value;
+      delete headers[name];
+    }
+  });
+};
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/helpers/parseHeaders.js":
+/*!********************************************************!*\
+  !*** ./node_modules/axios/lib/helpers/parseHeaders.js ***!
+  \********************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+"use strict";
+
+
+var utils = __webpack_require__(/*! ./../utils */ "./node_modules/axios/lib/utils.js");
+
+// Headers whose duplicates are ignored by node
+// c.f. https://nodejs.org/api/http.html#http_message_headers
+var ignoreDuplicateOf = [
+  'age', 'authorization', 'content-length', 'content-type', 'etag',
+  'expires', 'from', 'host', 'if-modified-since', 'if-unmodified-since',
+  'last-modified', 'location', 'max-forwards', 'proxy-authorization',
+  'referer', 'retry-after', 'user-agent'
+];
+
+/**
+ * Parse headers into an object
+ *
+ * ```
+ * Date: Wed, 27 Aug 2014 08:58:49 GMT
+ * Content-Type: application/json
+ * Connection: keep-alive
+ * Transfer-Encoding: chunked
+ * ```
+ *
+ * @param {String} headers Headers needing to be parsed
+ * @returns {Object} Headers parsed into an object
+ */
+module.exports = function parseHeaders(headers) {
+  var parsed = {};
+  var key;
+  var val;
+  var i;
+
+  if (!headers) { return parsed; }
+
+  utils.forEach(headers.split('\n'), function parser(line) {
+    i = line.indexOf(':');
+    key = utils.trim(line.substr(0, i)).toLowerCase();
+    val = utils.trim(line.substr(i + 1));
+
+    if (key) {
+      if (parsed[key] && ignoreDuplicateOf.indexOf(key) >= 0) {
+        return;
+      }
+      if (key === 'set-cookie') {
+        parsed[key] = (parsed[key] ? parsed[key] : []).concat([val]);
+      } else {
+        parsed[key] = parsed[key] ? parsed[key] + ', ' + val : val;
+      }
+    }
+  });
+
+  return parsed;
+};
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/helpers/spread.js":
+/*!**************************************************!*\
+  !*** ./node_modules/axios/lib/helpers/spread.js ***!
+  \**************************************************/
+/***/ ((module) => {
+
+"use strict";
+
+
+/**
+ * Syntactic sugar for invoking a function and expanding an array for arguments.
+ *
+ * Common use case would be to use `Function.prototype.apply`.
+ *
+ *  ```js
+ *  function f(x, y, z) {}
+ *  var args = [1, 2, 3];
+ *  f.apply(null, args);
+ *  ```
+ *
+ * With `spread` this example can be re-written.
+ *
+ *  ```js
+ *  spread(function(x, y, z) {})([1, 2, 3]);
+ *  ```
+ *
+ * @param {Function} callback
+ * @returns {Function}
+ */
+module.exports = function spread(callback) {
+  return function wrap(arr) {
+    return callback.apply(null, arr);
+  };
+};
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/helpers/validator.js":
+/*!*****************************************************!*\
+  !*** ./node_modules/axios/lib/helpers/validator.js ***!
+  \*****************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+"use strict";
+
+
+var pkg = __webpack_require__(/*! ./../../package.json */ "./node_modules/axios/package.json");
+
+var validators = {};
+
+// eslint-disable-next-line func-names
+['object', 'boolean', 'number', 'function', 'string', 'symbol'].forEach(function(type, i) {
+  validators[type] = function validator(thing) {
+    return typeof thing === type || 'a' + (i < 1 ? 'n ' : ' ') + type;
+  };
+});
+
+var deprecatedWarnings = {};
+var currentVerArr = pkg.version.split('.');
+
+/**
+ * Compare package versions
+ * @param {string} version
+ * @param {string?} thanVersion
+ * @returns {boolean}
+ */
+function isOlderVersion(version, thanVersion) {
+  var pkgVersionArr = thanVersion ? thanVersion.split('.') : currentVerArr;
+  var destVer = version.split('.');
+  for (var i = 0; i < 3; i++) {
+    if (pkgVersionArr[i] > destVer[i]) {
+      return true;
+    } else if (pkgVersionArr[i] < destVer[i]) {
+      return false;
+    }
+  }
+  return false;
+}
+
+/**
+ * Transitional option validator
+ * @param {function|boolean?} validator
+ * @param {string?} version
+ * @param {string} message
+ * @returns {function}
+ */
+validators.transitional = function transitional(validator, version, message) {
+  var isDeprecated = version && isOlderVersion(version);
+
+  function formatMessage(opt, desc) {
+    return '[Axios v' + pkg.version + '] Transitional option \'' + opt + '\'' + desc + (message ? '. ' + message : '');
+  }
+
+  // eslint-disable-next-line func-names
+  return function(value, opt, opts) {
+    if (validator === false) {
+      throw new Error(formatMessage(opt, ' has been removed in ' + version));
+    }
+
+    if (isDeprecated && !deprecatedWarnings[opt]) {
+      deprecatedWarnings[opt] = true;
+      // eslint-disable-next-line no-console
+      console.warn(
+        formatMessage(
+          opt,
+          ' has been deprecated since v' + version + ' and will be removed in the near future'
+        )
+      );
+    }
+
+    return validator ? validator(value, opt, opts) : true;
+  };
+};
+
+/**
+ * Assert object's properties type
+ * @param {object} options
+ * @param {object} schema
+ * @param {boolean?} allowUnknown
+ */
+
+function assertOptions(options, schema, allowUnknown) {
+  if (typeof options !== 'object') {
+    throw new TypeError('options must be an object');
+  }
+  var keys = Object.keys(options);
+  var i = keys.length;
+  while (i-- > 0) {
+    var opt = keys[i];
+    var validator = schema[opt];
+    if (validator) {
+      var value = options[opt];
+      var result = value === undefined || validator(value, opt, options);
+      if (result !== true) {
+        throw new TypeError('option ' + opt + ' must be ' + result);
+      }
+      continue;
+    }
+    if (allowUnknown !== true) {
+      throw Error('Unknown option ' + opt);
+    }
+  }
+}
+
+module.exports = {
+  isOlderVersion: isOlderVersion,
+  assertOptions: assertOptions,
+  validators: validators
+};
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/utils.js":
+/*!*****************************************!*\
+  !*** ./node_modules/axios/lib/utils.js ***!
+  \*****************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+"use strict";
+
+
+var bind = __webpack_require__(/*! ./helpers/bind */ "./node_modules/axios/lib/helpers/bind.js");
+
+// utils is a library of generic helper functions non-specific to axios
+
+var toString = Object.prototype.toString;
+
+/**
+ * Determine if a value is an Array
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is an Array, otherwise false
+ */
+function isArray(val) {
+  return toString.call(val) === '[object Array]';
+}
+
+/**
+ * Determine if a value is undefined
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if the value is undefined, otherwise false
+ */
+function isUndefined(val) {
+  return typeof val === 'undefined';
+}
+
+/**
+ * Determine if a value is a Buffer
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is a Buffer, otherwise false
+ */
+function isBuffer(val) {
+  return val !== null && !isUndefined(val) && val.constructor !== null && !isUndefined(val.constructor)
+    && typeof val.constructor.isBuffer === 'function' && val.constructor.isBuffer(val);
+}
+
+/**
+ * Determine if a value is an ArrayBuffer
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is an ArrayBuffer, otherwise false
+ */
+function isArrayBuffer(val) {
+  return toString.call(val) === '[object ArrayBuffer]';
+}
+
+/**
+ * Determine if a value is a FormData
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is an FormData, otherwise false
+ */
+function isFormData(val) {
+  return (typeof FormData !== 'undefined') && (val instanceof FormData);
+}
+
+/**
+ * Determine if a value is a view on an ArrayBuffer
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is a view on an ArrayBuffer, otherwise false
+ */
+function isArrayBufferView(val) {
+  var result;
+  if ((typeof ArrayBuffer !== 'undefined') && (ArrayBuffer.isView)) {
+    result = ArrayBuffer.isView(val);
+  } else {
+    result = (val) && (val.buffer) && (val.buffer instanceof ArrayBuffer);
+  }
+  return result;
+}
+
+/**
+ * Determine if a value is a String
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is a String, otherwise false
+ */
+function isString(val) {
+  return typeof val === 'string';
+}
+
+/**
+ * Determine if a value is a Number
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is a Number, otherwise false
+ */
+function isNumber(val) {
+  return typeof val === 'number';
+}
+
+/**
+ * Determine if a value is an Object
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is an Object, otherwise false
+ */
+function isObject(val) {
+  return val !== null && typeof val === 'object';
+}
+
+/**
+ * Determine if a value is a plain Object
+ *
+ * @param {Object} val The value to test
+ * @return {boolean} True if value is a plain Object, otherwise false
+ */
+function isPlainObject(val) {
+  if (toString.call(val) !== '[object Object]') {
+    return false;
+  }
+
+  var prototype = Object.getPrototypeOf(val);
+  return prototype === null || prototype === Object.prototype;
+}
+
+/**
+ * Determine if a value is a Date
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is a Date, otherwise false
+ */
+function isDate(val) {
+  return toString.call(val) === '[object Date]';
+}
+
+/**
+ * Determine if a value is a File
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is a File, otherwise false
+ */
+function isFile(val) {
+  return toString.call(val) === '[object File]';
+}
+
+/**
+ * Determine if a value is a Blob
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is a Blob, otherwise false
+ */
+function isBlob(val) {
+  return toString.call(val) === '[object Blob]';
+}
+
+/**
+ * Determine if a value is a Function
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is a Function, otherwise false
+ */
+function isFunction(val) {
+  return toString.call(val) === '[object Function]';
+}
+
+/**
+ * Determine if a value is a Stream
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is a Stream, otherwise false
+ */
+function isStream(val) {
+  return isObject(val) && isFunction(val.pipe);
+}
+
+/**
+ * Determine if a value is a URLSearchParams object
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is a URLSearchParams object, otherwise false
+ */
+function isURLSearchParams(val) {
+  return typeof URLSearchParams !== 'undefined' && val instanceof URLSearchParams;
+}
+
+/**
+ * Trim excess whitespace off the beginning and end of a string
+ *
+ * @param {String} str The String to trim
+ * @returns {String} The String freed of excess whitespace
+ */
+function trim(str) {
+  return str.trim ? str.trim() : str.replace(/^\s+|\s+$/g, '');
+}
+
+/**
+ * Determine if we're running in a standard browser environment
+ *
+ * This allows axios to run in a web worker, and react-native.
+ * Both environments support XMLHttpRequest, but not fully standard globals.
+ *
+ * web workers:
+ *  typeof window -> undefined
+ *  typeof document -> undefined
+ *
+ * react-native:
+ *  navigator.product -> 'ReactNative'
+ * nativescript
+ *  navigator.product -> 'NativeScript' or 'NS'
+ */
+function isStandardBrowserEnv() {
+  if (typeof navigator !== 'undefined' && (navigator.product === 'ReactNative' ||
+                                           navigator.product === 'NativeScript' ||
+                                           navigator.product === 'NS')) {
+    return false;
+  }
+  return (
+    typeof window !== 'undefined' &&
+    typeof document !== 'undefined'
+  );
+}
+
+/**
+ * Iterate over an Array or an Object invoking a function for each item.
+ *
+ * If `obj` is an Array callback will be called passing
+ * the value, index, and complete array for each item.
+ *
+ * If 'obj' is an Object callback will be called passing
+ * the value, key, and complete object for each property.
+ *
+ * @param {Object|Array} obj The object to iterate
+ * @param {Function} fn The callback to invoke for each item
+ */
+function forEach(obj, fn) {
+  // Don't bother if no value provided
+  if (obj === null || typeof obj === 'undefined') {
+    return;
+  }
+
+  // Force an array if not already something iterable
+  if (typeof obj !== 'object') {
+    /*eslint no-param-reassign:0*/
+    obj = [obj];
+  }
+
+  if (isArray(obj)) {
+    // Iterate over array values
+    for (var i = 0, l = obj.length; i < l; i++) {
+      fn.call(null, obj[i], i, obj);
+    }
+  } else {
+    // Iterate over object keys
+    for (var key in obj) {
+      if (Object.prototype.hasOwnProperty.call(obj, key)) {
+        fn.call(null, obj[key], key, obj);
+      }
+    }
+  }
+}
+
+/**
+ * Accepts varargs expecting each argument to be an object, then
+ * immutably merges the properties of each object and returns result.
+ *
+ * When multiple objects contain the same key the later object in
+ * the arguments list will take precedence.
+ *
+ * Example:
+ *
+ * ```js
+ * var result = merge({foo: 123}, {foo: 456});
+ * console.log(result.foo); // outputs 456
+ * ```
+ *
+ * @param {Object} obj1 Object to merge
+ * @returns {Object} Result of all merge properties
+ */
+function merge(/* obj1, obj2, obj3, ... */) {
+  var result = {};
+  function assignValue(val, key) {
+    if (isPlainObject(result[key]) && isPlainObject(val)) {
+      result[key] = merge(result[key], val);
+    } else if (isPlainObject(val)) {
+      result[key] = merge({}, val);
+    } else if (isArray(val)) {
+      result[key] = val.slice();
+    } else {
+      result[key] = val;
+    }
+  }
+
+  for (var i = 0, l = arguments.length; i < l; i++) {
+    forEach(arguments[i], assignValue);
+  }
+  return result;
+}
+
+/**
+ * Extends object a by mutably adding to it the properties of object b.
+ *
+ * @param {Object} a The object to be extended
+ * @param {Object} b The object to copy properties from
+ * @param {Object} thisArg The object to bind function to
+ * @return {Object} The resulting value of object a
+ */
+function extend(a, b, thisArg) {
+  forEach(b, function assignValue(val, key) {
+    if (thisArg && typeof val === 'function') {
+      a[key] = bind(val, thisArg);
+    } else {
+      a[key] = val;
+    }
+  });
+  return a;
+}
+
+/**
+ * Remove byte order marker. This catches EF BB BF (the UTF-8 BOM)
+ *
+ * @param {string} content with BOM
+ * @return {string} content value without BOM
+ */
+function stripBOM(content) {
+  if (content.charCodeAt(0) === 0xFEFF) {
+    content = content.slice(1);
+  }
+  return content;
+}
+
+module.exports = {
+  isArray: isArray,
+  isArrayBuffer: isArrayBuffer,
+  isBuffer: isBuffer,
+  isFormData: isFormData,
+  isArrayBufferView: isArrayBufferView,
+  isString: isString,
+  isNumber: isNumber,
+  isObject: isObject,
+  isPlainObject: isPlainObject,
+  isUndefined: isUndefined,
+  isDate: isDate,
+  isFile: isFile,
+  isBlob: isBlob,
+  isFunction: isFunction,
+  isStream: isStream,
+  isURLSearchParams: isURLSearchParams,
+  isStandardBrowserEnv: isStandardBrowserEnv,
+  forEach: forEach,
+  merge: merge,
+  extend: extend,
+  trim: trim,
+  stripBOM: stripBOM
+};
+
+
+/***/ }),
+
 /***/ "./resources/js/components/App.js":
 /*!****************************************!*\
   !*** ./resources/js/components/App.js ***!
@@ -235,12 +2288,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* binding */ LoginForm)
 /* harmony export */ });
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-/* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router-dom/index.js");
-/* harmony import */ var _services_Form__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../services/Form */ "./resources/js/services/Form.js");
-/* harmony import */ var _services_Session__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../services/Session */ "./resources/js/services/Session.js");
-/* harmony import */ var _services_Weekend__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../services/Weekend */ "./resources/js/services/Weekend.js");
-/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router-dom/index.js");
+/* harmony import */ var _services_Form__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../services/Form */ "./resources/js/services/Form.js");
+/* harmony import */ var _services_Session__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../services/Session */ "./resources/js/services/Session.js");
+/* harmony import */ var _services_Weekend__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../../services/Weekend */ "./resources/js/services/Weekend.js");
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
 function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -273,6 +2328,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 
 
+
 var LoginForm = /*#__PURE__*/function (_Component) {
   _inherits(LoginForm, _Component);
 
@@ -285,7 +2341,7 @@ var LoginForm = /*#__PURE__*/function (_Component) {
 
     _this = _super.call(this, props);
 
-    _defineProperty(_assertThisInitialized(_this), "form", new _services_Form__WEBPACK_IMPORTED_MODULE_1__["default"](document.querySelector('.login__form')));
+    _defineProperty(_assertThisInitialized(_this), "form", new _services_Form__WEBPACK_IMPORTED_MODULE_2__["default"](document.querySelector('.login__form')));
 
     _defineProperty(_assertThisInitialized(_this), "getFormData", function () {
       var formData = new FormData();
@@ -299,8 +2355,8 @@ var LoginForm = /*#__PURE__*/function (_Component) {
 
       _this.form.postData('/login', _this.getFormData()).then(function (res) {
         if (res.user) {
-          _services_Session__WEBPACK_IMPORTED_MODULE_2__["default"].fill(res);
-          location.href = "".concat(location.origin, "/profile/").concat(_services_Session__WEBPACK_IMPORTED_MODULE_2__["default"].getId());
+          _services_Session__WEBPACK_IMPORTED_MODULE_3__["default"].fill(res);
+          location.href = "".concat(location.origin, "/profile/").concat(_services_Session__WEBPACK_IMPORTED_MODULE_3__["default"].getId());
         } else {
           _this.setState({
             error: res.errors[Object.keys(res.errors)[0]][0]
@@ -335,38 +2391,38 @@ var LoginForm = /*#__PURE__*/function (_Component) {
           error = _this$state.error,
           email = _this$state.email,
           password = _this$state.password;
-      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("div", {
         className: "login",
-        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("form", {
+        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsxs)("form", {
           onSubmit: this.login,
           className: "login__form",
           method: "post",
-          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("img", {
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("img", {
             src: "../images/logo.svg",
             alt: "Weekend",
             className: "logo"
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("div", {
             className: error ? "error-box" : "error-box hide",
             children: error
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("input", {
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("input", {
             type: "email",
             name: "email",
             placeholder: "E-mail",
             className: "input email",
             value: email,
             onChange: this.handleInputChange
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("input", {
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("input", {
             type: "password",
             name: "password",
             placeholder: "Password",
             className: "input password",
             value: password,
             onChange: this.handleInputChange
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("button", {
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("button", {
             className: "btn-auth",
             name: "btn-login",
             children: "Sign in"
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_5__.Link, {
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_6__.Link, {
             to: "/register",
             className: "link",
             children: "Not registered yet?"
@@ -377,7 +2433,7 @@ var LoginForm = /*#__PURE__*/function (_Component) {
   }]);
 
   return LoginForm;
-}(react__WEBPACK_IMPORTED_MODULE_0__.Component);
+}(react__WEBPACK_IMPORTED_MODULE_1__.Component);
 
 
 
@@ -1137,7 +3193,7 @@ var Main = /*#__PURE__*/function (_Component) {
               path: "profile/:id",
               element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)(_profile_profile_container__WEBPACK_IMPORTED_MODULE_7__["default"], {})
             }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_10__.Route, {
-              path: "message",
+              path: "messages",
               element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)(_message_message__WEBPACK_IMPORTED_MODULE_2__["default"], {})
             }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_10__.Route, {
               path: "friends",
@@ -1257,13 +3313,13 @@ var MenuItem = /*#__PURE__*/function (_Component) {
               children: text
             })
           })]
-        }), countRequests && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("div", {
+        }), countRequests ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("div", {
           className: "sidebar__count-body",
           children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("span", {
             className: "sidebar__item-count",
             children: ["+", countRequests]
           })
-        })]
+        }) : null]
       });
     }
   }]);
@@ -1359,7 +3415,7 @@ var Menu = /*#__PURE__*/function (_Component) {
             }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_menu_item__WEBPACK_IMPORTED_MODULE_1__["default"], {
               img: "../images/message.svg",
               text: "Messages",
-              link: "message"
+              link: "messages"
             }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_menu_item__WEBPACK_IMPORTED_MODULE_1__["default"], {
               img: "../images/friends.svg",
               text: "Friends",
@@ -1424,7 +3480,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (/* binding */ MessageChat)
 /* harmony export */ });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
+/* harmony import */ var _services_Session__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../services/Session */ "./resources/js/services/Session.js");
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
 function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -1451,6 +3508,7 @@ function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.g
 
 
 
+
 var MessageChat = /*#__PURE__*/function (_Component) {
   _inherits(MessageChat, _Component);
 
@@ -1465,129 +3523,135 @@ var MessageChat = /*#__PURE__*/function (_Component) {
   _createClass(MessageChat, [{
     key: "render",
     value: function render() {
-      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
+      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
         className: "message__chat-container",
-        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("div", {
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
           className: "message__chat-header flex_center_center",
-          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
+          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
             className: "message__header-container flex ai_center",
-            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("div", {
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
               className: "message__header-ava",
-              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("a", {
+              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("a", {
                 href: "#",
-                children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("img", {
+                children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("img", {
                   src: "../images/Ava.jpg",
                   className: "ava-50",
                   alt: "User avatar"
-                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("div", {
+                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
                   className: "online-status"
                 })]
               })
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
               className: "message__header-info flex",
-              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
                 className: "message__header-user flex_column",
-                children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("a", {
+                children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("a", {
                   href: "#",
-                  children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("span", {
+                  children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("span", {
                     className: "username",
                     children: "Afanyakenso Alexander"
                   })
-                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("span", {
+                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("span", {
                   className: "message__header-online",
                   children: "Was online today at 14:37"
                 })]
-              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
                 className: "message__header-actions flex_center_space-between",
-                children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("img", {
+                children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("img", {
                   src: "../images/search.svg",
                   className: "icon-search",
                   alt: "Search"
-                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
+                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
                   className: "kebab gray",
-                  children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("div", {
+                  children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
                     className: "circle"
-                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("div", {
+                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
                     className: "circle"
-                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("div", {
+                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
                     className: "circle"
                   })]
                 })]
               })]
             })]
           })
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
           className: "message__chat-box",
-          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
             className: "message__msg message__msg-outgoing",
-            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("time", {
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("time", {
               className: "chat msg-time",
               children: "13:00"
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("div", {
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
               className: "details",
-              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("p", {
+              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("p", {
                 className: "msg-text",
                 children: "Hello world"
               })
             })]
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
             className: "message__msg message__msg-incoming",
-            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("a", {
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("a", {
               href: "#",
-              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("img", {
+              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("img", {
                 src: "../images/Ava.jpg",
                 className: "ava-35",
                 alt: ""
               })
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("div", {
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
               className: "details",
-              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("p", {
+              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("p", {
                 className: "msg-text",
                 children: "asfasfasf"
               })
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("time", {
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("time", {
               className: "chat msg-time",
               children: "12:57"
             })]
           })]
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("div", {
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("form", {
+          method: "post",
           className: "message__form-send-msg flex_center_center",
-          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
+          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
             className: "message__form-container flex ai_center",
-            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("textarea", {
-              name: "msg",
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("input", {
+              type: "hidden",
+              name: "out_user_id",
+              value: _services_Session__WEBPACK_IMPORTED_MODULE_1__["default"].getId()
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("input", {
+              type: "hidden",
+              name: "inc_user_id",
+              value: 2
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("textarea", {
+              name: "text",
               className: "message__input-field",
               placeholder: "Send your message",
               id: ""
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
               className: "message__form-details flex_center_space-between",
-              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("a", {
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("a", {
                 href: "#",
-                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("img", {
+                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("img", {
                   src: "../images/music.svg",
                   alt: "Attach music"
                 })
-              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("a", {
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("a", {
                 href: "#",
-                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("img", {
+                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("img", {
                   src: "../images/photo.svg",
                   alt: "Attach photo"
                 })
-              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("a", {
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("a", {
                 href: "#",
-                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("img", {
+                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("img", {
                   src: "../images/video.svg",
                   alt: "Attach video"
                 })
               })]
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("a", {
-              href: "#",
-              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("div", {
-                className: "message__btn-send flex_center_center",
-                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("img", {
-                  src: "../images/icon-send.svg",
-                  alt: "Send message"
-                })
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
+              className: "message__btn-send flex_center_center",
+              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("img", {
+                src: "../images/icon-send.svg",
+                alt: "Send message"
               })
             })]
           })
@@ -1727,7 +3791,7 @@ var MessageList = /*#__PURE__*/function (_Component) {
             className: "input-search",
             placeholder: "Search"
           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("img", {
-            src: ".../images/search.svg",
+            src: "../images/search.svg",
             className: "icon-search",
             alt: "Search"
           })]
@@ -1843,7 +3907,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (/* binding */ Music)
 /* harmony export */ });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
+/* harmony import */ var _popup_add_music__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./popup-add-music */ "./resources/js/components/music/popup-add-music/index.js");
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
 function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -1870,115 +3935,136 @@ function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.g
 
 
 
+
 var Music = /*#__PURE__*/function (_Component) {
   _inherits(Music, _Component);
 
   var _super = _createSuper(Music);
 
-  function Music() {
+  function Music(props) {
+    var _this;
+
     _classCallCheck(this, Music);
 
-    return _super.apply(this, arguments);
+    _this = _super.call(this, props);
+    _this.state = {
+      popup: false
+    };
+    return _this;
   }
 
   _createClass(Music, [{
     key: "render",
     value: function render() {
-      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
+      var _this2 = this;
+
+      var popup = this.state.popup;
+      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
         "class": "music",
-        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
+        children: [popup && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_popup_add_music__WEBPACK_IMPORTED_MODULE_1__["default"], {
+          onClose: function onClose() {
+            return _this2.setState({
+              popup: false
+            });
+          }
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
           "class": "music__playlist flex_column ai_center",
-          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("div", {
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
             "class": "music__search-container",
-            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
+            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
               "class": "search-box",
-              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("input", {
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("input", {
                 type: "text",
                 "class": "input-search",
                 placeholder: "Search"
-              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("img", {
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("img", {
                 src: "../images/search.svg",
                 "class": "icon-search",
                 alt: "Search"
               })]
             })
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
             "class": "music__now-playing flex_column",
-            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
               "class": "music__track-header flex_center_space-between",
-              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("span", {
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("span", {
                 "class": "music__title",
                 children: "Now playing"
-              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
                 "class": "music__actions flex_center_space-between",
-                children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
+                children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
                   "class": "music__add-audio flex_center_space-between",
-                  children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("img", {
+                  children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("img", {
                     src: "../images/plus.svg",
                     alt: ""
-                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("a", {
+                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("a", {
                     href: "#",
                     "class": "link",
-                    children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("span", {
+                    children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("span", {
+                      onClick: function onClick() {
+                        _this2.setState({
+                          popup: true
+                        });
+                      },
                       "class": "text",
                       children: "Add your music"
                     })
                   })]
-                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("a", {
+                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("a", {
                   href: "#",
                   "class": "link",
-                  children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("span", {
+                  children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("span", {
                     "class": "text",
                     children: "Friends music"
                   })
                 })]
               })]
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
               "class": "music__now-track flex ai_center",
-              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
                 "class": "music__track-controls flex_center_space-between",
-                children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("img", {
+                children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("img", {
                   src: "../images/arrow-left.svg",
                   "class": "cur_pointer",
                   alt: "Prev track"
-                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("img", {
+                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("img", {
                   src: "../images/pause.svg",
                   "class": "cur_pointer",
                   alt: "Pause"
-                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("img", {
+                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("img", {
                   src: "../images/arrow-right.svg",
                   "class": "cur_pointer",
                   alt: "Next track"
                 })]
-              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("img", {
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("img", {
                 src: "../images/Audio.jpg",
                 "class": "ava-50",
                 alt: "Track cover"
-              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("div", {
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
                 "class": "music__now-track-info flex_column",
-                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
+                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
                   "class": "music__track-name-time flex_column",
-                  children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
+                  children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
                     "class": "music__track-name flex_center_space-between",
-                    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
+                    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
                       "class": "music__track-info-container flex_column",
-                      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("span", {
+                      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("span", {
                         "class": "track-artist",
                         children: "unxknow"
-                      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("span", {
+                      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("span", {
                         "class": "track-name",
                         children: "\u041D\u0430 \u043A\u043E\u0440\u0432\u0430\u043B\u043E\u043B\u0435"
                       })]
-                    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("div", {
+                    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
                       "class": "music__track-time",
-                      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("time", {
+                      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("time", {
                         "class": "track-time",
                         children: "1:39"
                       })
                     })]
-                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("div", {
+                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
                     "class": "music__track-input",
-                    children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("input", {
+                    children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("input", {
                       type: "range",
                       "class": "input-range",
                       min: "0",
@@ -1987,112 +4073,112 @@ var Music = /*#__PURE__*/function (_Component) {
                     })
                   })]
                 })
-              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
                 "class": "track-actions flex_center_space-between",
-                children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("img", {
+                children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("img", {
                   src: "../images/sound.svg",
                   alt: "Change sound"
-                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("img", {
+                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("img", {
                   src: "../images/retry.svg",
                   alt: "Retry track"
-                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("img", {
+                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("img", {
                   src: "../images/repost.svg",
                   alt: "Repost track"
-                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
+                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
                   "class": "kebab gray",
-                  children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("div", {
+                  children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
                     "class": "circle"
-                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("div", {
+                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
                     "class": "circle"
-                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("div", {
+                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
                     "class": "circle"
                   })]
                 })]
               })]
             })]
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
             "class": "music__track-list",
-            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("div", {
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
               "class": "music__track-list-header",
-              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("span", {
+              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("span", {
                 "class": "music__title",
                 children: "Your playlist"
               })
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
               "class": "music__track flex_center_space-between",
               title: "Click to play audio",
-              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
                 "class": "music__track-info flex ai_center",
-                children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("img", {
+                children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("img", {
                   src: "../images/Ava.jpg",
                   "class": "ava-50",
                   alt: "Audio cover"
-                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
+                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
                   "class": "music__track-desc flex_column",
-                  children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("span", {
+                  children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("span", {
                     "class": "track-artist",
                     children: "unxknow"
-                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("span", {
+                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("span", {
                     "class": "track-name",
                     children: "\u041D\u0430 \u043A\u043E\u0440\u0432\u0430\u043B\u043E\u043B\u0435"
                   })]
                 })]
-              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
                 "class": "track-actions flex_center_space-between",
-                children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("img", {
+                children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("img", {
                   src: "../images/sound.svg",
                   alt: "Change sound"
-                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("img", {
+                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("img", {
                   src: "../images/retry.svg",
                   alt: "Retry track"
-                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("img", {
+                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("img", {
                   src: "../images/repost.svg",
                   alt: "Repost track"
-                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
+                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
                   "class": "kebab gray",
-                  children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("div", {
+                  children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
                     "class": "circle"
-                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("div", {
+                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
                     "class": "circle"
-                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("div", {
+                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
                     "class": "circle"
                   })]
                 })]
               })]
             })]
           })]
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
           "class": "music__right-side flex_column ai_center",
-          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("div", {
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
             "class": "music__search-container",
-            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
+            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
               "class": "search-box",
-              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("input", {
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("input", {
                 type: "text",
                 "class": "input-search",
                 placeholder: "Search"
-              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("img", {
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("img", {
                 src: "../images/search.svg",
                 "class": "icon-search",
                 alt: "Search"
               })]
             })
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("div", {
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
             "class": "music__albums flex jc_space-between",
-            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("div", {
+            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
               "class": "music__album",
-              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
+              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
                 "class": "music__album-container flex_center_center",
-                children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
+                children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
                   "class": "music__album-info flex_column",
-                  children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("span", {
+                  children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("span", {
                     "class": "album-name no-select",
                     children: "\u043C\u043E\u0438 \u0434\u0440\u0443\u0437\u044C\u044F \u043D\u0435 \u0434\u043E\u043B\u0436\u043D\u044B \u0443\u043C\u0438\u0440\u0430\u0442\u044C"
-                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("span", {
+                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("span", {
                     "class": "album-artist no-select",
                     children: "aikko"
                   })]
-                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("span", {
+                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("span", {
                   "class": "album-year no-select",
                   children: "2020"
                 })]
@@ -2108,6 +4194,262 @@ var Music = /*#__PURE__*/function (_Component) {
 }(react__WEBPACK_IMPORTED_MODULE_0__.Component);
 
 
+
+/***/ }),
+
+/***/ "./resources/js/components/music/popup-add-music/index.js":
+/*!****************************************************************!*\
+  !*** ./resources/js/components/music/popup-add-music/index.js ***!
+  \****************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _popup_add_music__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./popup-add-music */ "./resources/js/components/music/popup-add-music/popup-add-music.js");
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_popup_add_music__WEBPACK_IMPORTED_MODULE_0__["default"]);
+
+/***/ }),
+
+/***/ "./resources/js/components/music/popup-add-music/popup-add-music.js":
+/*!**************************************************************************!*\
+  !*** ./resources/js/components/music/popup-add-music/popup-add-music.js ***!
+  \**************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ PopupAddMusic)
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var _services_Audio__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../services/Audio */ "./resources/js/services/Audio.js");
+/* harmony import */ var _popup__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../popup */ "./resources/js/components/popup/index.js");
+/* harmony import */ var _popup_add_music_css__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./popup-add-music.css */ "./resources/js/components/music/popup-add-music/popup-add-music.css");
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+
+
+
+
+
+
+
+var PopupAddMusic = /*#__PURE__*/function (_Component) {
+  _inherits(PopupAddMusic, _Component);
+
+  var _super = _createSuper(PopupAddMusic);
+
+  function PopupAddMusic(props) {
+    var _this;
+
+    _classCallCheck(this, PopupAddMusic);
+
+    _this = _super.call(this, props);
+
+    _defineProperty(_assertThisInitialized(_this), "handleSubmit", function (input) {
+      input.preventDefault();
+      var file = _this.inputMp3.current.files[0];
+      console.log(_this.inputMp3.current.files[0].duration);
+      var parts = file.name.split('.');
+      var ext = parts.length > 1 ? parts.pop() : '';
+
+      _this.setState({
+        form: ext.toLowerCase() === 'mp3' ? true : false,
+        author: parts[0],
+        name: parts[1] && parts[0]
+      });
+    });
+
+    _defineProperty(_assertThisInitialized(_this), "handleCover", function (input) {
+      input.preventDefault();
+      var availableExt = ['png', 'jpeg', 'jpg', 'svg'];
+      var file = _this.inputImg.current.files[0];
+      var parts = file.name.split('.');
+      var ext = parts.length > 1 ? parts.pop() : '';
+
+      if (availableExt.includes(ext.toLowerCase())) {
+        _this.setState({
+          previewCover: URL.createObjectURL(file)
+        });
+      }
+    });
+
+    _defineProperty(_assertThisInitialized(_this), "getFormData", function () {
+      var _this$state = _this.state,
+          author = _this$state.author,
+          name = _this$state.name;
+      var formData = new FormData();
+      formData.append("author", author);
+      formData.append("name", name);
+      formData.append("cover", _this.inputMp3.current.files[0].duration);
+    });
+
+    _defineProperty(_assertThisInitialized(_this), "addAudio", function () {
+      _this.audio.addAudio().then(function (res) {})["catch"](function (error) {
+        console.warn(error);
+      });
+    });
+
+    _this.state = {
+      form: false,
+      author: '',
+      name: ''
+    };
+    _this.audio = new _services_Audio__WEBPACK_IMPORTED_MODULE_1__["default"]();
+    _this.handleSubmit = _this.handleSubmit.bind(_assertThisInitialized(_this));
+    _this.handleInputChange = _this.handleInputChange.bind(_assertThisInitialized(_this));
+    _this.inputMp3 = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createRef();
+    _this.inputImg = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createRef();
+    return _this;
+  }
+
+  _createClass(PopupAddMusic, [{
+    key: "handleInputChange",
+    value: function handleInputChange(event) {
+      var target = event.target;
+      var value = target.value;
+      var name = target.name;
+      this.setState(_defineProperty({}, name, value));
+    }
+  }, {
+    key: "render",
+    value: function render() {
+      var _this$state2 = this.state,
+          form = _this$state2.form,
+          author = _this$state2.author,
+          name = _this$state2.name,
+          previewCover = _this$state2.previewCover;
+      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_popup__WEBPACK_IMPORTED_MODULE_2__["default"], {
+        onClose: this.props.onClose,
+        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("form", {
+          onSubmit: this.addAudio,
+          method: "post",
+          encType: "multipart/form-data",
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("input", {
+            type: "file",
+            ref: this.inputMp3,
+            onChange: this.handleSubmit,
+            name: "audio",
+            className: "audio",
+            id: "audio",
+            hidden: true
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("label", {
+            htmlFor: "audio",
+            className: "upload_audio",
+            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
+              className: "btn-upload flex_center_center",
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("img", {
+                src: "../images/music(purple).svg",
+                className: "btn-upload__icon",
+                alt: "Music"
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("span", {
+                children: "Choose mp3 file"
+              })]
+            })
+          }), form && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
+            className: "flex_column",
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("input", {
+              type: "text",
+              name: "author",
+              onChange: this.handleInputChange,
+              value: author,
+              className: "input",
+              placeholder: "Author"
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("input", {
+              type: "text",
+              name: "name",
+              onChange: this.handleInputChange,
+              value: name,
+              className: "input",
+              placeholder: "Audio name"
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("input", {
+              type: "file",
+              name: "cover",
+              onChange: this.handleCover,
+              ref: this.inputImg,
+              accept: "image/*",
+              id: "cover",
+              className: "cover",
+              hidden: true
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("label", {
+              htmlFor: "cover",
+              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
+                className: "btn-upload flex_center_center",
+                children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("img", {
+                  src: "../images/img(purple).svg",
+                  className: "btn-upload__icon",
+                  alt: "Music"
+                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("span", {
+                  children: "Cover for your audio"
+                })]
+              })
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
+              className: previewCover && "flex",
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("span", {
+                children: "Cover preview:"
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("img", {
+                src: previewCover,
+                className: "preview-cover",
+                alt: "Cover audio"
+              })]
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("button", {
+              className: "btn-auth",
+              children: "Add audio"
+            })]
+          })]
+        })
+      });
+    }
+  }]);
+
+  return PopupAddMusic;
+}(react__WEBPACK_IMPORTED_MODULE_0__.Component);
+
+
+
+/***/ }),
+
+/***/ "./resources/js/components/popup/index.js":
+/*!************************************************!*\
+  !*** ./resources/js/components/popup/index.js ***!
+  \************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _popup__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./popup */ "./resources/js/components/popup/popup.js");
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_popup__WEBPACK_IMPORTED_MODULE_0__["default"]);
 
 /***/ }),
 
@@ -2741,9 +5083,42 @@ var Profile = /*#__PURE__*/function (_Component) {
       });
     });
 
+    _defineProperty(_assertThisInitialized(_this), "getUserInfo", function (user_id) {
+      _this.user.get(user_id).then(function (info) {
+        console.log(info.data);
+
+        _this.setState({
+          profile: info.data,
+          loading: false
+        });
+      })["catch"](function (error) {
+        console.error(error);
+      });
+    });
+
+    _defineProperty(_assertThisInitialized(_this), "getCountFriends", function (user_id) {
+      _this.friend.getCountFriends(user_id).then(function (res) {
+        if (res.count) {
+          _this.setState({
+            personalInfo: {
+              countFriends: res.count
+            }
+          });
+        }
+      })["catch"](function (error) {
+        console.warn(error);
+      });
+    });
+
     _this.state = {
       loading: true,
       profile: [],
+      personalInfo: {
+        countFriends: 0,
+        countMusic: 0,
+        countPhotos: 0,
+        countVideos: 0
+      },
       messages: [],
       popup: false
     };
@@ -2763,24 +5138,14 @@ var Profile = /*#__PURE__*/function (_Component) {
   }, {
     key: "componentDidMount",
     value: function componentDidMount() {
-      var _this2 = this;
-
       var user_id = this.props.user_id;
-      this.user.get(user_id).then(function (info) {
-        console.log(info.data);
-
-        _this2.setState({
-          profile: info.data,
-          loading: false
-        });
-      })["catch"](function (error) {
-        console.error(error);
-      });
+      this.getUserInfo(user_id);
+      this.getCountFriends(user_id);
     }
   }, {
     key: "render",
     value: function render() {
-      var _this3 = this;
+      var _this2 = this;
 
       var _this$state$profile = this.state.profile,
           name = _this$state$profile.name,
@@ -2790,10 +5155,11 @@ var Profile = /*#__PURE__*/function (_Component) {
           loading = _this$state.loading,
           messages = _this$state.messages,
           popup = _this$state.popup;
+      var countFriends = this.state.personalInfo.countFriends;
       return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_7__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_7__.Fragment, {
         children: [loading && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_7__.jsx)(_spinner__WEBPACK_IMPORTED_MODULE_4__["default"], {}), popup && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_7__.jsx)(_popup_popup__WEBPACK_IMPORTED_MODULE_3__["default"], {
           onClose: function onClose() {
-            return _this3.setState({
+            return _this2.setState({
               popup: false
             });
           },
@@ -2932,7 +5298,7 @@ var Profile = /*#__PURE__*/function (_Component) {
                         children: "Friends"
                       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_7__.jsx)("span", {
                         className: "item-count",
-                        children: "35"
+                        children: countFriends
                       })]
                     })
                   }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_7__.jsx)("div", {
@@ -3133,7 +5499,7 @@ var Sidebar = /*#__PURE__*/function (_Component) {
           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
             className: "sidebar__user-info flex_column",
             children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_5__.Link, {
-              to: "profile/".concat(_services_Session__WEBPACK_IMPORTED_MODULE_2__["default"].getId()),
+              to: "/profile/".concat(_services_Session__WEBPACK_IMPORTED_MODULE_2__["default"].getId()),
               children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("h2", {
                 className: "username",
                 children: "Kirill Sabaev"
@@ -3565,6 +5931,103 @@ var User = /*#__PURE__*/function (_Component) {
 
 /***/ }),
 
+/***/ "./resources/js/services/Audio.js":
+/*!****************************************!*\
+  !*** ./resources/js/services/Audio.js ***!
+  \****************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ Audio)
+/* harmony export */ });
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _Weekend__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Weekend */ "./resources/js/services/Weekend.js");
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+
+
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+
+
+var Audio = /*#__PURE__*/function (_Weekend) {
+  _inherits(Audio, _Weekend);
+
+  var _super = _createSuper(Audio);
+
+  function Audio() {
+    var _this;
+
+    _classCallCheck(this, Audio);
+
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    _this = _super.call.apply(_super, [this].concat(args));
+
+    _defineProperty(_assertThisInitialized(_this), "addAudio", /*#__PURE__*/function () {
+      var _ref = _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().mark(function _callee(data) {
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().wrap(function _callee$(_context) {
+          while (1) {
+            switch (_context.prev = _context.next) {
+              case 0:
+                _context.next = 2;
+                return _this.postData("/addAudio", data, true);
+
+              case 2:
+                return _context.abrupt("return", _context.sent);
+
+              case 3:
+              case "end":
+                return _context.stop();
+            }
+          }
+        }, _callee);
+      }));
+
+      return function (_x) {
+        return _ref.apply(this, arguments);
+      };
+    }());
+
+    return _this;
+  }
+
+  return _createClass(Audio);
+}(_Weekend__WEBPACK_IMPORTED_MODULE_1__["default"]);
+
+
+
+/***/ }),
+
 /***/ "./resources/js/services/Form.js":
 /*!***************************************!*\
   !*** ./resources/js/services/Form.js ***!
@@ -3728,14 +6191,14 @@ var Friend = /*#__PURE__*/function (_Weekend) {
       };
     }());
 
-    _defineProperty(_assertThisInitialized(_this), "getCountRequests", /*#__PURE__*/function () {
+    _defineProperty(_assertThisInitialized(_this), "getCountFriends", /*#__PURE__*/function () {
       var _ref3 = _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().mark(function _callee3(id) {
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().wrap(function _callee3$(_context3) {
           while (1) {
             switch (_context3.prev = _context3.next) {
               case 0:
                 _context3.next = 2;
-                return _this.getData("/countFriendRequests/".concat(id));
+                return _this.getData("/countFriends/".concat(id));
 
               case 2:
                 return _context3.abrupt("return", _context3.sent);
@@ -3753,14 +6216,14 @@ var Friend = /*#__PURE__*/function (_Weekend) {
       };
     }());
 
-    _defineProperty(_assertThisInitialized(_this), "getRequests", /*#__PURE__*/function () {
+    _defineProperty(_assertThisInitialized(_this), "getCountRequests", /*#__PURE__*/function () {
       var _ref4 = _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().mark(function _callee4(id) {
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().wrap(function _callee4$(_context4) {
           while (1) {
             switch (_context4.prev = _context4.next) {
               case 0:
                 _context4.next = 2;
-                return _this.getData("/friendRequests/".concat(id));
+                return _this.getData("/countFriendRequests/".concat(id));
 
               case 2:
                 return _context4.abrupt("return", _context4.sent);
@@ -3778,14 +6241,14 @@ var Friend = /*#__PURE__*/function (_Weekend) {
       };
     }());
 
-    _defineProperty(_assertThisInitialized(_this), "addFriend", /*#__PURE__*/function () {
+    _defineProperty(_assertThisInitialized(_this), "getRequests", /*#__PURE__*/function () {
       var _ref5 = _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().mark(function _callee5(id) {
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().wrap(function _callee5$(_context5) {
           while (1) {
             switch (_context5.prev = _context5.next) {
               case 0:
                 _context5.next = 2;
-                return _this.getData("/addFriend/".concat(id));
+                return _this.getData("/friendRequests/".concat(id));
 
               case 2:
                 return _context5.abrupt("return", _context5.sent);
@@ -3803,14 +6266,14 @@ var Friend = /*#__PURE__*/function (_Weekend) {
       };
     }());
 
-    _defineProperty(_assertThisInitialized(_this), "searchFriends", /*#__PURE__*/function () {
-      var _ref6 = _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().mark(function _callee6(data) {
+    _defineProperty(_assertThisInitialized(_this), "addFriend", /*#__PURE__*/function () {
+      var _ref6 = _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().mark(function _callee6(id) {
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().wrap(function _callee6$(_context6) {
           while (1) {
             switch (_context6.prev = _context6.next) {
               case 0:
                 _context6.next = 2;
-                return _this.postData("/searchFriends", data, true);
+                return _this.getData("/addFriend/".concat(id));
 
               case 2:
                 return _context6.abrupt("return", _context6.sent);
@@ -3825,6 +6288,31 @@ var Friend = /*#__PURE__*/function (_Weekend) {
 
       return function (_x6) {
         return _ref6.apply(this, arguments);
+      };
+    }());
+
+    _defineProperty(_assertThisInitialized(_this), "searchFriends", /*#__PURE__*/function () {
+      var _ref7 = _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().mark(function _callee7(data) {
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().wrap(function _callee7$(_context7) {
+          while (1) {
+            switch (_context7.prev = _context7.next) {
+              case 0:
+                _context7.next = 2;
+                return _this.postData("/searchFriends", data, true);
+
+              case 2:
+                return _context7.abrupt("return", _context7.sent);
+
+              case 3:
+              case "end":
+                return _context7.stop();
+            }
+          }
+        }, _callee7);
+      }));
+
+      return function (_x7) {
+        return _ref7.apply(this, arguments);
       };
     }());
 
@@ -4359,7 +6847,31 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "* {\n  margin: 0;\n  padding: 0;\n  box-sizing: border-box;\n}\n\n:root {\n  --purple: #BD2A6C;\n  --pink: #D592FF;\n  --white: #fff;\n  --black: #000;\n  --gray: #444;\n  --dark-gray: #181818;\n  --white-gray: #fafafa;\n  --light-gray: #e6e6e6;\n  --shadow: 0px 0px 4px rgba(138, 138, 138, 0.25);\n  --hover-shadow: 0px 0px 4px rgba(138, 138, 138, 0.40);\n  --animate-transition: .4s ease;\n  --online-status: #44C959;\n  --offline-status: #D63737;\n  --c4: #c4c4c4;\n}\n\n/* Стили лоудера */\n\n.loader-wrapper {\n  position: absolute;\n  z-index: 10;\n  width: 100%;\n  height: 100vh;\n  top: 0;\n  left: 0;\n  background-color: rgba(0, 0, 0, 0.4);\n  display: flex;\n  align-items: center;\n  justify-content: center;\n}\n\n.loader-wrapper.hide {\n  display: none;\n}\n\n.loader-box {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  width: 150px;\n  height: 150px;\n  position: absolute;\n  left: 50%;\n  top: 50%;\n  transform: translate(-50%, -50%);\n}\n\n.loader {\n  border: 12px solid #f3f3f3;\n  border-radius: 50%;\n  border-top: 12px solid #BD2A6C;\n  width: 100px;\n  height: 100px;\n  -webkit-animation: spin 2s linear infinite; /* Safari */\n  animation: spin 2s linear infinite;\n}\n\n/* Safari */\n@-webkit-keyframes spin {\n0% { -webkit-transform: rotate(0deg); }\n100% { -webkit-transform: rotate(360deg); }\n}\n\n@keyframes spin {\n0% { transform: rotate(0deg); }\n100% { transform: rotate(360deg); }\n}\n\n/* Стили скроллбара */\n\n::-webkit-scrollbar {\n  width: 4px;\n}\n\n::-webkit-scrollbar-thumb {\n  background-color: #e6e6e6;\n  border-radius: 3px;\n}\n\n::-webkit-scrollbar-thumb:hover {\n  background-color: #c4c4c4;\n}\n\n::-webkit-scrollbar-track {\n  background-color: white;\n}\n\ninput::-moz-placeholder {\n  font-weight: 300;\n  font-size: 16px;\n  color: var(--light-gray);\n}\n\ninput:-ms-input-placeholder {\n  font-weight: 300;\n  font-size: 16px;\n  color: var(--light-gray);\n}\n\ninput::placeholder {\n  font-weight: 300;\n  font-size: 16px;\n  color: var(--light-gray);\n}\n\n/* Стили ползунка для музыки */\n\n.input-range {\n  -webkit-appearance: none;\n  background: #e6e6e6;\n  width: 100%;\n  height: 3px;\n  outline: none;\n  border: none;\n  border-radius: 5px;\n  margin-top: 5px;\n  padding: 0;\n  transition: 1s ease;\n  cursor: pointer;\n}\n\n.input-range::-webkit-slider-thumb {\n  -webkit-appearance: none;\n  border-radius: 50%;\n  background-color: #B60F46;\n  width: 12px;\n  height: 12px;\n  cursor: pointer;\n}\n\n.input-range::-webkit-slider-thumb:hover,\n.input-range::-webkit-slider-thumb:active {\n  background-color: #8A1F4F;\n  -webkit-transition: 1s ease;\n  transition: 1s ease;\n}\n\n.input-range::-moz-range-thumb:hover,\n.input-range::-moz-range-thumb:active {\n  background-color: #8A1F4F;\n  -moz-transition: 1s ease;\n  transition: 1s ease;\n}\n\n.input-range::-moz-range-track {\n  -moz-appearance: none;\n  border-radius: 50%;\n  background-color: #B60F46;\n  width: 12px;\n  height: 12px;\n  cursor: pointer;\n}\n\n.input-range::-moz-range-thumb {\n  -moz-appearance: none;\n  border-radius: 50%;\n  background-color: #B60F46;\n  width: 12px;\n  height: 12px;\n  cursor: pointer;\n}\n\n/* Стили поиска */\n\n.search-box {\n  position: relative;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  height: 55px;\n  margin: 5px 5px 10px 5px;\n}\n\n.search-box .input-search {\n  width: 100%;\n  height: 100%;\n  border: none;\n  text-align: center;\n  padding: 5px 5px 5px 10px;\n  outline: 1px dashed #e6e6e6;\n  border-radius: 5px;\n}\n\n.search-box .icon-search {\n  position: absolute;\n  right: 0;\n  margin-right: 10px;\n}\n\n.flex {\n  display: flex;\n}\n\n.flex_column {\n  display: flex;\n  flex-direction: column;\n}\n\n.flex_center_center {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n}\n\n.flex_center_flex-end {\n  display: flex;\n  align-items: center;\n  justify-content: flex-end;\n}\n\n.flex_center_space-between {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n}\n\n.ai_center {\n  align-items: center;\n}\n\n.ai_flex-start {\n  align-items: flex-start;\n}\n\n.ai_flex-end {\n  align-items: flex-end;\n}\n\n.jc_center {\n  justify-content: center;\n}\n\n.jc_space-between {\n  justify-content: space-between;\n}\n\n/* Общий стиль для кебаб с 3 точками */\n\n.kebab {\n  width: 5px;\n  height: 20px;\n  display: flex;\n  flex-direction: column;\n  justify-content: space-between;\n}\n\n.kebab .circle {\n  width: 5px;\n  height: 5px;\n  background-color: var(--black);\n  border-radius: 50%;\n}\n\n.kebab.gray{\n  height: 20px;\n}\n\n.kebab.gray .circle {\n  background-color: var(--light-gray);\n}\n\n.cur_pointer {\n  cursor: pointer;\n}\n\n.no-select {\n  user-select: none;\n  -webkit-touch-callout: none; /* iOS Safari */\n  -webkit-user-select: none; /* Safari */\n  -khtml-user-select: none; /* Konqueror HTML */\n  -moz-user-select: none; /* Old versions of Firefox */\n  -ms-user-select: none; /* Internet Explorer/Edge */\n}\n\n/* Обнуление стилей списков */\n\nul {\n  list-style-type: none;\n}\n\n/* Стили для аватарок разных размеров */\n\n.ava-35, .ava-50, .ava-60, .ava-70 {\n  border-radius: 50%;\n  box-shadow: var(--shadow);\n  -o-object-fit: cover;\n     object-fit: cover;\n}\n\n.ava-35 {\n  width: 35px;\n  height: 35px;\n}\n\n.ava-50 {\n  width: 50px;\n  height: 50px;\n}\n\n.ava-60 {\n  width: 60px;\n  height: 60px;\n}\n\n.ava-70 {\n  width: 70px;\n  height: 70px;\n}\n\n/* Общие стили для имени пользователя */\n\n.username {\n  color: var(--black);\n  cursor: pointer;\n  transition: var(--animate-transition);\n}\n\n.username:hover {\n  color: var(--purple);\n  transition: var(--animate-transition);\n}\n\n/* Общие стили для ссылок */\n\n.link {\n  cursor: pointer;\n  transition: var(--animate-transition);\n}\n\n.link:hover {\n  color: var(--purple);\n  transition: var(--animate-transition);\n}\n\nbody {\n  font-family: 'Roboto';\n}\n\na {\n  text-decoration: none;\n  color: black;\n}\n\n#app {\n  width: 100%;\n  height: 100%;\n}\n\n.main {\n  width: 1220px;\n  height: 100vh;\n  margin: 0 auto;\n}\n\n.auth {\n  width: 100%;\n  height: 100vh;\n  background-size: 100% 100%;\n  font-family: 'Roboto', sans-serif;\n}\n\n.login {\n  width: 331px;\n  position: absolute;\n  left: 50%;\n  top: 50%;\n  transform: translate(-50%, -50%);\n  height: auto;\n  background: rgba(255, 255, 255, 0.9);\n  border-radius: 15px;\n}\n\n.login .login__form  {\n  border: none;\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  text-align: center;\n}\n\n.input {\n  width: 250px;\n  height: 45px;\n  padding-left: 15px;\n  background: #FFFFFF;\n  border: 1px solid #C4C4C4;\n  box-sizing: border-box;\n  border-radius: 15px;\n  outline: none;\n  margin-bottom: 20px;\n  transition: .2s ease;\n}\n\n.input::-webkit-input-placeholder {\n  font-weight: 300;\n  font-size: 16px;\n  color: var(--c4);\n}\n\n.input::-moz-placeholder {\n  font-weight: 300;\n  font-size: 16px;\n  color: var(--c4);\n}\n\n.login .login__form  .input.empty {\n  border: 1px solid #B60F46;\n  transition: .2s ease;\n}\n\n.input.empty::-webkit-input-placeholder {\n  color: #B60F46;\n}\n\n.input.empty::-moz-placeholder {\n  color: #B60F46;\n}\n\n.login form  .input:focus {\n  border-color: #777;\n}\n\n.btn-auth {\n  width: 251px;\n  height: 44px;\n  border: none;\n  margin: 18px auto;\n  font-family: Pacifico;\n  font-size: 18px;\n  line-height: 32px;\n  color: #FFFFFF;\n  background: #B60F46;\n  border-radius: 15px;\n  outline: none;\n  cursor: pointer;\n}\n\n.auth .link { \n  margin-bottom: 30px;\n  font-size: 12px;\n  line-height: 14px;\n  color: #3D3AD4;\n  cursor: pointer;\n  text-decoration: underline;\n}\n\n.error-box {\n  display: flex;\n  border: 1px solid #B60F46;\n  color:#B60F46;\n  border-radius: 10px;\n  width: 250px;\n  min-height: 45px;\n  height: auto;\n  margin-bottom: 20px;\n  align-items: center;\n  justify-content: center;\n}\n\n.error-box.hide {\n  display: none;\n}\n\n.register {\n  width: 331px;\n  position: absolute;\n  left: 50%;\n  top: 50%;\n  transform: translate(-50%, -50%);\n  height: auto;\n  background: rgba(255, 255, 255, 0.9);\n  border-radius: 15px;\n}\n\n.register .register-form  {\n  border: none;\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  text-align: center;\n}\n\n.register .register-form  .input.empty {\n  border: 1px solid #B60F46;\n  transition: .2s ease;\n}\n\n.register .register-form  .input.empty-date {\n  color: #B60F46;\n  border: 1px solid #B60F46;\n  transition: .2s ease;\n}\n\n.input.empty::-webkit-input-placeholder {\n  color: #B60F46;\n}\n\n.input.empty::-moz-placeholder {\n  color: #B60F46;\n}\n\n.register .register-form  .input:focus {\n  border-color: #777;\n}\n\n.login .login-form .link,\n.register .register-form .link {\n  margin-bottom: 30px;\n  font-size: 12px;\n  line-height: 14px;\n  color: #3D3AD4;\n}\n\n.logo {\n  margin: 30px auto;  \n  width: 141px;\n  height: 35px;\n}\n\n.sidebar {\n  padding-top: 30px;\n  width: 300px;\n  height: 100vh;\n  background-color: var(--white);\n  box-shadow: var(--shadow);\n  z-index: 10;\n}\n\n.sidebar .sidebar__user-container {\n  width: 245px;\n  margin: 50px 0 40px 0;\n}\n\n.sidebar .sidebar__user-container .sidebar__user-ava {\n  margin-right: 15px;\n}\n\n.sidebar .sidebar__user-info {\n  margin-right: 20px;\n}\n\n.sidebar .sidebar__user-actions {\n  width: 60px;\n  padding-top: 1px;\n}\n\n.sidebar .sidebar__user-actions .icon-settings,\n.sidebar .sidebar__user-actions .icon-logout {\n  cursor: pointer;\n  transition: var(--animate-transition);\n}\n\n.sidebar .sidebar__user-actions .icon-settings:hover {\n  transition: var(--animate-transition);\n  transform: rotate(360deg);\n}\n\n.sidebar .sidebar__user-actions .icon-logout:hover {\n  transform: scale(1.1);\n  transition: var(--animate-transition);\n}\n\n.sidebar .sidebar__user-info .username {\n  font-weight: 500;\n  font-size: 18px;\n}\n\n.sidebar .sidebar__user-info .sidebar__my-profile {\n  font-weight: 300;\n  font-size: 13px;\n  color: var(--gray);\n}\n\n.sidebar .sidebar__menu-container .sidebar__menu {\n  height: 340px;\n}\n\n.sidebar .sidebar__menu-container .sidebar__menu .sidebar__menu-item {\n  cursor: pointer;\n  transition: var(--animate-transition);\n}\n\n.sidebar .sidebar__menu-container .sidebar__menu .sidebar__item-link:hover {\n  color: var(--purple);\n  transition: var(--animate-transition);\n}\n\n.sidebar__item-link:hover > .sidebar__item-icon {\n  transform: rotate(180deg);\n  transition: var(--animate-transition);\n}\n\n.sidebar .sidebar__menu-container .sidebar__menu .sidebar__item-link .sidebar__item-text {\n  margin-left: 10px;\n  font-size: 20px;\n}\n\n.sidebar__menu-item .sidebar__count-body {\n  padding: 3px 5px;\n  font-size: 12px;\n  font-weight: bold;\n  background-color: var(--purple);\n  color: var(--white);\n  border-radius: 50%;\n}\n\n.sidebar .sidebar__audio {\n  width: 95%;\n  margin-top: 55px;\n  padding: 3px; \n}\n\n.sidebar .sidebar__audio-cover {\n  width: 50px;\n  height: 50px;\n  border-radius: 50%;\n  -o-object-fit: cover;\n     object-fit: cover;\n  margin-right: 15px;\n}\n\n.sidebar .sidebar__audio .sidebar__track-info .sidebar__audio-artist {\n  font-weight: 300;\n  font-size: 13px;\n}\n\n.sidebar .sidebar__audio .sidebar__track-info .sidebar__audio-name {\n  font-weight: 500;\n  font-size: 13px;\n}\n\n.sidebar .sidebar__audio .sidebar__audio-actions {\n  width: 70px;\n}\n\n.sidebar .sidebar__audio-duration .text-duration {\n  font-style: normal;\n  font-weight: 300;\n  font-size: 13px;\n  color: var(--gray);\n  margin-top: 5px;\n}\n\n/* Верстка профиля пользователя */\n\n.profile {\n  width: 920px;\n  padding: 30px 0 0 30px;\n  background-color: var(--white);\n}\n\n.profile .profile__user-avatar .left-circle {\n  padding-left: 3px;\n  border-radius: 164px 0 0 164px;\n  box-shadow: var(--shadow);\n}\n\n.profile .profile__user-avatar .left-circle .icon-msg {\n  position: absolute;\n}\n\n.profile .profile__user-avatar .right-circle {\n  border-radius: 0 164px 164px 0;\n  box-shadow: var(--shadow);\n  padding-right: 3px;\n}\n\n.profile .profile__user-avatar .right-circle .icon-friend {\n  position: absolute;\n}\n\n.profile .profile__user-avatar .profile__avatar {\n  position: absolute;\n  width: 280px;\n  height: 280px;\n  -o-object-fit: cover;\n     object-fit: cover;\n  border-radius: 50%;\n}\n\n.profile .profile__user-avatar .profile__avatar .avatar-img {\n  width: 280px;\n  height: 280px;\n  -o-object-fit: cover;\n     object-fit: cover;\n  border-radius: 50%;\n}\n\n.profile .profile__user-avatar .link-btn__left-circle,\n.profile .profile__user-avatar .link-btn__right-circle {\n  transition: var(--animate-transition);\n  cursor: pointer;\n}\n\n.profile .profile__user-container .profile__user-avatar .icon-circle {\n  width: 100%;\n  height: 100%;\n}\n\n.profile .profile__user-avatar .link-btn__left-circle {\n  border-radius: 164px 0 0 164px;\n  \n}\n\n.profile .profile__user-avatar .link-btn__right-circle {\n  border-radius: 0 164px 164px 0; \n}\n\n.profile .profile__user-avatar .link-btn__left-circle:hover,\n.profile .profile__user-avatar .link-btn__right-circle:hover {\n  box-shadow: var(--hover-shadow);\n  transition: var(--animate-transition);\n}\n\n.profile .profile__user-info {\n  width: 470px;\n  margin-left: 30px;\n}\n\n.profile .profile__user-info .profile__name-container {\n  width: 100%;\n}\n\n.profile .profile__user-info .profile__name-container .profile__username {\n  font-size: 30px;\n  font-weight: normal;\n  font-family: 'Pacifico';\n  color: var(--purple);\n}\n\n.profile .profile__user-info .profile__name-container .online-status {\n  width: 45px;\n}\n\n.profile .profile__user-info .profile__name-container .online-status .online-circle {\n  width: 5px;\n  height: 5px;\n  border-radius: 50%;\n  background-color: var(--online-status);\n}\n\n.profile .profile__user-info .profile__name-container .online-status .online-text {\n  font-size: 12px;\n  color: #181818;\n}\n\n.profile .profile__user-info .profile__user-status {\n  width: 100%;\n  height: 35px;\n  background-color: var(--white-gray);\n  border-radius: 10px;\n  padding-left: 10px;\n  margin: 5px 0 20px 0;\n}\n\n.profile .profile__user-info .profile__user-status .profile__status-text {\n  font-size: 18px;\n  font-weight: 300;\n  color: var(--black);\n}\n\n.profile .profile__user-info .profile__more-info {\n  width: 415px;\n}\n\n.profile .profile__user-info .profile__list-info {\n  width: 215px;\n  height: 170px;\n  padding-left: 10px;\n}\n\n.profile .profile__user-info .profile__list-info .profile__list-item {\n  width: 100%;\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n}\n\n.profile .profile__user-info .profile__list-info .profile__list-item .profile__item-caption {\n  font-size: 18px;\n  color: #515151;\n  font-weight: 300;\n}\n\n.profile .profile__user-info .profile__list-info .profile__list-item .profile__item-value {\n  width: 90px;\n  height: 35px;\n  display: flex;\n  align-items: center;\n  background-color: var(--white-gray);\n  border-radius: 10px;\n  padding-left: 10px;\n}\n\n.profile .profile__personal-info {\n  width: 170px;\n  height: 170px;\n  flex-wrap: wrap;\n}\n\n.profile .profile__user-info .profile__info-item  {\n  width: 50%;\n}\n\n.profile .profile__user-info .profile__info-item .profile__item-link {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  cursor: pointer;\n  transition: var(--animate-transition);\n}\n\n.profile .profile__user-info .profile__info-item .profile__item-link .icon-item:hover {\n  transform: scale(1.1);\n  transition: var(--animate-transition);\n}\n\n.profile .profile__personal-info .profile__info-item .profile__item-link .item-text {\n  font-size: 13px;\n  color: #181818;\n  font-weight: 300;\n}\n\n.profile .profile__personal-info .profile__info-item .profile__item-link .item-count {\n  font-size: 20px;\n  color: var(--purple);\n  font-weight: normal;\n}\n\n/* Верстка блока постов пользователя */\n\n.profile .posts .posts__add-post {\n  width: 825px;\n  height: -webkit-fit-content;\n  height: -moz-fit-content;\n  height: fit-content;\n  box-shadow: var(--shadow);\n  border-radius: 15px;\n  margin: 25px 0;\n}\n\n.profile .posts .posts__add-post-avatar {\n  margin: 5px 10px 0 35px;\n}\n\n.profile .posts .posts__add-input {\n  width: 65%;\n  height: 65px;\n  resize: none;\n  outline: var(--white-gray);\n  border: none;\n  padding-top: 22px;\n}\n\n.profile .posts__add-post .posts__post-actions {\n  width: 115px;\n  height: 20px;\n  margin-top: 20px;\n}\n\n.profile .posts__add-post .posts__post-actions .icon-attach {\n  cursor: pointer;\n  transition: var(--animate-transition);\n}\n\n.profile .posts__add-post .posts__post-actions .icon-attach:hover {\n  transform: scale(1.1);\n  transition: var(--animate-transition);\n}\n\n.profile .posts__add-post .posts__add-btn-link {\n  width: 20px;\n  height: 20px;\n}\n\n.profile .posts__add-post .posts__add-btn {\n  margin: 20px 0 0 35px;\n  width: 20px;\n  height: 20px;\n  cursor: pointer;\n  transition: var(--animate-transition);\n}\n\n.profile .posts__add-post .posts__add-btn:hover {\n  transform: scale(1.1);\n  transition: var(--animate-transition);\n}\n\n.profile .posts .post {\n  width: 825px;\n  display: flex;\n  border-radius: 15px;\n  box-shadow: var(--shadow);\n  padding: 25px 25px 0 25px;\n  margin-bottom: 25px;\n}\n\n.profile .post .post__container {\n  width: 100%;\n  margin-left: 15px;\n}\n\n.profile .post .post__container .post__header {\n  width: 100%;\n}\n\n.profile .post .post__container .post__header .post__username {\n  width: -webkit-fit-content;\n  width: -moz-fit-content;\n  width: fit-content;\n}\n\n.profile .post .post__container .post__header .post__username .username {\n  font-weight: 500;\n  font-size: 18px;\n}\n\n.profile .post .post__container .post__header .post__username .date {\n  font-weight: 300;\n  font-size: 12px;\n  margin-left: 10px;\n  padding-top: 5px;\n}\n\n.profile .post .post__actions {\n  width: 85px;\n}\n\n.profile .post .post__actions .icon-delete,\n.profile .post .post__actions .icon-edit {\n  cursor: pointer;\n  transition: var(--animate-transition);\n} \n\n.profile .post .post__actions .icon-delete:hover {\n  transform: rotate(360deg);\n  transition: var(--animate-transition);\n}\n\n.profile .post .post__actions .icon-edit:hover {\n  transform: scale(1.1);\n  transition: var(--animate-transition);\n}\n\n.profile .post .post__body {\n  font-weight: 300;\n  font-size: 15px;\n  margin-top: 15px;\n}\n\n.profile .post .post__footer {\n  width: 100%;\n  border-top: 1px solid var(--light-gray);\n  margin-top: 10px;\n  padding: 10px 0;\n}\n\n.profile .post .post__footer .post__like .link .icon-like, \n.profile .post .post__footer .post__repost .link .icon-repost,\n.profile .post .post__footer .post__comment .link .icon-comment {\n  margin-right: 5px;\n}\n\n.profile .post .post__footer .post__like .link .text, \n.profile .post .post__footer .post__repost .link .text,\n.profile .post .post__footer .post__comment .link .text {\n  font-weight: 300;\n  font-size: 16px;\n}\n\n/* Верстка страницы сообщений */\n\n.message {\n  width: 920px;\n  display: flex;\n  background-color: var(--white);\n}\n\n.message .message__user-list {\n  width: 300px;\n  height: 100vh;\n  box-shadow: var(--shadow);\n}\n\n.message .message__user-list .message__user-body {\n  width: 100%;\n  padding: 7px 10px;\n  border-top: 1px dashed var(--light-gray);\n  transition: var(--animate-transition);\n}\n\n.message .message__user-list .message__user-body:last-child {\n  border-bottom: 1px dashed var(--light-gray);\n}\n\n.message .message__user-list .message__user-body:hover {\n  background-color: #fafafa;\n  transition: var(--animate-transition);\n}\n\n.message .message__user-list .message__user-body .message__user-container {\n  display: flex;\n  align-items: center;\n}\n\n.message .message__user-list .message__user-body .message__user-container .message__user-ava {\n  margin-right: 10px;\n}\n\n.message .message__user-list .message__user-body .message__user-container .message__user-info {\n  display: flex;\n  justify-content: space-between;\n}\n\n.message .message__user-list .message__user-body .message__user-container .message__user-info .message__name-container {\n  display: flex;\n  flex-direction: column;\n}\n\n.message .message__user-list .message__user-body .message__user-container .message__user-name {\n  font-weight: 300;\n  font-size: 13px;\n  color: var(--gray);\n}\n\n.message .message__user-list .message__user-body .message__user-container .message__last-message {\n  font-style: normal;\n  font-weight: normal;\n  font-size: 15px;\n  color: var(--black);\n}\n\n.message .message__user-list .message__user-body .message__user-container .message__user-ava {\n  margin-right: 10px;\n}\n\n.message .message__user-list .message__user-body .message__user-container .message__send-time {\n  font-weight: 300;\n  font-size: 12px;\n  color: var(--gray);\n  margin-left: 5px;\n}\n\n.message .message__chat-container {\n  width: 620px;\n  position: relative;\n}\n\n.message .message__chat-header {\n  border-bottom: 1px dashed var(--light-gray);\n  padding: 10px 0;\n}\n\n.message .message__chat-header .message__header-container {\n  width: 585px;\n}\n\n.message .message__chat-header .message__header-info .message__header-user {\n  width: 420px;\n}\n\n.message .message__chat-header .message__header-info .message__header-actions {\n  width: 75px;\n}\n\n.message .message__chat-header .message__header-info .message__header-actions .icon-search {\n  width: 20px;\n  height: 20px;\n}\n\n.message .message__chat-header .message__header-ava {\n  position: relative;\n  width: 50px;\n  height: 50px;\n  margin-right: 25px;\n}\n\n.message .message__chat-header .message__header-ava .online-status {\n  width: 13px;\n  height: 13px;  \n  border: 1px solid var(--white);\n  border-radius: 50%;\n  background-color: var(--offline-status);\n  position: absolute;\n  right: 0;\n  top: 70%;\n}\n\n.message .message__chat-header .message__header-info .message__header-user .username {\n  font-style: normal;\n  font-weight: 300;\n  font-size: 24px;\n}\n\n.message .message__chat-box {\n  height: 620px;\n  padding: 0 25px;\n  overflow-y: auto;\n}\n\n.message .message__chat-container .message__chat-header .message__header-info .message__header-user .message__header-online {\n  font-style: normal;\n  font-weight: 300;\n  font-size: 12px;\n  color: var(--dark-gray);\n}\n\n.message .message__chat-container .message__msg {\n  margin: 15px 0;\n}\n\n.message .message__chat-container .message__msg .msg-text {\n  word-wrap: break-word;\n  padding: 8px 16px;\n  box-shadow: 0 0 32px rgb(0, 0, 0/8%) 0 16px 16px -16px rgb(0, 0, 0/10%);\n}\n\n.message .message__chat-container .message__msg-outgoing {\n  display: flex;\n}\n\n.message .message__msg-outgoing .details {\n  max-width: calc(100% - 130px);\n}\n\n.message .message__msg-outgoing .details .msg-text {\n  background: #e6e6e6;\n  color: black;\n  border-radius: 18px 18px 0 18px;\n}\n\n.message .message__msg-outgoing .msg-time,\n.message .message__msg-incoming .msg-time {\n  display: flex;\n  justify-content: flex-end;\n  flex-direction: column;\n  font-weight: 300;\n  font-size: 12px;\n  color: #444;\n}\n\n.message .message__msg-outgoing .msg-time {\n  margin: 0 10px 0 auto;\n}\n\n.message .message__chat-container .message__msg-incoming {\n  display: flex;\n  align-items: flex-end;\n}\n\n.message .message__msg-incoming .details {\n  margin-left: 10px;\n  max-width: calc(100% - 130px);\n}\n\n.message .message__msg-incoming .msg-time {\n  margin: 0 auto 0 10px;\n}\n\n.message .message__msg-incoming .details .msg-text {\n  background: #fff;\n  border-radius: 18px 18px 18px 0;\n  box-shadow: 0px 0px 4px rgba(138, 138, 138, 0.25);\n}\n\n.message .message__form-send-msg {\n  width: 100%;\n  position: absolute;\n  bottom: 15px;\n}\n\n.message .message__form-container {\n  width: 585px;\n  height: 40px;\n  background-color: var(--white);\n  box-shadow: var(--shadow);\n  border-radius: 15px;\n  padding-left: 40px;\n}\n\n.message .message__form-send-msg .message__form-container .message__input-field {\n  width: 80%;\n  height: inherit;\n  resize: none;\n  border: none; \n  outline: none;\n  border-radius: 1px;\n  padding-top: 11px;\n}\n\n.message .message__form-container .message__form-details {\n  width: 110px;\n  margin-right: 20px;\n}\n\n.message .message__form-container .message__btn-send {\n  width: 65px;\n  height: 40px;\n  background-color: var(--purple);\n  border-radius: 15px;\n}\n\n/* Верстка страницы друзей */\n\n.friend {\n  width: 920px;\n  height: 100vh;\n  display: flex;\n  background-color: var(--white);\n}\n\n.friend .friend__friend-list {\n  width: 620px;\n}\n\n.friend .friend__friend-list .friend__search-container {\n  width: 100%;\n  margin-bottom: 30px;\n}\n\n.friend .friend__friend-list .friend__user {\n  width: 550px;   \n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  margin-bottom: 30px;\n}\n\n.friend .friend__friend-list .friend__users-container {\n  width: 100%;\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  overflow-y: hidden;\n} \n\n.friend .friend__friend-list .friend__users-container:hover {\n  overflow-y: auto;\n}\n\n.friend .friend__friend-list .friend__user .friend__user-info {\n  display: flex;\n  align-items: center;\n}\n\n.friend .friend__friend-list .friend__user .friend__user-info .friend__user-ava {\n  margin-right: 15px;\n}\n\n.friend .friend__friend-list .friend__user .friend__user-info .friend__user-name {\n  display: flex;\n  flex-direction: column;\n}\n\n.friend .friend__friend-list .friend__user .friend__user-info .friend__user-name .username {\n  font-style: normal;\n  font-weight: normal;\n  font-size: 20px;\n}\n\n.friend .friend__friend-list .friend__user .friend__user-info .friend__user-name .online-status {\n  font-style: normal;\n  font-weight: 300;\n  font-size: 15px;\n  color: var(--gray);\n}\n\n.friend .friend__user .friend__user-actions {\n  width: 75px;\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n}\n\n.friend .friend__right-side {\n  width: 300px;\n  box-shadow: var(--shadow);\n}\n\n.friend .friend__right-side .friend__header {\n  width: 100%;\n  text-align: center;\n  color: var(--gray);\n  font-style: normal;\n  font-weight: 500;\n  font-size: 24px;\n  border-bottom: 1px dashed var(--light-gray);\n  padding: 20px 0;\n}\n\n.friend .friend__right-side .link-all-users {\n  padding: 25px 0;\n}\n\n.friend .friend__right-side .friend__all-users {\n  font-style: normal;\n  font-weight: normal;\n  font-size: 20px;\n}\n\n.friend .friend__right-side .friend__friend-request {\n  width: 250px;\n}\n\n.friend .friend__right-side .friend__friend-request .friend__request-header {\n  width: 100%;\n}\n\n.friend .friend__right-side .friend__friend-request .friend__request-header .title {\n  font-style: normal;\n  font-weight: normal;\n  font-size: 20px;\n  color: var(--black);\n}\n\n.friend .friend__right-side .friend__friend-request .friend__request-list {\n  max-height: 315px;\n  border-top: 1px dashed var(--light-gray);\n  border-bottom: 1px dashed var(--light-gray);\n  margin-top: 15px;\n  padding: 0 5px 5px 0;\n  overflow-y: auto;\n}\n\n.friend .friend__right-side .friend__friend-request .friend__request-list .friend__user-request {\n  width: 100%;\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  margin-top: 5px;\n}\n\n.friend .friend__right-side  .friend__request-list .friend__user-request .friend__user-info {\n  display: flex;\n  align-items: center;\n}\n\n.friend .friend__right-side  .friend__request-list .friend__user-request .friend__user-info .link-ava {\n  margin-right: 15px;\n}\n\n.friend .friend__right-side  .friend__request-list .friend__user-request .friend__user-info .username {\n  font-style: normal;\n  font-weight: 500;\n  font-size: 18px;\n}\n\n.friend .friend__right-side  .friend__request-list .friend__user-request .friend__request-actions {\n  width: 45px;\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n}\n\n/* Верстка страницы с музыкой */\n\n.music {\n  width: 920px;\n  height: 100vh;\n  display: flex;\n  background-color: var(--white);\n}\n\n.music .music__search-container {\n  width: 100%;\n}\n\n.music .music__playlist {\n  width: 620px;\n}\n\n.music .music__playlist .music__now-playing {\n  width: 550px;\n}\n\n.music .music__playlist .music__now-playing .music__track-header {\n  width: 100%;\n  margin-bottom: 10px;\n}\n\n.music .music__playlist .music__now-playing .music__track-header .music__actions {\n  width: 200px;\n}\n\n.music .music__playlist .music__now-playing .music__track-header .music__actions .text {\n  font-style: normal;\n  font-weight: 500;\n  font-size: 12px;\n}\n\n.music .music__playlist .music__now-playing .music__now-track-info {\n  width: 255px;\n  margin: 0 10px;\n}\n\n.music .music__playlist .track-artist {\n  font-style: normal;\n  font-weight: 300;\n  font-size: 12px;\n  color: var(--dark-gray);\n}\n\n.music .music__playlist .track-name {\n  font-style: normal;\n  font-weight: 500;\n  font-size: 12px;\n  color: var(--dark-gray);\n}\n\n.music .music__playlist .music__now-playing .music__now-track-info .track-time {\n  font-style: normal;\n  font-weight: 300;\n  font-size: 13px;\n  color: var(--gray);\n}\n\n.music .music__playlist .music__now-playing .music__now-track-info .music__track-input .input-range {\n  width: 100%;\n}\n\n.music .music__playlist .music__now-playing .music__now-track {\n  width: 550px;\n  height: 60px;\n  border-radius: 15px;\n  box-shadow: var(--shadow);\n}\n\n.music .music__playlist .music__now-playing .music__now-track .music__track-controls {\n  width: 55px;\n  margin: 0 10px;\n}\n\n.music .music__playlist .track-actions {\n  width: 130px;\n}\n\n.music .music__playlist .music__title {\n  font-style: normal;\n  font-weight: 300;\n  font-size: 15px;\n  color: var(--gray);\n}\n\n.music .music__playlist .music__track-list .music__track-list-header {\n  margin: 20px 0 10px 0;\n}\n\n.music .music__playlist .music__track {\n  width: 550px;\n  height: 65px;\n  border-radius: 15px;\n  cursor: pointer;\n  transition: var(--animate-transition);\n  margin-bottom: 10px;\n  padding: 0 20px;\n}\n\n.music .music__playlist .music__track:hover {\n  background-color: var(--white-gray);\n  transition: var(--animate-transition);\n}\n\n.music .music__playlist .music__track-info .music__track-desc {\n  margin-left: 15px;\n}\n\n.music .music__right-side {\n  width: 300px;\n  box-shadow: var(--shadow);\n}\n\n.music .music__right-side .music__album {\n  width: 120px;\n  height: 120px;\n  border-radius: 15px;\n  /* background-image: url('./img/Audio.jpg'); */\n  background-size: 100% 100%;\n  margin-bottom: 15px;\n}\n\n.music .music__right-side .music__album:hover > .music__album-container {\n  display: flex;\n  transition: var(--animate-transition);\n  opacity: 1;\n}\n\n.music .music__right-side .music__album .music__album-container {\n  opacity: 0;\n  position: relative;\n  width: 100%;\n  height: 100%;\n  border-radius: 15px;\n  background:rgba(0,0,0,0.4);\n  padding: 10px;\n  cursor: pointer;\n  transition: var(--animate-transition);\n}\n\n.music .music__right-side .music__album .music__album-info .album-name {\n  font-style: normal;\n  font-weight: bold;\n  font-size: 15px;\n  color: var(--white);\n}\n\n.music .music__right-side .music__album .music__album-info .album-artist {\n  font-style: normal;\n  font-weight: 300;\n  font-size: 12px;\n  color: var(--white);\n}\n\n.music .music__right-side .music__album .album-year {\n  position: absolute;\n  right: 10px;\n  bottom: 10px;\n  font-style: normal;\n  font-weight: 300;\n  font-size: 10px;\n  color: var(--white);\n  -webkit-user-select: none;\n     -moz-user-select: none;\n      -ms-user-select: none;\n          user-select: none;\n}\n\n.music .music__right-side .music__albums {\n  width: 255px;\n  flex-wrap: wrap;\n}", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "* {\n  margin: 0;\n  padding: 0;\n  box-sizing: border-box;\n}\n\n:root {\n  --purple: #BD2A6C;\n  --purple-disabled: #E1658E;\n  --pink: #D592FF;\n  --white: #fff;\n  --black: #000;\n  --gray: #444;\n  --dark-gray: #181818;\n  --white-gray: #fafafa;\n  --light-gray: #e6e6e6;\n  --shadow: 0px 0px 4px rgba(138, 138, 138, 0.25);\n  --hover-shadow: 0px 0px 4px rgba(138, 138, 138, 0.40);\n  --animate-transition: .4s ease;\n  --online-status: #44C959;\n  --offline-status: #D63737;\n  --c4: #c4c4c4;\n}\n\n/* Стили лоудера */\n\n.loader-wrapper {\n  position: absolute;\n  z-index: 10;\n  width: 100%;\n  height: 100vh;\n  top: 0;\n  left: 0;\n  background-color: rgba(0, 0, 0, 0.4);\n  display: flex;\n  align-items: center;\n  justify-content: center;\n}\n\n.loader-wrapper.hide {\n  display: none;\n}\n\n.loader-box {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  width: 150px;\n  height: 150px;\n  position: absolute;\n  left: 50%;\n  top: 50%;\n  transform: translate(-50%, -50%);\n}\n\n.loader {\n  border: 12px solid #f3f3f3;\n  border-radius: 50%;\n  border-top: 12px solid #BD2A6C;\n  width: 100px;\n  height: 100px;\n  -webkit-animation: spin 2s linear infinite; /* Safari */\n  animation: spin 2s linear infinite;\n}\n\n/* Safari */\n@-webkit-keyframes spin {\n0% { -webkit-transform: rotate(0deg); }\n100% { -webkit-transform: rotate(360deg); }\n}\n\n@keyframes spin {\n0% { transform: rotate(0deg); }\n100% { transform: rotate(360deg); }\n}\n\n/* Стили скроллбара */\n\n::-webkit-scrollbar {\n  width: 4px;\n}\n\n::-webkit-scrollbar-thumb {\n  background-color: #e6e6e6;\n  border-radius: 3px;\n}\n\n::-webkit-scrollbar-thumb:hover {\n  background-color: #c4c4c4;\n}\n\n::-webkit-scrollbar-track {\n  background-color: white;\n}\n\ninput::-moz-placeholder {\n  font-weight: 300;\n  font-size: 16px;\n  color: var(--light-gray);\n}\n\ninput:-ms-input-placeholder {\n  font-weight: 300;\n  font-size: 16px;\n  color: var(--light-gray);\n}\n\ninput::placeholder {\n  font-weight: 300;\n  font-size: 16px;\n  color: var(--light-gray);\n}\n\n/* Стили ползунка для музыки */\n\n.input-range {\n  -webkit-appearance: none;\n  background: #e6e6e6;\n  width: 100%;\n  height: 3px;\n  outline: none;\n  border: none;\n  border-radius: 5px;\n  margin-top: 5px;\n  padding: 0;\n  transition: 1s ease;\n  cursor: pointer;\n}\n\n.input-range::-webkit-slider-thumb {\n  -webkit-appearance: none;\n  border-radius: 50%;\n  background-color: #B60F46;\n  width: 12px;\n  height: 12px;\n  cursor: pointer;\n}\n\n.input-range::-webkit-slider-thumb:hover,\n.input-range::-webkit-slider-thumb:active {\n  background-color: #8A1F4F;\n  -webkit-transition: 1s ease;\n  transition: 1s ease;\n}\n\n.input-range::-moz-range-thumb:hover,\n.input-range::-moz-range-thumb:active {\n  background-color: #8A1F4F;\n  -moz-transition: 1s ease;\n  transition: 1s ease;\n}\n\n.input-range::-moz-range-track {\n  -moz-appearance: none;\n  border-radius: 50%;\n  background-color: #B60F46;\n  width: 12px;\n  height: 12px;\n  cursor: pointer;\n}\n\n.input-range::-moz-range-thumb {\n  -moz-appearance: none;\n  border-radius: 50%;\n  background-color: #B60F46;\n  width: 12px;\n  height: 12px;\n  cursor: pointer;\n}\n\n/* Стили поиска */\n\n.search-box {\n  position: relative;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  height: 55px;\n  margin: 5px 5px 10px 5px;\n}\n\n.search-box .input-search {\n  width: 100%;\n  height: 100%;\n  border: none;\n  text-align: center;\n  padding: 5px 5px 5px 10px;\n  outline: 1px dashed #e6e6e6;\n  border-radius: 5px;\n}\n\n.search-box .icon-search {\n  position: absolute;\n  right: 0;\n  margin-right: 10px;\n}\n\n.flex {\n  display: flex;\n}\n\n.flex_column {\n  display: flex;\n  flex-direction: column;\n}\n\n.flex_center_center {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n}\n\n.flex_center_flex-end {\n  display: flex;\n  align-items: center;\n  justify-content: flex-end;\n}\n\n.flex_center_space-between {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n}\n\n.ai_center {\n  align-items: center;\n}\n\n.ai_flex-start {\n  align-items: flex-start;\n}\n\n.ai_flex-end {\n  align-items: flex-end;\n}\n\n.jc_center {\n  justify-content: center;\n}\n\n.jc_space-between {\n  justify-content: space-between;\n}\n\n/* Общий стиль для кебаб с 3 точками */\n\n.kebab {\n  width: 5px;\n  height: 20px;\n  display: flex;\n  flex-direction: column;\n  justify-content: space-between;\n}\n\n.kebab .circle {\n  width: 5px;\n  height: 5px;\n  background-color: var(--black);\n  border-radius: 50%;\n}\n\n.kebab.gray{\n  height: 20px;\n}\n\n.kebab.gray .circle {\n  background-color: var(--light-gray);\n}\n\n.cur_pointer {\n  cursor: pointer;\n}\n\n.no-select {\n  user-select: none;\n  -webkit-touch-callout: none; /* iOS Safari */\n  -webkit-user-select: none; /* Safari */\n  -khtml-user-select: none; /* Konqueror HTML */\n  -moz-user-select: none; /* Old versions of Firefox */\n  -ms-user-select: none; /* Internet Explorer/Edge */\n}\n\n/* Обнуление стилей списков */\n\nul {\n  list-style-type: none;\n}\n\n/* Стили для аватарок разных размеров */\n\n.ava-35, .ava-50, .ava-60, .ava-70 {\n  border-radius: 50%;\n  box-shadow: var(--shadow);\n  -o-object-fit: cover;\n     object-fit: cover;\n}\n\n.ava-35 {\n  width: 35px;\n  height: 35px;\n}\n\n.ava-50 {\n  width: 50px;\n  height: 50px;\n}\n\n.ava-60 {\n  width: 60px;\n  height: 60px;\n}\n\n.ava-70 {\n  width: 70px;\n  height: 70px;\n}\n\n/* Общие стили для имени пользователя */\n\n.username {\n  color: var(--black);\n  cursor: pointer;\n  transition: var(--animate-transition);\n}\n\n.username:hover {\n  color: var(--purple);\n  transition: var(--animate-transition);\n}\n\n/* Общие стили для ссылок */\n\n.link {\n  cursor: pointer;\n  transition: var(--animate-transition);\n}\n\n.link:hover {\n  color: var(--purple);\n  transition: var(--animate-transition);\n}\n\nbody {\n  font-family: 'Roboto';\n}\n\na {\n  text-decoration: none;\n  color: black;\n}\n\n#app {\n  width: 100%;\n  height: 100%;\n}\n\n.main {\n  width: 1220px;\n  height: 100vh;\n  margin: 0 auto;\n}\n\n.auth {\n  width: 100%;\n  height: 100vh;\n  background-size: 100% 100%;\n  font-family: 'Roboto', sans-serif;\n}\n\n.login {\n  width: 331px;\n  position: absolute;\n  left: 50%;\n  top: 50%;\n  transform: translate(-50%, -50%);\n  height: auto;\n  background: rgba(255, 255, 255, 0.9);\n  border-radius: 15px;\n}\n\n.login .login__form  {\n  border: none;\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  text-align: center;\n}\n\n.input {\n  width: 250px;\n  height: 45px;\n  padding-left: 15px;\n  background: #FFFFFF;\n  border: 1px solid #C4C4C4;\n  box-sizing: border-box;\n  border-radius: 15px;\n  outline: none;\n  margin-bottom: 20px;\n  transition: .2s ease;\n}\n\n.input::-webkit-input-placeholder {\n  font-weight: 300;\n  font-size: 16px;\n  color: var(--c4);\n}\n\n.input::-moz-placeholder {\n  font-weight: 300;\n  font-size: 16px;\n  color: var(--c4);\n}\n\n.login .login__form  .input.empty {\n  border: 1px solid #B60F46;\n  transition: .2s ease;\n}\n\n.input.empty::-webkit-input-placeholder {\n  color: #B60F46;\n}\n\n.input.empty::-moz-placeholder {\n  color: #B60F46;\n}\n\n.login form  .input:focus {\n  border-color: #777;\n}\n\n.btn-auth {\n  width: 251px;\n  height: 44px;\n  border: none;\n  margin: 18px auto;\n  font-family: Pacifico;\n  font-size: 18px;\n  line-height: 32px;\n  color: #FFFFFF;\n  background: #B60F46;\n  border-radius: 15px;\n  outline: none;\n  cursor: pointer;\n}\n\n.auth .link { \n  margin-bottom: 30px;\n  font-size: 12px;\n  line-height: 14px;\n  color: #3D3AD4;\n  cursor: pointer;\n  text-decoration: underline;\n}\n\n.error-box {\n  display: flex;\n  border: 1px solid #B60F46;\n  color:#B60F46;\n  border-radius: 10px;\n  width: 250px;\n  min-height: 45px;\n  height: auto;\n  margin-bottom: 20px;\n  align-items: center;\n  justify-content: center;\n}\n\n.error-box.hide {\n  display: none;\n}\n\n.register {\n  width: 331px;\n  position: absolute;\n  left: 50%;\n  top: 50%;\n  transform: translate(-50%, -50%);\n  height: auto;\n  background: rgba(255, 255, 255, 0.9);\n  border-radius: 15px;\n}\n\n.register .register-form  {\n  border: none;\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  text-align: center;\n}\n\n.register .register-form  .input.empty {\n  border: 1px solid #B60F46;\n  transition: .2s ease;\n}\n\n.register .register-form  .input.empty-date {\n  color: #B60F46;\n  border: 1px solid #B60F46;\n  transition: .2s ease;\n}\n\n.input.empty::-webkit-input-placeholder {\n  color: #B60F46;\n}\n\n.input.empty::-moz-placeholder {\n  color: #B60F46;\n}\n\n.register .register-form  .input:focus {\n  border-color: #777;\n}\n\n.login .login-form .link,\n.register .register-form .link {\n  margin-bottom: 30px;\n  font-size: 12px;\n  line-height: 14px;\n  color: #3D3AD4;\n}\n\n.logo {\n  margin: 30px auto;  \n  width: 141px;\n  height: 35px;\n}\n\n.sidebar {\n  padding-top: 30px;\n  width: 300px;\n  height: 100vh;\n  background-color: var(--white);\n  box-shadow: var(--shadow);\n  z-index: 10;\n}\n\n.sidebar .sidebar__user-container {\n  width: 245px;\n  margin: 50px 0 40px 0;\n}\n\n.sidebar .sidebar__user-container .sidebar__user-ava {\n  margin-right: 15px;\n}\n\n.sidebar .sidebar__user-info {\n  margin-right: 20px;\n}\n\n.sidebar .sidebar__user-actions {\n  width: 60px;\n  padding-top: 1px;\n}\n\n.sidebar .sidebar__user-actions .icon-settings,\n.sidebar .sidebar__user-actions .icon-logout {\n  cursor: pointer;\n  transition: var(--animate-transition);\n}\n\n.sidebar .sidebar__user-actions .icon-settings:hover {\n  transition: var(--animate-transition);\n  transform: rotate(360deg);\n}\n\n.sidebar .sidebar__user-actions .icon-logout:hover {\n  transform: scale(1.1);\n  transition: var(--animate-transition);\n}\n\n.sidebar .sidebar__user-info .username {\n  font-weight: 500;\n  font-size: 18px;\n}\n\n.sidebar .sidebar__user-info .sidebar__my-profile {\n  font-weight: 300;\n  font-size: 13px;\n  color: var(--gray);\n}\n\n.sidebar .sidebar__menu-container .sidebar__menu {\n  height: 340px;\n}\n\n.sidebar .sidebar__menu-container .sidebar__menu .sidebar__menu-item {\n  cursor: pointer;\n  transition: var(--animate-transition);\n}\n\n.sidebar .sidebar__menu-container .sidebar__menu .sidebar__item-link:hover {\n  color: var(--purple);\n  transition: var(--animate-transition);\n}\n\n.sidebar__item-link:hover > .sidebar__item-icon {\n  transform: rotate(180deg);\n  transition: var(--animate-transition);\n}\n\n.sidebar .sidebar__menu-container .sidebar__menu .sidebar__item-link .sidebar__item-text {\n  margin-left: 10px;\n  font-size: 20px;\n}\n\n.sidebar__menu-item .sidebar__count-body {\n  padding: 3px 5px;\n  font-size: 12px;\n  font-weight: bold;\n  background-color: var(--purple);\n  color: var(--white);\n  border-radius: 50%;\n}\n\n.sidebar .sidebar__audio {\n  width: 95%;\n  margin-top: 55px;\n  padding: 3px; \n}\n\n.sidebar .sidebar__audio-cover {\n  width: 50px;\n  height: 50px;\n  border-radius: 50%;\n  -o-object-fit: cover;\n     object-fit: cover;\n  margin-right: 15px;\n}\n\n.sidebar .sidebar__audio .sidebar__track-info .sidebar__audio-artist {\n  font-weight: 300;\n  font-size: 13px;\n}\n\n.sidebar .sidebar__audio .sidebar__track-info .sidebar__audio-name {\n  font-weight: 500;\n  font-size: 13px;\n}\n\n.sidebar .sidebar__audio .sidebar__audio-actions {\n  width: 70px;\n}\n\n.sidebar .sidebar__audio-duration .text-duration {\n  font-style: normal;\n  font-weight: 300;\n  font-size: 13px;\n  color: var(--gray);\n  margin-top: 5px;\n}\n\n/* Верстка профиля пользователя */\n\n.profile {\n  width: 920px;\n  padding: 30px 0 0 30px;\n  background-color: var(--white);\n}\n\n.profile .profile__user-avatar .left-circle {\n  padding-left: 3px;\n  border-radius: 164px 0 0 164px;\n  box-shadow: var(--shadow);\n}\n\n.profile .profile__user-avatar .left-circle .icon-msg {\n  position: absolute;\n}\n\n.profile .profile__user-avatar .right-circle {\n  border-radius: 0 164px 164px 0;\n  box-shadow: var(--shadow);\n  padding-right: 3px;\n}\n\n.profile .profile__user-avatar .right-circle .icon-friend {\n  position: absolute;\n}\n\n.profile .profile__user-avatar .profile__avatar {\n  position: absolute;\n  width: 280px;\n  height: 280px;\n  -o-object-fit: cover;\n     object-fit: cover;\n  border-radius: 50%;\n}\n\n.profile .profile__user-avatar .profile__avatar .avatar-img {\n  width: 280px;\n  height: 280px;\n  -o-object-fit: cover;\n     object-fit: cover;\n  border-radius: 50%;\n}\n\n.profile .profile__user-avatar .link-btn__left-circle,\n.profile .profile__user-avatar .link-btn__right-circle {\n  transition: var(--animate-transition);\n  cursor: pointer;\n}\n\n.profile .profile__user-container .profile__user-avatar .icon-circle {\n  width: 100%;\n  height: 100%;\n}\n\n.profile .profile__user-avatar .link-btn__left-circle {\n  border-radius: 164px 0 0 164px;\n  \n}\n\n.profile .profile__user-avatar .link-btn__right-circle {\n  border-radius: 0 164px 164px 0; \n}\n\n.profile .profile__user-avatar .link-btn__left-circle:hover,\n.profile .profile__user-avatar .link-btn__right-circle:hover {\n  box-shadow: var(--hover-shadow);\n  transition: var(--animate-transition);\n}\n\n.profile .profile__user-info {\n  width: 470px;\n  margin-left: 30px;\n}\n\n.profile .profile__user-info .profile__name-container {\n  width: 100%;\n}\n\n.profile .profile__user-info .profile__name-container .profile__username {\n  font-size: 30px;\n  font-weight: normal;\n  font-family: 'Pacifico';\n  color: var(--purple);\n}\n\n.profile .profile__user-info .profile__name-container .online-status {\n  width: 45px;\n}\n\n.profile .profile__user-info .profile__name-container .online-status .online-circle {\n  width: 5px;\n  height: 5px;\n  border-radius: 50%;\n  background-color: var(--online-status);\n}\n\n.profile .profile__user-info .profile__name-container .online-status .online-text {\n  font-size: 12px;\n  color: #181818;\n}\n\n.profile .profile__user-info .profile__user-status {\n  width: 100%;\n  height: 35px;\n  background-color: var(--white-gray);\n  border-radius: 10px;\n  padding-left: 10px;\n  margin: 5px 0 20px 0;\n}\n\n.profile .profile__user-info .profile__user-status .profile__status-text {\n  font-size: 18px;\n  font-weight: 300;\n  color: var(--black);\n}\n\n.profile .profile__user-info .profile__more-info {\n  width: 415px;\n}\n\n.profile .profile__user-info .profile__list-info {\n  width: 215px;\n  height: 170px;\n  padding-left: 10px;\n}\n\n.profile .profile__user-info .profile__list-info .profile__list-item {\n  width: 100%;\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n}\n\n.profile .profile__user-info .profile__list-info .profile__list-item .profile__item-caption {\n  font-size: 18px;\n  color: #515151;\n  font-weight: 300;\n}\n\n.profile .profile__user-info .profile__list-info .profile__list-item .profile__item-value {\n  width: 90px;\n  height: 35px;\n  display: flex;\n  align-items: center;\n  background-color: var(--white-gray);\n  border-radius: 10px;\n  padding-left: 10px;\n}\n\n.profile .profile__personal-info {\n  width: 170px;\n  height: 170px;\n  flex-wrap: wrap;\n}\n\n.profile .profile__user-info .profile__info-item  {\n  width: 50%;\n}\n\n.profile .profile__user-info .profile__info-item .profile__item-link {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  cursor: pointer;\n  transition: var(--animate-transition);\n}\n\n.profile .profile__user-info .profile__info-item .profile__item-link .icon-item:hover {\n  transform: scale(1.1);\n  transition: var(--animate-transition);\n}\n\n.profile .profile__personal-info .profile__info-item .profile__item-link .item-text {\n  font-size: 13px;\n  color: #181818;\n  font-weight: 300;\n}\n\n.profile .profile__personal-info .profile__info-item .profile__item-link .item-count {\n  font-size: 20px;\n  color: var(--purple);\n  font-weight: normal;\n}\n\n/* Верстка блока постов пользователя */\n\n.profile .posts .posts__add-post {\n  width: 825px;\n  height: -webkit-fit-content;\n  height: -moz-fit-content;\n  height: fit-content;\n  box-shadow: var(--shadow);\n  border-radius: 15px;\n  margin: 25px 0;\n}\n\n.profile .posts .posts__add-post-avatar {\n  margin: 5px 10px 0 35px;\n}\n\n.profile .posts .posts__add-input {\n  width: 65%;\n  height: 65px;\n  resize: none;\n  outline: var(--white-gray);\n  border: none;\n  padding-top: 22px;\n}\n\n.profile .posts__add-post .posts__post-actions {\n  width: 115px;\n  height: 20px;\n  margin-top: 20px;\n}\n\n.profile .posts__add-post .posts__post-actions .icon-attach {\n  cursor: pointer;\n  transition: var(--animate-transition);\n}\n\n.profile .posts__add-post .posts__post-actions .icon-attach:hover {\n  transform: scale(1.1);\n  transition: var(--animate-transition);\n}\n\n.profile .posts__add-post .posts__add-btn-link {\n  width: 20px;\n  height: 20px;\n}\n\n.profile .posts__add-post .posts__add-btn {\n  margin: 20px 0 0 35px;\n  width: 20px;\n  height: 20px;\n  cursor: pointer;\n  transition: var(--animate-transition);\n}\n\n.profile .posts__add-post .posts__add-btn:hover {\n  transform: scale(1.1);\n  transition: var(--animate-transition);\n}\n\n.profile .posts .post {\n  width: 825px;\n  display: flex;\n  border-radius: 15px;\n  box-shadow: var(--shadow);\n  padding: 25px 25px 0 25px;\n  margin-bottom: 25px;\n}\n\n.profile .post .post__container {\n  width: 100%;\n  margin-left: 15px;\n}\n\n.profile .post .post__container .post__header {\n  width: 100%;\n}\n\n.profile .post .post__container .post__header .post__username {\n  width: -webkit-fit-content;\n  width: -moz-fit-content;\n  width: fit-content;\n}\n\n.profile .post .post__container .post__header .post__username .username {\n  font-weight: 500;\n  font-size: 18px;\n}\n\n.profile .post .post__container .post__header .post__username .date {\n  font-weight: 300;\n  font-size: 12px;\n  margin-left: 10px;\n  padding-top: 5px;\n}\n\n.profile .post .post__actions {\n  width: 85px;\n}\n\n.profile .post .post__actions .icon-delete,\n.profile .post .post__actions .icon-edit {\n  cursor: pointer;\n  transition: var(--animate-transition);\n} \n\n.profile .post .post__actions .icon-delete:hover {\n  transform: rotate(360deg);\n  transition: var(--animate-transition);\n}\n\n.profile .post .post__actions .icon-edit:hover {\n  transform: scale(1.1);\n  transition: var(--animate-transition);\n}\n\n.profile .post .post__body {\n  font-weight: 300;\n  font-size: 15px;\n  margin-top: 15px;\n}\n\n.profile .post .post__footer {\n  width: 100%;\n  border-top: 1px solid var(--light-gray);\n  margin-top: 10px;\n  padding: 10px 0;\n}\n\n.profile .post .post__footer .post__like .link .icon-like, \n.profile .post .post__footer .post__repost .link .icon-repost,\n.profile .post .post__footer .post__comment .link .icon-comment {\n  margin-right: 5px;\n}\n\n.profile .post .post__footer .post__like .link .text, \n.profile .post .post__footer .post__repost .link .text,\n.profile .post .post__footer .post__comment .link .text {\n  font-weight: 300;\n  font-size: 16px;\n}\n\n/* Верстка страницы сообщений */\n\n.message {\n  width: 920px;\n  display: flex;\n  background-color: var(--white);\n}\n\n.message .message__user-list {\n  width: 300px;\n  height: 100vh;\n  box-shadow: var(--shadow);\n}\n\n.message .message__user-list .message__user-body {\n  width: 100%;\n  padding: 7px 10px;\n  border-top: 1px dashed var(--light-gray);\n  transition: var(--animate-transition);\n}\n\n.message .message__user-list .message__user-body:last-child {\n  border-bottom: 1px dashed var(--light-gray);\n}\n\n.message .message__user-list .message__user-body:hover {\n  background-color: #fafafa;\n  transition: var(--animate-transition);\n}\n\n.message .message__user-list .message__user-body .message__user-container {\n  display: flex;\n  align-items: center;\n}\n\n.message .message__user-list .message__user-body .message__user-container .message__user-ava {\n  margin-right: 10px;\n}\n\n.message .message__user-list .message__user-body .message__user-container .message__user-info {\n  display: flex;\n  justify-content: space-between;\n}\n\n.message .message__user-list .message__user-body .message__user-container .message__user-info .message__name-container {\n  display: flex;\n  flex-direction: column;\n}\n\n.message .message__user-list .message__user-body .message__user-container .message__user-name {\n  font-weight: 300;\n  font-size: 13px;\n  color: var(--gray);\n}\n\n.message .message__user-list .message__user-body .message__user-container .message__last-message {\n  font-style: normal;\n  font-weight: normal;\n  font-size: 15px;\n  color: var(--black);\n}\n\n.message .message__user-list .message__user-body .message__user-container .message__user-ava {\n  margin-right: 10px;\n}\n\n.message .message__user-list .message__user-body .message__user-container .message__send-time {\n  font-weight: 300;\n  font-size: 12px;\n  color: var(--gray);\n  margin-left: 5px;\n}\n\n.message .message__chat-container {\n  width: 620px;\n  position: relative;\n}\n\n.message .message__chat-header {\n  border-bottom: 1px dashed var(--light-gray);\n  padding: 10px 0;\n}\n\n.message .message__chat-header .message__header-container {\n  width: 585px;\n}\n\n.message .message__chat-header .message__header-info .message__header-user {\n  width: 420px;\n}\n\n.message .message__chat-header .message__header-info .message__header-actions {\n  width: 75px;\n}\n\n.message .message__chat-header .message__header-info .message__header-actions .icon-search {\n  width: 20px;\n  height: 20px;\n}\n\n.message .message__chat-header .message__header-ava {\n  position: relative;\n  width: 50px;\n  height: 50px;\n  margin-right: 25px;\n}\n\n.message .message__chat-header .message__header-ava .online-status {\n  width: 13px;\n  height: 13px;  \n  border: 1px solid var(--white);\n  border-radius: 50%;\n  background-color: var(--offline-status);\n  position: absolute;\n  right: 0;\n  top: 70%;\n}\n\n.message .message__chat-header .message__header-info .message__header-user .username {\n  font-style: normal;\n  font-weight: 300;\n  font-size: 24px;\n}\n\n.message .message__chat-box {\n  height: 620px;\n  padding: 0 25px;\n  overflow-y: auto;\n}\n\n.message .message__chat-container .message__chat-header .message__header-info .message__header-user .message__header-online {\n  font-style: normal;\n  font-weight: 300;\n  font-size: 12px;\n  color: var(--dark-gray);\n}\n\n.message .message__chat-container .message__msg {\n  margin: 15px 0;\n}\n\n.message .message__chat-container .message__msg .msg-text {\n  word-wrap: break-word;\n  padding: 8px 16px;\n  box-shadow: 0 0 32px rgb(0, 0, 0/8%) 0 16px 16px -16px rgb(0, 0, 0/10%);\n}\n\n.message .message__chat-container .message__msg-outgoing {\n  display: flex;\n}\n\n.message .message__msg-outgoing .details {\n  max-width: calc(100% - 130px);\n}\n\n.message .message__msg-outgoing .details .msg-text {\n  background: #e6e6e6;\n  color: black;\n  border-radius: 18px 18px 0 18px;\n}\n\n.message .message__msg-outgoing .msg-time,\n.message .message__msg-incoming .msg-time {\n  display: flex;\n  justify-content: flex-end;\n  flex-direction: column;\n  font-weight: 300;\n  font-size: 12px;\n  color: #444;\n}\n\n.message .message__msg-outgoing .msg-time {\n  margin: 0 10px 0 auto;\n}\n\n.message .message__chat-container .message__msg-incoming {\n  display: flex;\n  align-items: flex-end;\n}\n\n.message .message__msg-incoming .details {\n  margin-left: 10px;\n  max-width: calc(100% - 130px);\n}\n\n.message .message__msg-incoming .msg-time {\n  margin: 0 auto 0 10px;\n}\n\n.message .message__msg-incoming .details .msg-text {\n  background: #fff;\n  border-radius: 18px 18px 18px 0;\n  box-shadow: 0px 0px 4px rgba(138, 138, 138, 0.25);\n}\n\n.message .message__form-send-msg {\n  width: 100%;\n  position: absolute;\n  bottom: 15px;\n}\n\n.message .message__form-container {\n  width: 585px;\n  height: 40px;\n  background-color: var(--white);\n  box-shadow: var(--shadow);\n  border-radius: 15px;\n  padding-left: 40px;\n}\n\n.message .message__form-send-msg .message__form-container .message__input-field {\n  width: 80%;\n  height: inherit;\n  resize: none;\n  border: none; \n  outline: none;\n  border-radius: 1px;\n  padding-top: 11px;\n}\n\n.message .message__form-container .message__form-details {\n  width: 110px;\n  margin-right: 20px;\n}\n\n.message .message__form-container .message__btn-send {\n  width: 65px;\n  height: 40px;\n  background-color: var(--purple);\n  border-radius: 15px;\n}\n\n/* Верстка страницы друзей */\n\n.friend {\n  width: 920px;\n  height: 100vh;\n  display: flex;\n  background-color: var(--white);\n}\n\n.friend .friend__friend-list {\n  width: 620px;\n}\n\n.friend .friend__friend-list .friend__search-container {\n  width: 100%;\n  margin-bottom: 30px;\n}\n\n.friend .friend__friend-list .friend__user {\n  width: 550px;   \n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  margin-bottom: 30px;\n}\n\n.friend .friend__friend-list .friend__users-container {\n  width: 100%;\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  overflow-y: hidden;\n} \n\n.friend .friend__friend-list .friend__users-container:hover {\n  overflow-y: auto;\n}\n\n.friend .friend__friend-list .friend__user .friend__user-info {\n  display: flex;\n  align-items: center;\n}\n\n.friend .friend__friend-list .friend__user .friend__user-info .friend__user-ava {\n  margin-right: 15px;\n}\n\n.friend .friend__friend-list .friend__user .friend__user-info .friend__user-name {\n  display: flex;\n  flex-direction: column;\n}\n\n.friend .friend__friend-list .friend__user .friend__user-info .friend__user-name .username {\n  font-style: normal;\n  font-weight: normal;\n  font-size: 20px;\n}\n\n.friend .friend__friend-list .friend__user .friend__user-info .friend__user-name .online-status {\n  font-style: normal;\n  font-weight: 300;\n  font-size: 15px;\n  color: var(--gray);\n}\n\n.friend .friend__user .friend__user-actions {\n  width: 75px;\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n}\n\n.friend .friend__right-side {\n  width: 300px;\n  box-shadow: var(--shadow);\n}\n\n.friend .friend__right-side .friend__header {\n  width: 100%;\n  text-align: center;\n  color: var(--gray);\n  font-style: normal;\n  font-weight: 500;\n  font-size: 24px;\n  border-bottom: 1px dashed var(--light-gray);\n  padding: 20px 0;\n}\n\n.friend .friend__right-side .link-all-users {\n  padding: 25px 0;\n}\n\n.friend .friend__right-side .friend__all-users {\n  font-style: normal;\n  font-weight: normal;\n  font-size: 20px;\n}\n\n.friend .friend__right-side .friend__friend-request {\n  width: 250px;\n}\n\n.friend .friend__right-side .friend__friend-request .friend__request-header {\n  width: 100%;\n}\n\n.friend .friend__right-side .friend__friend-request .friend__request-header .title {\n  font-style: normal;\n  font-weight: normal;\n  font-size: 20px;\n  color: var(--black);\n}\n\n.friend .friend__right-side .friend__friend-request .friend__request-list {\n  max-height: 315px;\n  border-top: 1px dashed var(--light-gray);\n  border-bottom: 1px dashed var(--light-gray);\n  margin-top: 15px;\n  padding: 0 5px 5px 0;\n  overflow-y: auto;\n}\n\n.friend .friend__right-side .friend__friend-request .friend__request-list .friend__user-request {\n  width: 100%;\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  margin-top: 5px;\n}\n\n.friend .friend__right-side  .friend__request-list .friend__user-request .friend__user-info {\n  display: flex;\n  align-items: center;\n}\n\n.friend .friend__right-side  .friend__request-list .friend__user-request .friend__user-info .link-ava {\n  margin-right: 15px;\n}\n\n.friend .friend__right-side  .friend__request-list .friend__user-request .friend__user-info .username {\n  font-style: normal;\n  font-weight: 500;\n  font-size: 18px;\n}\n\n.friend .friend__right-side  .friend__request-list .friend__user-request .friend__request-actions {\n  width: 45px;\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n}\n\n/* Верстка страницы с музыкой */\n\n.music {\n  width: 920px;\n  height: 100vh;\n  display: flex;\n  background-color: var(--white);\n}\n\n.music .music__search-container {\n  width: 100%;\n}\n\n.music .music__playlist {\n  width: 620px;\n}\n\n.music .music__playlist .music__now-playing {\n  width: 550px;\n}\n\n.music .music__playlist .music__now-playing .music__track-header {\n  width: 100%;\n  margin-bottom: 10px;\n}\n\n.music .music__playlist .music__now-playing .music__track-header .music__actions {\n  width: 200px;\n}\n\n.music .music__playlist .music__now-playing .music__track-header .music__actions .text {\n  font-style: normal;\n  font-weight: 500;\n  font-size: 12px;\n}\n\n.music .music__playlist .music__now-playing .music__now-track-info {\n  width: 255px;\n  margin: 0 10px;\n}\n\n.music .music__playlist .track-artist {\n  font-style: normal;\n  font-weight: 300;\n  font-size: 12px;\n  color: var(--dark-gray);\n}\n\n.music .music__playlist .track-name {\n  font-style: normal;\n  font-weight: 500;\n  font-size: 12px;\n  color: var(--dark-gray);\n}\n\n.music .music__playlist .music__now-playing .music__now-track-info .track-time {\n  font-style: normal;\n  font-weight: 300;\n  font-size: 13px;\n  color: var(--gray);\n}\n\n.music .music__playlist .music__now-playing .music__now-track-info .music__track-input .input-range {\n  width: 100%;\n}\n\n.music .music__playlist .music__now-playing .music__now-track {\n  width: 550px;\n  height: 60px;\n  border-radius: 15px;\n  box-shadow: var(--shadow);\n}\n\n.music .music__playlist .music__now-playing .music__now-track .music__track-controls {\n  width: 55px;\n  margin: 0 10px;\n}\n\n.music .music__playlist .track-actions {\n  width: 130px;\n}\n\n.music .music__playlist .music__title {\n  font-style: normal;\n  font-weight: 300;\n  font-size: 15px;\n  color: var(--gray);\n}\n\n.music .music__playlist .music__track-list .music__track-list-header {\n  margin: 20px 0 10px 0;\n}\n\n.music .music__playlist .music__track {\n  width: 550px;\n  height: 65px;\n  border-radius: 15px;\n  cursor: pointer;\n  transition: var(--animate-transition);\n  margin-bottom: 10px;\n  padding: 0 20px;\n}\n\n.music .music__playlist .music__track:hover {\n  background-color: var(--white-gray);\n  transition: var(--animate-transition);\n}\n\n.music .music__playlist .music__track-info .music__track-desc {\n  margin-left: 15px;\n}\n\n.music .music__right-side {\n  width: 300px;\n  box-shadow: var(--shadow);\n}\n\n.music .music__right-side .music__album {\n  width: 120px;\n  height: 120px;\n  border-radius: 15px;\n  /* background-image: url('./img/Audio.jpg'); */\n  background-size: 100% 100%;\n  margin-bottom: 15px;\n}\n\n.music .music__right-side .music__album:hover > .music__album-container {\n  display: flex;\n  transition: var(--animate-transition);\n  opacity: 1;\n}\n\n.music .music__right-side .music__album .music__album-container {\n  opacity: 0;\n  position: relative;\n  width: 100%;\n  height: 100%;\n  border-radius: 15px;\n  background:rgba(0,0,0,0.4);\n  padding: 10px;\n  cursor: pointer;\n  transition: var(--animate-transition);\n}\n\n.music .music__right-side .music__album .music__album-info .album-name {\n  font-style: normal;\n  font-weight: bold;\n  font-size: 15px;\n  color: var(--white);\n}\n\n.music .music__right-side .music__album .music__album-info .album-artist {\n  font-style: normal;\n  font-weight: 300;\n  font-size: 12px;\n  color: var(--white);\n}\n\n.music .music__right-side .music__album .album-year {\n  position: absolute;\n  right: 10px;\n  bottom: 10px;\n  font-style: normal;\n  font-weight: 300;\n  font-size: 10px;\n  color: var(--white);\n  -webkit-user-select: none;\n     -moz-user-select: none;\n      -ms-user-select: none;\n          user-select: none;\n}\n\n.music .music__right-side .music__albums {\n  width: 255px;\n  flex-wrap: wrap;\n}", ""]);
+// Exports
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
+
+
+/***/ }),
+
+/***/ "./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[5].oneOf[1].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[5].oneOf[1].use[2]!./resources/js/components/music/popup-add-music/popup-add-music.css":
+/*!*************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[5].oneOf[1].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[5].oneOf[1].use[2]!./resources/js/components/music/popup-add-music/popup-add-music.css ***!
+  \*************************************************************************************************************************************************************************************************************************************/
+/***/ ((module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0__);
+// Imports
+
+var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
+// Module
+___CSS_LOADER_EXPORT___.push([module.id, ".btn-upload {\n    padding: 15px;\n    border: 1px solid var(--purple);\n    border-radius: 10px;\n    color: var(--purple);\n    cursor: pointer;\n    margin-bottom: 15px;\n}\n\n.btn-upload .btn-upload__icon {\n    margin-right: 10px;\n    width: 20px;\n    height: 20px;\n}\n\n.btn-auth.disabled {\n    background-color: var(--purple-disabled);\n}\n\n.preview-cover {\n    width: 50px;\n    height: 50px;\n    -o-object-fit: cover;\n       object-fit: cover;\n    border-radius: 3px;\n    border: 2px dotted var(--gray);\n}", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -4631,6 +7143,200 @@ module.exports = shouldUseNative() ? Object.assign : function (target, source) {
 
 	return to;
 };
+
+
+/***/ }),
+
+/***/ "./node_modules/process/browser.js":
+/*!*****************************************!*\
+  !*** ./node_modules/process/browser.js ***!
+  \*****************************************/
+/***/ ((module) => {
+
+// shim for using process in browser
+var process = module.exports = {};
+
+// cached from whatever global is present so that test runners that stub it
+// don't break things.  But we need to wrap it in a try catch in case it is
+// wrapped in strict mode code which doesn't define any globals.  It's inside a
+// function because try/catches deoptimize in certain engines.
+
+var cachedSetTimeout;
+var cachedClearTimeout;
+
+function defaultSetTimout() {
+    throw new Error('setTimeout has not been defined');
+}
+function defaultClearTimeout () {
+    throw new Error('clearTimeout has not been defined');
+}
+(function () {
+    try {
+        if (typeof setTimeout === 'function') {
+            cachedSetTimeout = setTimeout;
+        } else {
+            cachedSetTimeout = defaultSetTimout;
+        }
+    } catch (e) {
+        cachedSetTimeout = defaultSetTimout;
+    }
+    try {
+        if (typeof clearTimeout === 'function') {
+            cachedClearTimeout = clearTimeout;
+        } else {
+            cachedClearTimeout = defaultClearTimeout;
+        }
+    } catch (e) {
+        cachedClearTimeout = defaultClearTimeout;
+    }
+} ())
+function runTimeout(fun) {
+    if (cachedSetTimeout === setTimeout) {
+        //normal enviroments in sane situations
+        return setTimeout(fun, 0);
+    }
+    // if setTimeout wasn't available but was latter defined
+    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
+        cachedSetTimeout = setTimeout;
+        return setTimeout(fun, 0);
+    }
+    try {
+        // when when somebody has screwed with setTimeout but no I.E. maddness
+        return cachedSetTimeout(fun, 0);
+    } catch(e){
+        try {
+            // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
+            return cachedSetTimeout.call(null, fun, 0);
+        } catch(e){
+            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
+            return cachedSetTimeout.call(this, fun, 0);
+        }
+    }
+
+
+}
+function runClearTimeout(marker) {
+    if (cachedClearTimeout === clearTimeout) {
+        //normal enviroments in sane situations
+        return clearTimeout(marker);
+    }
+    // if clearTimeout wasn't available but was latter defined
+    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
+        cachedClearTimeout = clearTimeout;
+        return clearTimeout(marker);
+    }
+    try {
+        // when when somebody has screwed with setTimeout but no I.E. maddness
+        return cachedClearTimeout(marker);
+    } catch (e){
+        try {
+            // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
+            return cachedClearTimeout.call(null, marker);
+        } catch (e){
+            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
+            // Some versions of I.E. have different rules for clearTimeout vs setTimeout
+            return cachedClearTimeout.call(this, marker);
+        }
+    }
+
+
+
+}
+var queue = [];
+var draining = false;
+var currentQueue;
+var queueIndex = -1;
+
+function cleanUpNextTick() {
+    if (!draining || !currentQueue) {
+        return;
+    }
+    draining = false;
+    if (currentQueue.length) {
+        queue = currentQueue.concat(queue);
+    } else {
+        queueIndex = -1;
+    }
+    if (queue.length) {
+        drainQueue();
+    }
+}
+
+function drainQueue() {
+    if (draining) {
+        return;
+    }
+    var timeout = runTimeout(cleanUpNextTick);
+    draining = true;
+
+    var len = queue.length;
+    while(len) {
+        currentQueue = queue;
+        queue = [];
+        while (++queueIndex < len) {
+            if (currentQueue) {
+                currentQueue[queueIndex].run();
+            }
+        }
+        queueIndex = -1;
+        len = queue.length;
+    }
+    currentQueue = null;
+    draining = false;
+    runClearTimeout(timeout);
+}
+
+process.nextTick = function (fun) {
+    var args = new Array(arguments.length - 1);
+    if (arguments.length > 1) {
+        for (var i = 1; i < arguments.length; i++) {
+            args[i - 1] = arguments[i];
+        }
+    }
+    queue.push(new Item(fun, args));
+    if (queue.length === 1 && !draining) {
+        runTimeout(drainQueue);
+    }
+};
+
+// v8 likes predictible objects
+function Item(fun, array) {
+    this.fun = fun;
+    this.array = array;
+}
+Item.prototype.run = function () {
+    this.fun.apply(null, this.array);
+};
+process.title = 'browser';
+process.browser = true;
+process.env = {};
+process.argv = [];
+process.version = ''; // empty string to avoid regexp issues
+process.versions = {};
+
+function noop() {}
+
+process.on = noop;
+process.addListener = noop;
+process.once = noop;
+process.off = noop;
+process.removeListener = noop;
+process.removeAllListeners = noop;
+process.emit = noop;
+process.prependListener = noop;
+process.prependOnceListener = noop;
+
+process.listeners = function (name) { return [] }
+
+process.binding = function (name) {
+    throw new Error('process.binding is not supported');
+};
+
+process.cwd = function () { return '/' };
+process.chdir = function (dir) {
+    throw new Error('process.chdir is not supported');
+};
+process.umask = function() { return 0; };
 
 
 /***/ }),
@@ -37826,6 +40532,36 @@ var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js
 
 /***/ }),
 
+/***/ "./resources/js/components/music/popup-add-music/popup-add-music.css":
+/*!***************************************************************************!*\
+  !*** ./resources/js/components/music/popup-add-music/popup-add-music.css ***!
+  \***************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! !../../../../../node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js */ "./node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js");
+/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _node_modules_css_loader_dist_cjs_js_ruleSet_1_rules_5_oneOf_1_use_1_node_modules_postcss_loader_dist_cjs_js_ruleSet_1_rules_5_oneOf_1_use_2_popup_add_music_css__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! !!../../../../../node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[5].oneOf[1].use[1]!../../../../../node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[5].oneOf[1].use[2]!./popup-add-music.css */ "./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[5].oneOf[1].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[5].oneOf[1].use[2]!./resources/js/components/music/popup-add-music/popup-add-music.css");
+
+            
+
+var options = {};
+
+options.insert = "head";
+options.singleton = false;
+
+var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default()(_node_modules_css_loader_dist_cjs_js_ruleSet_1_rules_5_oneOf_1_use_1_node_modules_postcss_loader_dist_cjs_js_ruleSet_1_rules_5_oneOf_1_use_2_popup_add_music_css__WEBPACK_IMPORTED_MODULE_1__["default"], options);
+
+
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_css_loader_dist_cjs_js_ruleSet_1_rules_5_oneOf_1_use_1_node_modules_postcss_loader_dist_cjs_js_ruleSet_1_rules_5_oneOf_1_use_2_popup_add_music_css__WEBPACK_IMPORTED_MODULE_1__["default"].locals || {});
+
+/***/ }),
+
 /***/ "./resources/js/components/popup/popup.css":
 /*!*************************************************!*\
   !*** ./resources/js/components/popup/popup.css ***!
@@ -38163,6 +40899,17 @@ function _extends() {
 
   return _extends.apply(this, arguments);
 }
+
+/***/ }),
+
+/***/ "./node_modules/axios/package.json":
+/*!*****************************************!*\
+  !*** ./node_modules/axios/package.json ***!
+  \*****************************************/
+/***/ ((module) => {
+
+"use strict";
+module.exports = JSON.parse('{"name":"axios","version":"0.21.4","description":"Promise based HTTP client for the browser and node.js","main":"index.js","scripts":{"test":"grunt test","start":"node ./sandbox/server.js","build":"NODE_ENV=production grunt build","preversion":"npm test","version":"npm run build && grunt version && git add -A dist && git add CHANGELOG.md bower.json package.json","postversion":"git push && git push --tags","examples":"node ./examples/server.js","coveralls":"cat coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js","fix":"eslint --fix lib/**/*.js"},"repository":{"type":"git","url":"https://github.com/axios/axios.git"},"keywords":["xhr","http","ajax","promise","node"],"author":"Matt Zabriskie","license":"MIT","bugs":{"url":"https://github.com/axios/axios/issues"},"homepage":"https://axios-http.com","devDependencies":{"coveralls":"^3.0.0","es6-promise":"^4.2.4","grunt":"^1.3.0","grunt-banner":"^0.6.0","grunt-cli":"^1.2.0","grunt-contrib-clean":"^1.1.0","grunt-contrib-watch":"^1.0.0","grunt-eslint":"^23.0.0","grunt-karma":"^4.0.0","grunt-mocha-test":"^0.13.3","grunt-ts":"^6.0.0-beta.19","grunt-webpack":"^4.0.2","istanbul-instrumenter-loader":"^1.0.0","jasmine-core":"^2.4.1","karma":"^6.3.2","karma-chrome-launcher":"^3.1.0","karma-firefox-launcher":"^2.1.0","karma-jasmine":"^1.1.1","karma-jasmine-ajax":"^0.1.13","karma-safari-launcher":"^1.0.0","karma-sauce-launcher":"^4.3.6","karma-sinon":"^1.0.5","karma-sourcemap-loader":"^0.3.8","karma-webpack":"^4.0.2","load-grunt-tasks":"^3.5.2","minimist":"^1.2.0","mocha":"^8.2.1","sinon":"^4.5.0","terser-webpack-plugin":"^4.2.3","typescript":"^4.0.5","url-search-params":"^0.10.0","webpack":"^4.44.2","webpack-dev-server":"^3.11.0"},"browser":{"./lib/adapters/http.js":"./lib/adapters/xhr.js"},"jsdelivr":"dist/axios.min.js","unpkg":"dist/axios.min.js","typings":"./index.d.ts","dependencies":{"follow-redirects":"^1.14.0"},"bundlesize":[{"path":"./dist/axios.min.js","threshold":"5kB"}]}');
 
 /***/ })
 

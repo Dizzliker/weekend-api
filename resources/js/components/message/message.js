@@ -5,7 +5,7 @@ import MessageList from '../message-list/message-list';
 export default class Message extends Component {
     render() {
         return (
-            <div className="message">
+        <div className="message">
             <MessageList />
             <MessageChat />
         </div>

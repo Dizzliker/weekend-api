@@ -35,7 +35,7 @@ export default class Sidebar extends Component {
                 </div>
 
                 <div className="sidebar__user-info flex_column">
-                    <Link to={`profile/${Session.getId()}`}>
+                    <Link to={`/profile/${Session.getId()}`}>
                         <h2 className="username">Kirill Sabaev</h2>
                     </Link>
                     <span className="sidebar__my-profile">My profile</span>

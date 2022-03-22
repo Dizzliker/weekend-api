@@ -23,7 +23,7 @@ export default class Main extends Component {
                     <Sidebar countFriendRequests = {this.props.countFriendRequests}/>
                     <Routes>
                         <Route path="profile/:id" element={<ProfileContainer />}/>
-                        <Route path="message" element={<Message />}/>
+                        <Route path="messages" element={<Message />}/>
                         <Route path="friends"  element={<Friend countFriendRequests = {this.props.countFriendRequests}/>}/>
                         <Route path="users" element={<User />}/>
                         <Route path="music"   element={<Music/>}/>

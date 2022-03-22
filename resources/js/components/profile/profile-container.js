@@ -6,7 +6,7 @@ const ProfileContainer = () => {
     const {id} = useParams();
 
     return (
-        <Profile user_id = {id}/>
+        <Profile user_id = {id} />
     );
 }
 

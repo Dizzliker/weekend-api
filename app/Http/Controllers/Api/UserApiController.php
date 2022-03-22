@@ -34,6 +34,17 @@ class UserApiController extends Controller
         return UserResource::collection($friends);
     }
 
+    public function count_friends($id) {
+        $count = DB::select('
+            select count(*) count
+              from friends f
+             where (f.user_id = '.$id.' or f.friend_id = '.$id.')
+               and f.status = 1
+        ');
+
+        return response(['count' => $count[0]->count]);
+    }
+
     public function count_friend_requests($id) {
         $countRequests = DB::select('
             select count(*) count

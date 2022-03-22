@@ -48,7 +48,7 @@ export default class MessageList extends Component {
             <div className="message__user-list flex_column">
                 <div className="search-box">
                     <input type="text" className="input-search" placeholder="Search" />
-                    <img src=".../images/search.svg" className="icon-search" alt="Search" />
+                    <img src="../images/search.svg" className="icon-search" alt="Search" />
                 </div> 
                 {messageList}
             </div>

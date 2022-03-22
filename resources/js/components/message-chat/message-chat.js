@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import Session from '../../services/Session';
 
 export default class MessageChat extends Component {
     render() {
@@ -47,9 +48,11 @@ export default class MessageChat extends Component {
                         <time className="chat msg-time">12:57</time>
                     </div>
                 </div>
-                <div className="message__form-send-msg flex_center_center">
+                <form method="post" className="message__form-send-msg flex_center_center">
                     <div className="message__form-container flex ai_center">
-                        <textarea name="msg" className="message__input-field" placeholder="Send your message" id=""></textarea>
+                        <input type="hidden" name="out_user_id" value={Session.getId()}/>
+                        <input type="hidden" name="inc_user_id" value={2}/>
+                        <textarea name="text" className="message__input-field" placeholder="Send your message" id=""></textarea>
                         
                         <div className="message__form-details flex_center_space-between">
                             <a href="#">
@@ -62,13 +65,11 @@ export default class MessageChat extends Component {
                                 <img src="../images/video.svg" alt="Attach video" />
                             </a>
                         </div>
-                        <a href="#">
-                            <div className="message__btn-send flex_center_center">
-                                <img src="../images/icon-send.svg" alt="Send message" />
-                            </div>
-                        </a>
+                        <div className="message__btn-send flex_center_center">
+                            <img src="../images/icon-send.svg" alt="Send message" />
+                        </div>
                     </div>
-                </div>
+                </form>
             </div>
         );
     }

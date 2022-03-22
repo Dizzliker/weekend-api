@@ -1,9 +1,21 @@
 import React, { Component } from 'react';
+import PopupAddMisuc from './popup-add-music';
 
 export default class Music extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            popup: false,
+        }
+    }
+
     render() {
+        const {popup} = this.state;
+
         return (
             <div class="music">
+            {popup && <PopupAddMisuc onClose={() => this.setState({popup: false})}/>}
+            
             <div class="music__playlist flex_column ai_center">
                 <div class="music__search-container">
                     <div class="search-box">
@@ -18,7 +30,7 @@ export default class Music extends Component {
                             <div class="music__add-audio flex_center_space-between">
                                 <img src="../images/plus.svg" alt="" />
                                 <a href="#" class="link">
-                                    <span class="text">Add your music</span>
+                                    <span onClick={() => {this.setState({popup: true})}} class="text">Add your music</span>
                                 </a>
                             </div>
                             <a href="#" class="link">

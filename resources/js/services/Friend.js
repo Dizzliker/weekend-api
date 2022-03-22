@@ -13,6 +13,10 @@ export default class Friend extends Weekend {
         return await this.getData(`/friends/${id}`);
     }
 
+    getCountFriends = async (id) => {
+        return await this.getData(`/countFriends/${id}`);
+    }
+
     getCountRequests = async (id) => {
         return await this.getData(`/countFriendRequests/${id}`);
     }

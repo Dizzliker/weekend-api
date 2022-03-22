@@ -12,6 +12,12 @@ class Profile extends Component {
         this.state = {
             loading: true,
             profile: [],
+            personalInfo: {
+                countFriends: 0,
+                countMusic: 0,
+                countPhotos: 0,
+                countVideos: 0, 
+            },
             messages: [],
             popup: false,
         }
@@ -40,21 +46,39 @@ class Profile extends Component {
             });
     }
 
+    getUserInfo = (user_id) => {
+        this.user.get(user_id)
+            .then(info => {
+               console.log(info.data);
+                this.setState({profile: info.data, loading: false});
+            })
+            .catch(error => {
+                console.error(error);
+            });
+    }
+
+    getCountFriends = (user_id) => {
+        this.friend.getCountFriends(user_id)
+            .then(res => {
+                if (res.count) {
+                    this.setState({personalInfo: {countFriends: res.count}});
+                }
+            })
+            .catch(error => {
+                console.warn(error);
+            })
+    }
+
     componentDidMount() {
         const {user_id} = this.props;
-        this.user.get(user_id)
-        .then(info => {
-            console.log(info.data);
-            this.setState({profile: info.data, loading: false});
-        })
-        .catch(error => {
-            console.error(error);
-        })
+        this.getUserInfo(user_id);
+        this.getCountFriends(user_id);
     }
 
     render() {
         const {name, surname, avatar} = this.state.profile;
         const {loading, messages, popup} = this.state;
+        const {countFriends} = this.state.personalInfo;
 
         return(
             <>
@@ -133,7 +157,7 @@ class Profile extends Component {
                                 <a href="#" className="profile__item-link">
                                     <img src="../images/friends(purple).svg" className="icon-item" alt="Friends" />
                                     <span className="item-text">Friends</span>
-                                    <span className="item-count">35</span>
+                                    <span className="item-count">{countFriends}</span>
                                 </a>
                             </div>
                             <div className="profile__info-item">
