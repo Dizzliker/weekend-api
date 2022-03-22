@@ -6,8 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\ProfileResource;
 use App\Http\Resources\UserResource;
 use App\Models\User;
+use Illuminate\Http\File;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class ProfileApiController extends Controller
 {
@@ -27,5 +29,21 @@ class ProfileApiController extends Controller
         ');
         
         return new ProfileResource($profile[0]);
+    }
+
+    public function change_avatar(Request $request) {
+        $fields = $request->validate([
+            'user_id' => 'required|integer',
+            'avatar' => 'required|image|mimes:jpg,jpeg,png,svg|max:10000',
+        ]);
+ 
+        $newImageName = time().'-'.$request->user_id.'.'.$request->avatar->extension();
+        $request->avatar->move(public_path('images/avatars'), $newImageName);
+
+        $profile = DB::table('users')->where('id', $fields['user_id'])->update(['avatar' => '/images/avatars/'.$newImageName]); 
+        
+        if ($profile) {
+            return response(['success' => true]);
+        }
     }
 }

@@ -40,6 +40,7 @@ Route::group(['middleware' => ['auth:sanctum']], function() {
     Route::post('/addAudio', [AudioApiController::class, 'add_audio']);
     // Профиль
     Route::get('/profile/{id}', [ProfileApiController::class, 'profile']);
+    Route::post('/changeAvatar', [ProfileApiController::class, 'change_avatar']);
     // Выход
     Route::post('/logout', [AuthApiController::class, 'logout']);
 });

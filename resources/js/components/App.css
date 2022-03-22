@@ -669,6 +669,23 @@ a {
   border-radius: 50%;
 }
 
+.profile .profile__user-avatar .profile__avatar .profile__edit-ava {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  color: var(--white);
+  background-color: rgba(0,0,0,0.5);
+  border-radius: 50%;
+  opacity: 0;
+  transition: var(--animate-transition);
+  cursor: pointer;
+}
+
+.profile .profile__user-avatar .profile__avatar .profile__edit-ava:hover {
+  transition: var(--animate-transition);
+  opacity: 1;
+}
+
 .profile .profile__user-avatar .profile__avatar .avatar-img {
   width: 280px;
   height: 280px;

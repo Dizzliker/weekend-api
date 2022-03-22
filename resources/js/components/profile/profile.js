@@ -5,6 +5,7 @@ import Popup from '../popup/popup';
 import Spinner from '../spinner';
 import PostForm from './post-list/post-form';
 import {FriendService} from '../../services/Friend';
+import PopupEditAva from './popup-edit-ava/popup-edit-ava';
 
 class Profile extends Component {
     constructor(props) {
@@ -19,7 +20,8 @@ class Profile extends Component {
                 countVideos: 0, 
             },
             messages: [],
-            popup: false,
+            popupAddFriend: false,
+            popupEditAva: false,
         }
         this.user = new ProfileService();
         this.friend = new FriendService();
@@ -36,7 +38,7 @@ class Profile extends Component {
         this.friend.sendRequest(this.getFormData())
             .then(res => {
                 if (res.messages) {
-                   this.setState({messages: res.messages, popup: true});
+                   this.setState({messages: res.messages, popupAddFriend: true});
                 } else if (res.success) {
                     this.setState({messages: ['Friend request sent']});
                 }
@@ -77,16 +79,17 @@ class Profile extends Component {
 
     render() {
         const {name, surname, avatar} = this.state.profile;
-        const {loading, messages, popup} = this.state;
+        const {loading, messages, popupAddFriend, popupEditAva} = this.state;
         const {countFriends} = this.state.personalInfo;
 
         return(
             <>
             {loading && <Spinner />}
-            {popup &&
-            <Popup onClose = {() => this.setState({popup: false})}>
+            {popupAddFriend &&
+            <Popup onClose = {() => this.setState({popupAddFriend: false})}>
                 {messages[0]}
             </Popup>}
+            {popupEditAva && <PopupEditAva onClose={() => this.setState({popupEditAva: false})}/>}
             <div className="profile flex_column ai_flex-start">
             <div className="profile__user-container flex">
                 <div className="profile__user-avatar flex_center_center">
@@ -97,6 +100,9 @@ class Profile extends Component {
                         </span>
                     </span>
                     <div className="profile__avatar">
+                        <div className="profile__edit-ava flex_center_center" onClick={() => {this.setState({popupEditAva: true})}}>
+                            <span>Click to edit avatar</span>
+                        </div>
                         <img src={avatar} className="avatar-img" alt="User avatar" />
                     </div>
                     <span className="link-btn__right-circle" onClick={this.sendRequest}>
