@@ -12,7 +12,7 @@ export default class Menu extends Component {
                         <MenuItem img="../images/friends.svg"     text="Friends"     link="friends" countRequests = {this.props.countFriendRequests}/>
                         <MenuItem img="../images/communities.svg" text="Communities" link="*"/>
                         <MenuItem img="../images/music.svg"       text="Music"       link="music"/>
-                        <MenuItem img="../images/photo.svg"       text="Photos"      link="*"/>
+                        <MenuItem img="../images/photo.svg"       text="Photos"      link="photos"/>
                         <MenuItem img="../images/video.svg"       text="Videos"      link="*"/>
                     </ul>
                 </nav>

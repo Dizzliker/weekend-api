@@ -28,7 +28,6 @@ export default class PopupEditAva extends Component {
             .catch(error => {
                 console.warn(error);
             });
-        
     }
 
     render() {

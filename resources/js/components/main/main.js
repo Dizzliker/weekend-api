@@ -8,6 +8,7 @@ import Sidebar from '../sidebar';
 import bg from '../../img/bg.png';
 import ProfileContainer from '../profile/profile-container';
 import User from '../user/user';
+import Gallery from '../gallery/gallery';
 
 export default class Main extends Component {
     render() {
@@ -27,6 +28,7 @@ export default class Main extends Component {
                         <Route path="friends"  element={<Friend countFriendRequests = {this.props.countFriendRequests}/>}/>
                         <Route path="users" element={<User />}/>
                         <Route path="music"   element={<Music/>}/>
+                        <Route path="photos" element={<Gallery />}/>
                     </Routes>
                 </div>
             </div>

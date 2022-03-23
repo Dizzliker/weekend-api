@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AudioApiController;
 use App\Http\Controllers\Api\AuthApiController;
+use App\Http\Controllers\Api\GalleryApiController;
 use App\Http\Controllers\Api\MessageApiController;
 use App\Http\Controllers\Api\PostApiController;
 use App\Http\Controllers\Api\ProfileApiController;
@@ -41,6 +42,9 @@ Route::group(['middleware' => ['auth:sanctum']], function() {
     // Профиль
     Route::get('/profile/{id}', [ProfileApiController::class, 'profile']);
     Route::post('/changeAvatar', [ProfileApiController::class, 'change_avatar']);
+    // Фотографии
+    Route::get('/gallery/{id}', [GalleryApiController::class, 'gallery']);
+    Route::post('/addPhotos', [GalleryApiController::class, 'add_photos']);
     // Выход
     Route::post('/logout', [AuthApiController::class, 'logout']);
 });
