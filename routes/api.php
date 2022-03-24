@@ -47,6 +47,8 @@ Route::group(['middleware' => ['auth:sanctum']], function() {
     Route::post('/addPhotos', [GalleryApiController::class, 'add_photos']);
     // Выход
     Route::post('/logout', [AuthApiController::class, 'logout']);
+    // Все пользователи
+    Route::get('/users', [UserApiController::class, 'get_all']);
 });
 
 // Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
