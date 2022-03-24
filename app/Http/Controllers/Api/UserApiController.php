@@ -160,4 +160,17 @@ class UserApiController extends Controller
         }
         return response(['message' => 'Users is not found']);
     }
+
+    public function get_all() {
+        $users = DB::select('
+            select u.id,
+                   u.name,
+                   u.surname,
+                   u.avatar
+              from users u
+             where u.id not in ('.Auth::id().') 
+        ');
+
+        return UserResource::collection($users);
+    }
 }

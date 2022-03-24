@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
 import User from '../../services/User';
 
 export default class UserList extends Component {
@@ -9,12 +10,11 @@ export default class UserList extends Component {
         }
     }
 
-    user = new User;
+    user = new User();
 
     componentDidMount() {
         this.user.getAll()
         .then(users => {
-            console.log(users);
             this.setState({users: users.data});
         })
         .catch(error => {
@@ -25,17 +25,17 @@ export default class UserList extends Component {
     render() {
         const userList = this.state.users.map(user => {
             return (
-                <div className="friend__user">
+                <div className="friend__user" key={user.user_id}>
                     <div className="friend__user-info">
                         <div className="friend__user-ava">
-                            <a href="#">
+                            <Link to={`/profile/${user.user_id}`}>
                                 <img src={user.avatar} className="ava-60" alt="User avatar" />
-                            </a>
+                            </Link>
                         </div>
                         <div className="friend__user-name">
-                            <a href="#">
+                            <Link to={`/profile/${user.user_id}`}>
                                 <span className="username">{user.name} {user.surname}</span>
-                            </a>
+                            </Link>
                             <span className="online-status">{user.online}</span>
                         </div>
                     </div>

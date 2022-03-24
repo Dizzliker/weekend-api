@@ -49,6 +49,7 @@ export default class PostForm extends Component {
 
         return (
             <>
+            {(Session.getId() == this.props.user_id) &&
             <div className="posts__add-post flex">
                 <div className="posts__add-post-avatar">
                     <a href="#">
@@ -70,7 +71,7 @@ export default class PostForm extends Component {
                 <a href="#" className="posts__add-btn-link">
                     <img src="../images/icon-send(purple).svg" onClick={this.addPost} className="posts__add-btn" alt="Add post" />
                 </a>
-            </div>
+            </div>}
             <PostList user_id = {this.props.user_id} afterUpdatePosts = {() => this.setState({reload:false})} reload = {reload} user = {this.props.user} />
             </>
         );
