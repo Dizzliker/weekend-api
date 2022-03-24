@@ -17,10 +17,10 @@ export default class Gallery extends Component {
         this.inputImg = React.createRef();
     }
 
-    getFormData = (i) => {
+    getFormData = (file) => {
         let formData = new FormData();
         formData.append("user_id", Session.getId());
-        formData.append("img[]", JSON.stringify(i));
+        formData.append("images", file);
         return formData;
     }
 
@@ -47,33 +47,15 @@ export default class Gallery extends Component {
         }
     }
 
-    addPhotos = (input) => {
-        input.preventDefault();
-        const files = this.inputImg.current.files;
-        if (files.length > 0) {
-            this.galleryService.addPhotos(this.getFormData())
-                .then(res => {
-                    if (res.succes) {
-                        this.setState({reload: true});
-                    }
-                })
-                .catch(error => {
-                    console.warn(error);
-                });
-            
-        }
-    }
-
     handleImg = (input) => {
         input.preventDefault();
         const files = this.inputImg.current.files;
         if (files.length > 0) {
             for (let i = 0; i < files.length; i++) {
-                console.log(files[0]);
                 this.galleryService.addPhotos(this.getFormData(files[i]))
                     .then(res => {
                        if (res) {
-                            console.log(res);
+                           this.setState({loading: true, reload: true});
                         }
                     })
                     .catch(error => {
@@ -98,16 +80,6 @@ export default class Gallery extends Component {
             {loading && <Spinner />}
             <div className="gallery">
                <h2 className="gallery__header">My photos</h2>
-               {/* <form method="post" encType="multipart/form-data">
-                <input type="file" ref={this.inputImg} onChange={this.addPhotos} accept="image/*" name="img" className="img" id="img"
-                    hidden multiple/>
-                    <label htmlFor="img">
-                    <div className="btn-upload flex_center_center">
-                            <img src="../images/img(purple).svg" className="btn-upload__icon" alt="Img"/>
-                            <span>Upload new photos</span>
-                        </div>
-                    </label>
-               </form> */}
 
                <form method="post" encType="multipart/form-data">
                     <input type="file" name="img" onChange={this.handleImg} ref={this.inputImg} accept="image/*" id="img" className="img" hidden multiple/>

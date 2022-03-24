@@ -6,6 +6,7 @@ import Spinner from '../spinner';
 import PostForm from './post-list/post-form';
 import {FriendService} from '../../services/Friend';
 import PopupEditAva from './popup-edit-ava/popup-edit-ava';
+import InfoItem from './info-item/info-item';
 
 class Profile extends Component {
     constructor(props) {
@@ -13,12 +14,6 @@ class Profile extends Component {
         this.state = {
             loading: true,
             profile: [],
-            personalInfo: {
-                countFriends: 0,
-                countMusic: 0,
-                countPhotos: 0,
-                countVideos: 0, 
-            },
             messages: [],
             reload: false,
             popupAddFriend: false,
@@ -87,9 +82,8 @@ class Profile extends Component {
     }
 
     render() {
-        const {name, surname, avatar} = this.state.profile;
+        const {name, surname, avatar, count_friends, count_photos} = this.state.profile;
         const {loading, messages, popupAddFriend, popupEditAva} = this.state;
-        const {countFriends} = this.state.personalInfo;
 
         return(
             <>
@@ -169,34 +163,10 @@ class Profile extends Component {
                             </div>
                         </div>
                         <div className="profile__personal-info flex jc_space-between">
-                            <div className="profile__info-item">
-                                <a href="#" className="profile__item-link">
-                                    <img src="../images/friends(purple).svg" className="icon-item" alt="Friends" />
-                                    <span className="item-text">Friends</span>
-                                    <span className="item-count">{countFriends}</span>
-                                </a>
-                            </div>
-                            <div className="profile__info-item">
-                                <a href="#" className="profile__item-link">
-                                    <img src="../images/music(purple).svg" className="icon-item" alt="Music" />
-                                    <span className="item-text">Music</span>
-                                    <span className="item-count">137</span>
-                                </a>
-                            </div>
-                            <div className="profile__info-item">
-                                <a href="#" className="profile__item-link">
-                                    <img src="../images/photo(purple).svg" className="icon-item" alt="Photos" />
-                                    <span className="item-text">Photos</span>
-                                    <span className="item-count">17</span>
-                                </a>
-                            </div>
-                            <div className="profile__info-item">
-                                <a href="#" className="profile__item-link">
-                                    <img src="../images/video(purple).svg" className="icon-item" alt="Videos" />
-                                    <span className="item-text">Videos</span>
-                                    <span className="item-count">35</span>
-                                </a>
-                            </div>
+                            <InfoItem img="/images/friends(purple).svg" text="Friends" count={count_friends}/>
+                            <InfoItem img="/images/music(purple).svg"   text="Music"   count={0}/>
+                            <InfoItem img="/images/photo(purple).svg"   text="Photos"  count={count_photos}/>
+                            <InfoItem img="/images/video(purple).svg"   text="Videos"  count={0}/>
                         </div>
                     </div>
                 </div>

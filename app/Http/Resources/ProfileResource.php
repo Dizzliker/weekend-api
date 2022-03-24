@@ -20,6 +20,7 @@ class ProfileResource extends JsonResource
             'surname' => $this->surname,
             'avatar' => $this->avatar,
             'count_friends' => $this->count_friends,
+            'count_photos' => $this->count_photos,
         ];
     }
 }

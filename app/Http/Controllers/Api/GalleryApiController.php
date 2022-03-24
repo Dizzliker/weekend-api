@@ -12,28 +12,26 @@ class GalleryApiController extends Controller
     public function add_photos(Request $request) {
         $fields = $request->validate([
             'user_id' => 'integer|required',
-            'img' => 'required'
+            'images' => 'required|image'
         ]);
 
-        if ($request->hasFile('img')) {
-            foreach ($request->img as $file) {
-                $name = time().rand(1,100).'.'.$file->extension();
-                $file->move(public_path('images/gallery'), $name);
+        $name = time().rand(1,100).'.'.$request->images->extension();
+        $request->images->move(public_path('images/gallery'), $name);
 
-                Gallery::create([
-                    'user_id' => $fields['user_id'],
-                    'img' => 'images/gallery/'.$name,
-                    'description' => null,
-                ]);
-            }
-            return response(['success' => $request->file('img')]);
-        };
-
-        return $request->img;
+        return Gallery::create([
+            'user_id' => $fields['user_id'],
+            'img' => 'images/gallery/'.$name,
+            'description' => null,
+        ]);
     }
 
     public function gallery($id) {
-        $gallery = Gallery::where('user_id', $id)->get();
+        $gallery = DB::select('
+            select g.id,
+                   g.img
+              from gallery g
+             where g.user_id = '.$id.' 
+        ');
 
         return response(['gallery' => $gallery]);
     }

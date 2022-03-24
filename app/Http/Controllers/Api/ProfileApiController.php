@@ -19,11 +19,14 @@ class ProfileApiController extends Controller
                    u.name,
                    u.surname,
                    u.avatar,
-                   count(f.id) count_friends
+                   count(f.id) count_friends,
+                   count(g.id) count_photos
               from users u
                    left join friends f 
                      on (f.user_id = u.id or f.friend_id = u.id) 
                     and status = 1
+                    left join gallery g 
+                      on g.user_id = '.$id.'
               where u.id = '.$id.'
               limit 1       
         ');
