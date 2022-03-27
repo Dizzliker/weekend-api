@@ -7,7 +7,7 @@ export default class Message extends Component {
         return (
         <div className="message">
             <MessageList />
-            <MessageChat />
+            <MessageChat user_id = {this.props.user_id}/>
         </div>
         );
     }

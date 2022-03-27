@@ -70,12 +70,11 @@ class Profile extends Component {
     componentDidMount() {
         const {user_id} = this.props;
         this.getUserInfo(user_id);
-        this.getCountFriends(user_id);
     }
 
-    componentDidUpdate() {
-        if (this.state.reload) {
-            const {user_id} = this.props;
+    componentDidUpdate(prevProps) {
+        const {user_id} = this.props;
+        if (this.state.reload || user_id != prevProps.user_id) {
             this.setState({loading: true, popupEditAva: false, reload: false});
             this.getUserInfo(user_id);
         }

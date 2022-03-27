@@ -1,14 +1,14 @@
 import React, { Component } from 'react';
-import { Routes, Route, useParams } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import Friend from '../friend/friend';
 import Message from '../message/message';
 import Music from '../music';
-import Profile from '../profile/profile';
 import Sidebar from '../sidebar';
 import bg from '../../img/bg.png';
 import ProfileContainer from '../profile/profile-container';
 import User from '../user/user';
 import Gallery from '../gallery/gallery';
+import MessageContainer from '../message-container/message-container';
 
 export default class Main extends Component {
     render() {
@@ -24,7 +24,7 @@ export default class Main extends Component {
                     <Sidebar countFriendRequests = {this.props.countFriendRequests}/>
                     <Routes>
                         <Route path="profile/:id" element={<ProfileContainer />}/>
-                        <Route path="messages" element={<Message />}/>
+                        <Route path="messages/:id" element={<MessageContainer />}/>
                         <Route path="friends"  element={<Friend countFriendRequests = {this.props.countFriendRequests}/>}/>
                         <Route path="users" element={<User />}/>
                         <Route path="music"   element={<Music/>}/>

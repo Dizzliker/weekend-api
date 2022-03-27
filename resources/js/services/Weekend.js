@@ -29,7 +29,7 @@ export default class Weekend {
     postData = async (url, data, auth = false) => {
         try {
             const response = fetch(`${this._api}${url}`, {
-                method: 'POST',
+                method: "POST",
                 headers: {
                     "Accept": "application/json",
                     "X-CSRF-TOKEN": this.csrf_token,
