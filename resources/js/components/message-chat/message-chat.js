@@ -2,14 +2,17 @@ import React, { Component } from 'react';
 import { ChatService } from '../../services/Chat';
 import { Link } from 'react-router-dom';
 import Session from '../../services/Session';
+import Spinner from '../spinner';
 
 export default class MessageChat extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            loading: true,
             text: '',
             companion: {},
             chat: [],
+            chatList: [],
             reload: false,
         };
         this.chatService = new ChatService();
@@ -28,7 +31,7 @@ export default class MessageChat extends Component {
             this.chatService.get(this.getChatUsersId())
                 .then(res => {
                     if (res) {
-                        this.setState({companion: res.user, chat: res.chat, reload: false,});
+                        this.setState({companion: res.user, chat: res.chat, reload: false, loading: false});
                     }
                 })
                 .catch(error => {
@@ -73,13 +76,11 @@ export default class MessageChat extends Component {
         const value = target.value;
         const name = target.name;
     
-        this.setState({
-          [name]: value
-        });
+        this.setState({[name]: value});
     }
 
     render() {
-        const {chat, text} = this.state;
+        const {chat, text, loading} = this.state;
         const {user_id, name, surname, avatar} = this.state.companion;
         const messageBox = chat.length > 0 ? chat.map(message => {
             if (message.out_user_id == this.props.user_id) {
@@ -91,13 +92,13 @@ export default class MessageChat extends Component {
                         <div className="details">
                             <p className="msg-text">{message.text}</p>
                         </div>
-                        <time className="chat msg-time">{message.updated_at}</time>
+                        <time className="chat msg-time">{message.created_at}</time>
                     </div>
                 );
             } else {
                 return (
                     <div className="message__msg message__msg-outgoing" key={message.message_id}>
-                        <time className="chat msg-time">{message.updated_at}</time>
+                        <time className="chat msg-time">{message.created_at}</time>
                         <div className="details">
                             <p className="msg-text">{message.text}</p>
                         </div>
@@ -110,6 +111,7 @@ export default class MessageChat extends Component {
             <>
             {(this.props.user_id != 0) ?
             <div className="message__chat-container">
+                {loading && <Spinner />}
                 <div className="message__chat-header flex_center_center">
                     <div className="message__header-container flex ai_center">
                         <div className="message__header-ava">

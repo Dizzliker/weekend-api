@@ -841,7 +841,7 @@ a {
   height: fit-content;
   box-shadow: var(--shadow);
   border-radius: 15px;
-  margin: 25px 0;
+  margin-top: 25px;
 }
 
 .profile .posts .posts__add-post-avatar {
@@ -897,7 +897,7 @@ a {
   border-radius: 15px;
   box-shadow: var(--shadow);
   padding: 25px 25px 0 25px;
-  margin-bottom: 25px;
+  margin: 25px 0;
 }
 
 .profile .post .post__container {

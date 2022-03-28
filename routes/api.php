@@ -38,6 +38,7 @@ Route::group(['middleware' => ['auth:sanctum']], function() {
     // Сообщения
     Route::post('/sendMessage', [MessageApiController::class, 'send_message']);
     Route::post('/getChat', [MessageApiController::class, 'get_chat']);
+    Route::get('/getChatList/{id}', [MessageApiController::class, 'get_chat_list']);
     // Музыка
     Route::post('/addAudio', [AudioApiController::class, 'add_audio']);
     // Профиль
