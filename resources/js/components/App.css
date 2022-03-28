@@ -1356,6 +1356,11 @@ a {
   justify-content: space-between;
 }
 
+.friend .friend__right-side  .friend__request-list .friend__user-request .friend__request-actions .btn-add-friend {
+  border: none;
+  background-color: var(--white);
+}
+
 /* Верстка страницы с музыкой */
 
 .music {

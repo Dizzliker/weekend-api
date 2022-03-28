@@ -43,7 +43,7 @@ class MessageApiController extends Controller
             (select (case when m.inc_user_id = '.$id.' then m.out_user_id
                           when m.out_user_id = '.$id.' then m.inc_user_id
                     end) user_id,
-                    (case when length(m.text > 120) then concat(substring(m.text, 1, 15), "...")
+                    (case when length(m.text > 110) then concat(substring(m.text, 1, 14), "...")
                           else m.text
                      end) text,
                     m.created_at

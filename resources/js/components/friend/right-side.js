@@ -48,7 +48,7 @@ export default class RightSide extends Component {
                     <div className="friend__request-actions">
                         <form onSubmit={this.addFriend} method="get">
                             <input type="hidden" className="request_id" value={request.request_id} />
-                            <button>
+                            <button className="btn-add-friend">
                                 <img src="../images/plus.svg" className="icon-plus" alt="Add friend" />
                             </button>
                         </form>
