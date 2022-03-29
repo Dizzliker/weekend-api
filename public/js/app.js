@@ -5740,7 +5740,7 @@ var Profile = /*#__PURE__*/function (_Component) {
             });
           },
           children: messages[0]
-        }), popupEditAva && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)(_popup_edit_ava_popup_edit_ava__WEBPACK_IMPORTED_MODULE_7__["default"], {
+        }), popupEditAva && this.props.user_id == _services_Session__WEBPACK_IMPORTED_MODULE_2__["default"].getId() && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)(_popup_edit_ava_popup_edit_ava__WEBPACK_IMPORTED_MODULE_7__["default"], {
           onClose: function onClose() {
             return _this2.setState({
               popupEditAva: false
@@ -5773,7 +5773,7 @@ var Profile = /*#__PURE__*/function (_Component) {
                 })
               }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsxs)("div", {
                 className: "profile__avatar",
-                children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)("div", {
+                children: [this.props.user_id == _services_Session__WEBPACK_IMPORTED_MODULE_2__["default"].getId() && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)("div", {
                   className: "profile__edit-ava flex_center_center",
                   onClick: function onClick() {
                     _this2.setState({

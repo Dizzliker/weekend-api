@@ -91,7 +91,7 @@ class Profile extends Component {
             <Popup onClose = {() => this.setState({popupAddFriend: false})}>
                 {messages[0]}
             </Popup>}
-            {popupEditAva && <PopupEditAva onClose={() => this.setState({popupEditAva: false})} 
+            {(popupEditAva && this.props.user_id == Session.getId()) && <PopupEditAva onClose={() => this.setState({popupEditAva: false})} 
             afterImgLoaded={() => {this.setState({reload: true})}}></PopupEditAva>}
             <div className="profile flex_column ai_flex-start">
             <div className="profile__user-container flex">
@@ -103,9 +103,10 @@ class Profile extends Component {
                         </span>
                     </span>
                     <div className="profile__avatar">
+                        {(this.props.user_id == Session.getId()) && 
                         <div className="profile__edit-ava flex_center_center" onClick={() => {this.setState({popupEditAva: true})}}>
-                            <span>Click to edit avatar</span>
-                        </div>
+                           <span>Click to edit avatar</span>
+                        </div>}
                         <img src={avatar} className="avatar-img" alt="User avatar" />
                     </div>
                     <span className="link-btn__right-circle" onClick={this.sendRequest}>
