@@ -1096,7 +1096,7 @@ a {
 }
 
 .message .message__chat-box {
-  height: 620px;
+  height: 100%;
   padding: 0 25px;
   overflow-y: auto;
 }
@@ -1168,8 +1168,9 @@ a {
 
 .message .message__form-send-msg {
   width: 100%;
-  position: absolute;
-  bottom: 15px;
+  height: 40px;
+  background-color: white;
+  padding-bottom: 15px;
 }
 
 .message .message__form-container {

@@ -110,7 +110,7 @@ export default class MessageChat extends Component {
         return (
             <>
             {(this.props.user_id != 0) ?
-            <div className="message__chat-container">
+            <div className="message__chat-container flex_column jc_space-between">
                 {loading && <Spinner />}
                 <div className="message__chat-header flex_center_center">
                     <div className="message__header-container flex ai_center">

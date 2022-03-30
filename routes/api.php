@@ -53,9 +53,9 @@ Route::group(['middleware' => ['auth:sanctum']], function() {
     Route::get('/users', [UserApiController::class, 'get_all']);
 });
 
-// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-//     return $request->user();
-// });
+Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+    return $request->user();
+});
 
 Route::post('/register', [AuthApiController::class, 'register'])->name('register');
 Route::post('/login', [AuthApiController::class, 'login'])->name('login');
