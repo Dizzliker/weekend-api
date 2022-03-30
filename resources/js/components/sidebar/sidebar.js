@@ -3,9 +3,29 @@ import Menu from '../menu';
 import { Link } from 'react-router-dom';
 import Session from '../../services/Session';
 import { ProfileService } from '../../services/Profile';
+import Spinner from '../spinner';
 
 export default class Sidebar extends Component {
-    profile = new ProfileService();
+    constructor(props) {
+        super(props);
+        this.state = {
+            loading: true,
+            user: {},
+        };
+        this.profile = new ProfileService();
+    }
+
+    componentDidMount() {
+        this.profile.get(Session.getId())
+            .then(res => {
+                if (res.data) {
+                    this.setState({user: res.data, loading: false});
+                }
+            })
+            .catch(error => {
+                console.warn(error);
+            });
+    }
 
     logout = () => {
         this.profile.logout()
@@ -21,22 +41,27 @@ export default class Sidebar extends Component {
     }
 
     render() {
+        const {loading} = this.state;
+        const {user_id, name, surname, avatar} = this.state.user;
+
         return (
-            <div className="sidebar flex_column ai_center">
+        <>
+        {loading && <Spinner />}
+        <div className="sidebar flex_column ai_center">
             <div className="sidebar__logo">
                 <img src="../images/logo.svg" alt="" />
             </div>
 
             <div className="sidebar__user-container flex ai_center">
                 <div className="sidebar__user-ava">
-                    <a href="#">
-                        <img src="../images/Ava.jpg" className="ava-50" alt="Your profile" />
-                    </a>
+                    <Link to={`/profile/${user_id}`}>
+                        <img src={avatar} className="ava-50" alt="Your profile" />
+                    </Link>
                 </div>
 
                 <div className="sidebar__user-info flex_column">
-                    <Link to={`/profile/${Session.getId()}`}>
-                        <h2 className="username">Kirill Sabaev</h2>
+                    <Link to={`/profile/${user_id}`}>
+                        <h2 className="username">{name} {surname}</h2>
                     </Link>
                     <span className="sidebar__my-profile">My profile</span>
                 </div>
@@ -77,6 +102,7 @@ export default class Sidebar extends Component {
                 </div>
             </div>
         </div>
+        </>
         );
     }
 }
