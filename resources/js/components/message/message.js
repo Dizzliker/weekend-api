@@ -7,7 +7,7 @@ export default class Message extends Component {
         return (
         <div className="message">
             <MessageList />
-            <MessageChat user_id = {this.props.user_id}/>
+            <MessageChat user_id = {this.props.user_id} countMessages = {this.props.countMessages}/>
         </div>
         );
     }

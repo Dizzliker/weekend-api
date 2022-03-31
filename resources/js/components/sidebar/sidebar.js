@@ -52,29 +52,32 @@ export default class Sidebar extends Component {
                 <img src="../images/logo.svg" alt="" />
             </div>
 
-            <div className="sidebar__user-container flex ai_center">
-                <div className="sidebar__user-ava">
-                    <Link to={`/profile/${user_id}`}>
-                        <img src={avatar} className="ava-50" alt="Your profile" />
-                    </Link>
+            <div className="sidebar__user-container flex jc_space-between">
+                <div className="flex ai_center">
+                    <div className="sidebar__user-ava">
+                        <Link to={`/profile/${user_id}`}>
+                            <img src={avatar} className="ava-50" alt="Your profile" />
+                        </Link>
+                    </div>
+
+                    <div className="sidebar__user-info flex_column">
+                        <Link to={`/profile/${user_id}`}>
+                            <h2 className="username">{name} {surname}</h2>
+                        </Link>
+                        <span className="sidebar__my-profile">My profile</span>
+                    </div>
                 </div>
 
-                <div className="sidebar__user-info flex_column">
-                    <Link to={`/profile/${user_id}`}>
-                        <h2 className="username">{name} {surname}</h2>
-                    </Link>
-                    <span className="sidebar__my-profile">My profile</span>
-                </div>
-
-                <div className="sidebar__user-actions flex jc_space-between">
+                <div className="sidebar__user-actions flex_center_space-between">
                     <a href="#">
-                        <img src="../images/settings.svg" alt="Settings" className="icon-settings" />
+                        <img src="../images/settings.svg" alt="Settings" className="icon icon-settings" />
                     </a>
-                    <img src="../images/logout.svg" alt="Logout" onClick={this.logout} className="icon-logout" title="logout"/>
+                    <img src="../images/logout.svg" alt="Logout" onClick={this.logout} className="icon icon-logout" title="logout"/>
                 </div>
             </div>
 
-            <Menu countFriendRequests = {this.props.countFriendRequests}/>
+            <Menu countFriendRequests = {this.props.countFriendRequests}
+                  countMessages = {this.props.countMessages}/>
 
             <div className="sidebar__audio flex_column">
                 <input type="range" className="input-range" min="0" max="100" step="1" />

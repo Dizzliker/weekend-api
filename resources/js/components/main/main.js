@@ -21,10 +21,11 @@ export default class Main extends Component {
         return (
             <div className="bg" style={bgStyle}>
                 <div className="main flex">
-                    <Sidebar countFriendRequests = {this.props.countFriendRequests}/>
+                    <Sidebar countFriendRequests = {this.props.countFriendRequests}
+                             countMessages = {this.props.countMessages}/>
                     <Routes>
                         <Route path="profile/:id" element={<ProfileContainer />}/>
-                        <Route path="messages/:id" element={<MessageContainer />}/>
+                        <Route path="messages/:id" element={<MessageContainer countMessages = {this.props.countMessages}/>}/>
                         <Route path="friends"  element={<Friend countFriendRequests = {this.props.countFriendRequests}/>}/>
                         <Route path="users" element={<User />}/>
                         <Route path="music"   element={<Music/>}/>

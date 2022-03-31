@@ -5,12 +5,20 @@ class Chat extends Weekend {
         return await this.postData('/getChat', data, true);
     }
 
+    getCountMessages = async (id) => {
+        return await this.getData(`/getCountMessages/${id}`);
+    }
+
     getChatList = async (id) => {
         return await this.getData(`/getChatList/${id}`);
     }
 
     sendMessage = async (data) => {
         return await this.postData('/sendMessage', data, true);
+    }
+
+    readMessages = async (data) => {
+        return await this.postData('/readMessages', data, true);
     }
 }
 

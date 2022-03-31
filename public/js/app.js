@@ -2080,11 +2080,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _auth_auth__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./auth/auth */ "./resources/js/components/auth/auth.js");
 /* harmony import */ var _main_main__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./main/main */ "./resources/js/components/main/main.js");
 /* harmony import */ var react_dom__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! react-dom */ "./node_modules/react-dom/index.js");
-/* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router-dom/index.js");
+/* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router-dom/index.js");
 /* harmony import */ var _services_Session__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../services/Session */ "./resources/js/services/Session.js");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 /* harmony import */ var _services_Friend__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../services/Friend */ "./resources/js/services/Friend.js");
-/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
+/* harmony import */ var _services_Chat__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../services/Chat */ "./resources/js/services/Chat.js");
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
 function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -2107,6 +2108,9 @@ function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Re
 
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
 
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+
 
 
 
@@ -2128,36 +2132,58 @@ var App = /*#__PURE__*/function (_Component) {
     _classCallCheck(this, App);
 
     _this = _super.call(this, props);
+
+    _defineProperty(_assertThisInitialized(_this), "getCountFriendRequests", function (id) {
+      _this.friend.getCountRequests(id).then(function (res) {
+        if (res.count) {
+          _this.setState({
+            countFriendRequests: res.count
+          });
+        }
+      })["catch"](function (error) {
+        console.warn(error);
+      });
+    });
+
+    _defineProperty(_assertThisInitialized(_this), "getCountMessages", function (id) {
+      setInterval(function () {
+        _this.chat.getCountMessages(id).then(function (res) {
+          if (res) {
+            _this.setState({
+              countMessages: res.count
+            });
+          }
+        })["catch"](function (error) {
+          console.warn(error);
+        });
+      }, 3000);
+    });
+
     _this.state = {
+      countMessages: 0,
       countFriendRequests: 0
     };
     _this.friend = new _services_Friend__WEBPACK_IMPORTED_MODULE_6__.FriendService();
+    _this.chat = new _services_Chat__WEBPACK_IMPORTED_MODULE_7__.ChatService();
     return _this;
   }
 
   _createClass(App, [{
     key: "componentDidMount",
     value: function componentDidMount() {
-      var _this2 = this;
-
       if (_services_Session__WEBPACK_IMPORTED_MODULE_4__["default"].check()) {
-        this.friend.getCountRequests(_services_Session__WEBPACK_IMPORTED_MODULE_4__["default"].getId()).then(function (res) {
-          if (res.count) {
-            _this2.setState({
-              countFriendRequests: res.count
-            });
-          }
-        })["catch"](function (error) {
-          console.warn(error);
-        });
+        var user_id = _services_Session__WEBPACK_IMPORTED_MODULE_4__["default"].getId();
+        this.getCountMessages(user_id);
+        this.getCountFriendRequests(user_id);
       }
     }
   }, {
     key: "render",
     value: function render() {
-      return _services_Session__WEBPACK_IMPORTED_MODULE_4__["default"].check() ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_7__.jsx)(_main_main__WEBPACK_IMPORTED_MODULE_2__["default"], {
-        countFriendRequests: this.state.countFriendRequests
-      }) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_7__.jsx)(_auth_auth__WEBPACK_IMPORTED_MODULE_1__["default"], {});
+      return _services_Session__WEBPACK_IMPORTED_MODULE_4__["default"].check() ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_8__.jsx)(_main_main__WEBPACK_IMPORTED_MODULE_2__["default"], {
+        countFriendRequests: this.state.countFriendRequests,
+        countMessages: this.state.countMessages
+      }) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_8__.jsx)(_auth_auth__WEBPACK_IMPORTED_MODULE_1__["default"], {});
     }
   }]);
 
@@ -2165,8 +2191,8 @@ var App = /*#__PURE__*/function (_Component) {
 }(react__WEBPACK_IMPORTED_MODULE_5__.Component);
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (App);
-react_dom__WEBPACK_IMPORTED_MODULE_3__.render( /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_7__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_8__.BrowserRouter, {
-  children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_7__.jsx)(App, {})
+react_dom__WEBPACK_IMPORTED_MODULE_3__.render( /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_8__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_9__.BrowserRouter, {
+  children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_8__.jsx)(App, {})
 }), document.getElementById('app'));
 
 /***/ }),
@@ -2291,11 +2317,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-/* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router-dom/index.js");
+/* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router-dom/index.js");
 /* harmony import */ var _services_Form__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../services/Form */ "./resources/js/services/Form.js");
 /* harmony import */ var _services_Session__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../services/Session */ "./resources/js/services/Session.js");
-/* harmony import */ var _services_Weekend__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../../services/Weekend */ "./resources/js/services/Weekend.js");
-/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
 function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -2319,7 +2344,6 @@ function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Re
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 
 
 
@@ -2391,38 +2415,38 @@ var LoginForm = /*#__PURE__*/function (_Component) {
           error = _this$state.error,
           email = _this$state.email,
           password = _this$state.password;
-      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("div", {
+      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
         className: "login",
-        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsxs)("form", {
+        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("form", {
           onSubmit: this.login,
           className: "login__form",
           method: "post",
-          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("img", {
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("img", {
             src: "../images/logo.svg",
             alt: "Weekend",
             className: "logo"
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("div", {
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
             className: error ? "error-box" : "error-box hide",
             children: error
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("input", {
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("input", {
             type: "email",
             name: "email",
             placeholder: "E-mail",
             className: "input email",
             value: email,
             onChange: this.handleInputChange
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("input", {
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("input", {
             type: "password",
             name: "password",
             placeholder: "Password",
             className: "input password",
             value: password,
             onChange: this.handleInputChange
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("button", {
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("button", {
             className: "btn-auth",
             name: "btn-login",
             children: "Sign in"
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_6__.Link, {
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_5__.Link, {
             to: "/register",
             className: "link",
             children: "Not registered yet?"
@@ -3385,14 +3409,17 @@ var Main = /*#__PURE__*/function (_Component) {
         children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_10__.jsxs)("div", {
           className: "main flex",
           children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_10__.jsx)(_sidebar__WEBPACK_IMPORTED_MODULE_4__["default"], {
-            countFriendRequests: this.props.countFriendRequests
+            countFriendRequests: this.props.countFriendRequests,
+            countMessages: this.props.countMessages
           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_10__.jsxs)(react_router_dom__WEBPACK_IMPORTED_MODULE_11__.Routes, {
             children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_10__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_11__.Route, {
               path: "profile/:id",
               element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_10__.jsx)(_profile_profile_container__WEBPACK_IMPORTED_MODULE_6__["default"], {})
             }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_10__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_11__.Route, {
               path: "messages/:id",
-              element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_10__.jsx)(_message_container_message_container__WEBPACK_IMPORTED_MODULE_9__["default"], {})
+              element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_10__.jsx)(_message_container_message_container__WEBPACK_IMPORTED_MODULE_9__["default"], {
+                countMessages: this.props.countMessages
+              })
             }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_10__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_11__.Route, {
               path: "friends",
               element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_10__.jsx)(_friend_friend__WEBPACK_IMPORTED_MODULE_1__["default"], {
@@ -3497,7 +3524,7 @@ var MenuItem = /*#__PURE__*/function (_Component) {
           img = _this$props.img,
           text = _this$props.text,
           link = _this$props.link,
-          countRequests = _this$props.countRequests;
+          count = _this$props.count;
       return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("li", {
         className: "sidebar__menu-item flex ai_center jc_space-between",
         children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
@@ -3514,11 +3541,11 @@ var MenuItem = /*#__PURE__*/function (_Component) {
               children: text
             })
           })]
-        }), countRequests ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("div", {
+        }), count ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("div", {
           className: "sidebar__count-body",
           children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("span", {
             className: "sidebar__item-count",
-            children: ["+", countRequests]
+            children: ["+", count]
           })
         }) : null]
       });
@@ -3616,12 +3643,13 @@ var Menu = /*#__PURE__*/function (_Component) {
             }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_menu_item__WEBPACK_IMPORTED_MODULE_1__["default"], {
               img: "../images/message.svg",
               text: "Messages",
-              link: "messages/0"
+              link: "messages/0",
+              count: this.props.countMessages
             }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_menu_item__WEBPACK_IMPORTED_MODULE_1__["default"], {
               img: "../images/friends.svg",
               text: "Friends",
               link: "friends",
-              countRequests: this.props.countFriendRequests
+              count: this.props.countFriendRequests
             }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_menu_item__WEBPACK_IMPORTED_MODULE_1__["default"], {
               img: "../images/communities.svg",
               text: "Communities",
@@ -3746,7 +3774,18 @@ var MessageChat = /*#__PURE__*/function (_Component) {
               companion: res.user,
               chat: res.chat,
               reload: false,
-              loading: false
+              loading: false,
+              read: true
+            });
+
+            _this.scrollChatToBottom();
+
+            _this.chatService.readMessages(_this.getChatUsersId()).then(function (res) {
+              _this.setState({
+                read: false
+              });
+            })["catch"](function (error) {
+              console.warn(error);
             });
           }
         })["catch"](function (error) {
@@ -3766,16 +3805,18 @@ var MessageChat = /*#__PURE__*/function (_Component) {
     _defineProperty(_assertThisInitialized(_this), "sendMessage", function (event) {
       event.preventDefault();
 
-      _this.chatService.sendMessage(_this.getFormData()).then(function (res) {
-        if (res) {
-          _this.setState({
-            text: '',
-            reload: true
-          });
-        }
-      })["catch"](function (error) {
-        console.warn(error);
-      });
+      if (_this.state.text.trim() != '') {
+        _this.chatService.sendMessage(_this.getFormData()).then(function (res) {
+          if (res) {
+            _this.setState({
+              text: '',
+              reload: true
+            });
+          }
+        })["catch"](function (error) {
+          console.warn(error);
+        });
+      }
     });
 
     _this.state = {
@@ -3784,14 +3825,21 @@ var MessageChat = /*#__PURE__*/function (_Component) {
       companion: {},
       chat: [],
       chatList: [],
-      reload: false
+      reload: false,
+      read: false
     };
+    _this.chatBox = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createRef();
     _this.chatService = new _services_Chat__WEBPACK_IMPORTED_MODULE_1__.ChatService();
     _this.handleInputChange = _this.handleInputChange.bind(_assertThisInitialized(_this));
     return _this;
   }
 
   _createClass(MessageChat, [{
+    key: "scrollChatToBottom",
+    value: function scrollChatToBottom() {
+      this.chatBox.current.scrollTop = this.chatBox.current.scrollHeight;
+    }
+  }, {
     key: "componentDidMount",
     value: function componentDidMount() {
       this.updateChat();
@@ -3799,7 +3847,7 @@ var MessageChat = /*#__PURE__*/function (_Component) {
   }, {
     key: "componentDidUpdate",
     value: function componentDidUpdate(prevProps) {
-      if (this.props.user_id != prevProps.user_id || this.state.reload) {
+      if (this.props.user_id != prevProps.user_id || this.state.reload || prevProps.countMessages != this.props.countMessages) {
         this.updateChat();
       }
     }
@@ -3917,6 +3965,7 @@ var MessageChat = /*#__PURE__*/function (_Component) {
             })
           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
             className: "message__chat-box",
+            ref: this.chatBox,
             children: messageBox
           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("form", {
             onSubmit: this.sendMessage,
@@ -3998,12 +4047,15 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-var MessageContainer = function MessageContainer() {
+var MessageContainer = function MessageContainer(_ref) {
+  var countMessages = _ref.countMessages;
+
   var _useParams = (0,react_router_dom__WEBPACK_IMPORTED_MODULE_3__.useParams)(),
       id = _useParams.id;
 
   return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_message_message__WEBPACK_IMPORTED_MODULE_1__["default"], {
-    user_id: id
+    user_id: id,
+    countMessages: countMessages
   });
 };
 
@@ -4217,7 +4269,8 @@ var Message = /*#__PURE__*/function (_Component) {
       return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
         className: "message",
         children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_message_list_message_list__WEBPACK_IMPORTED_MODULE_2__["default"], {}), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_message_chat__WEBPACK_IMPORTED_MODULE_1__["default"], {
-          user_id: this.props.user_id
+          user_id: this.props.user_id,
+          countMessages: this.props.countMessages
         })]
       });
     }
@@ -6027,8 +6080,6 @@ var Sidebar = /*#__PURE__*/function (_Component) {
 
       this.profile.get(_services_Session__WEBPACK_IMPORTED_MODULE_2__["default"].getId()).then(function (res) {
         if (res.data) {
-          console.log(res.user);
-
           _this2.setState({
             user: res.data,
             loading: false
@@ -6057,48 +6108,52 @@ var Sidebar = /*#__PURE__*/function (_Component) {
               alt: ""
             })
           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsxs)("div", {
-            className: "sidebar__user-container flex ai_center",
-            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("div", {
-              className: "sidebar__user-ava",
-              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_6__.Link, {
-                to: "/profile/".concat(user_id),
-                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("img", {
-                  src: avatar,
-                  className: "ava-50",
-                  alt: "Your profile"
+            className: "sidebar__user-container flex jc_space-between",
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsxs)("div", {
+              className: "flex ai_center",
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("div", {
+                className: "sidebar__user-ava",
+                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_6__.Link, {
+                  to: "/profile/".concat(user_id),
+                  children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("img", {
+                    src: avatar,
+                    className: "ava-50",
+                    alt: "Your profile"
+                  })
                 })
-              })
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsxs)("div", {
-              className: "sidebar__user-info flex_column",
-              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_6__.Link, {
-                to: "/profile/".concat(user_id),
-                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsxs)("h2", {
-                  className: "username",
-                  children: [name, " ", surname]
-                })
-              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("span", {
-                className: "sidebar__my-profile",
-                children: "My profile"
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsxs)("div", {
+                className: "sidebar__user-info flex_column",
+                children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_6__.Link, {
+                  to: "/profile/".concat(user_id),
+                  children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsxs)("h2", {
+                    className: "username",
+                    children: [name, " ", surname]
+                  })
+                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("span", {
+                  className: "sidebar__my-profile",
+                  children: "My profile"
+                })]
               })]
             }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsxs)("div", {
-              className: "sidebar__user-actions flex jc_space-between",
+              className: "sidebar__user-actions flex_center_space-between",
               children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("a", {
                 href: "#",
                 children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("img", {
                   src: "../images/settings.svg",
                   alt: "Settings",
-                  className: "icon-settings"
+                  className: "icon icon-settings"
                 })
               }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("img", {
                 src: "../images/logout.svg",
                 alt: "Logout",
                 onClick: this.logout,
-                className: "icon-logout",
+                className: "icon icon-logout",
                 title: "logout"
               })]
             })]
           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)(_menu__WEBPACK_IMPORTED_MODULE_1__["default"], {
-            countFriendRequests: this.props.countFriendRequests
+            countFriendRequests: this.props.countFriendRequests,
+            countMessages: this.props.countMessages
           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsxs)("div", {
             className: "sidebar__audio flex_column",
             children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("input", {
@@ -6688,14 +6743,14 @@ var Chat = /*#__PURE__*/function (_Weekend) {
       };
     }());
 
-    _defineProperty(_assertThisInitialized(_this), "getChatList", /*#__PURE__*/function () {
+    _defineProperty(_assertThisInitialized(_this), "getCountMessages", /*#__PURE__*/function () {
       var _ref2 = _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().mark(function _callee2(id) {
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
                 _context2.next = 2;
-                return _this.getData("/getChatList/".concat(id));
+                return _this.getData("/getCountMessages/".concat(id));
 
               case 2:
                 return _context2.abrupt("return", _context2.sent);
@@ -6713,14 +6768,14 @@ var Chat = /*#__PURE__*/function (_Weekend) {
       };
     }());
 
-    _defineProperty(_assertThisInitialized(_this), "sendMessage", /*#__PURE__*/function () {
-      var _ref3 = _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().mark(function _callee3(data) {
+    _defineProperty(_assertThisInitialized(_this), "getChatList", /*#__PURE__*/function () {
+      var _ref3 = _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().mark(function _callee3(id) {
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().wrap(function _callee3$(_context3) {
           while (1) {
             switch (_context3.prev = _context3.next) {
               case 0:
                 _context3.next = 2;
-                return _this.postData('/sendMessage', data, true);
+                return _this.getData("/getChatList/".concat(id));
 
               case 2:
                 return _context3.abrupt("return", _context3.sent);
@@ -6735,6 +6790,56 @@ var Chat = /*#__PURE__*/function (_Weekend) {
 
       return function (_x3) {
         return _ref3.apply(this, arguments);
+      };
+    }());
+
+    _defineProperty(_assertThisInitialized(_this), "sendMessage", /*#__PURE__*/function () {
+      var _ref4 = _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().mark(function _callee4(data) {
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().wrap(function _callee4$(_context4) {
+          while (1) {
+            switch (_context4.prev = _context4.next) {
+              case 0:
+                _context4.next = 2;
+                return _this.postData('/sendMessage', data, true);
+
+              case 2:
+                return _context4.abrupt("return", _context4.sent);
+
+              case 3:
+              case "end":
+                return _context4.stop();
+            }
+          }
+        }, _callee4);
+      }));
+
+      return function (_x4) {
+        return _ref4.apply(this, arguments);
+      };
+    }());
+
+    _defineProperty(_assertThisInitialized(_this), "readMessages", /*#__PURE__*/function () {
+      var _ref5 = _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().mark(function _callee5(data) {
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().wrap(function _callee5$(_context5) {
+          while (1) {
+            switch (_context5.prev = _context5.next) {
+              case 0:
+                _context5.next = 2;
+                return _this.postData('/readMessages', data, true);
+
+              case 2:
+                return _context5.abrupt("return", _context5.sent);
+
+              case 3:
+              case "end":
+                return _context5.stop();
+            }
+          }
+        }, _callee5);
+      }));
+
+      return function (_x5) {
+        return _ref5.apply(this, arguments);
       };
     }());
 
@@ -7714,7 +7819,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "* {\n  margin: 0;\n  padding: 0;\n  box-sizing: border-box;\n}\n\n:root {\n  --purple: #BD2A6C;\n  --purple-disabled: #E1658E;\n  --pink: #D592FF;\n  --white: #fff;\n  --black: #000;\n  --gray: #444;\n  --dark-gray: #181818;\n  --white-gray: #fafafa;\n  --light-gray: #e6e6e6;\n  --shadow: 0px 0px 4px rgba(138, 138, 138, 0.25);\n  --hover-shadow: 0px 0px 4px rgba(138, 138, 138, 0.40);\n  --animate-transition: .4s ease;\n  --online-status: #44C959;\n  --offline-status: #D63737;\n  --c4: #c4c4c4;\n}\n\n/* Стили лоудера */\n\n.loader-wrapper {\n  position: absolute;\n  z-index: 10;\n  width: 100%;\n  height: 100vh;\n  top: 0;\n  left: 0;\n  background-color: rgba(0, 0, 0, 0.4);\n  display: flex;\n  align-items: center;\n  justify-content: center;\n}\n\n.loader-wrapper.hide {\n  display: none;\n}\n\n.loader-box {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  width: 150px;\n  height: 150px;\n  position: absolute;\n  left: 50%;\n  top: 50%;\n  transform: translate(-50%, -50%);\n}\n\n.loader {\n  border: 12px solid #f3f3f3;\n  border-radius: 50%;\n  border-top: 12px solid #BD2A6C;\n  width: 100px;\n  height: 100px;\n  -webkit-animation: spin 2s linear infinite; /* Safari */\n  animation: spin 2s linear infinite;\n}\n\n/* Safari */\n@-webkit-keyframes spin {\n0% { -webkit-transform: rotate(0deg); }\n100% { -webkit-transform: rotate(360deg); }\n}\n\n@keyframes spin {\n0% { transform: rotate(0deg); }\n100% { transform: rotate(360deg); }\n}\n\n/* Стили скроллбара */\n\n::-webkit-scrollbar {\n  width: 4px;\n}\n\n::-webkit-scrollbar-thumb {\n  background-color: #e6e6e6;\n  border-radius: 3px;\n}\n\n::-webkit-scrollbar-thumb:hover {\n  background-color: #c4c4c4;\n}\n\n::-webkit-scrollbar-track {\n  background-color: white;\n}\n\ninput::-moz-placeholder {\n  font-weight: 300;\n  font-size: 16px;\n  color: var(--light-gray);\n}\n\ninput:-ms-input-placeholder {\n  font-weight: 300;\n  font-size: 16px;\n  color: var(--light-gray);\n}\n\ninput::placeholder {\n  font-weight: 300;\n  font-size: 16px;\n  color: var(--light-gray);\n}\n\n/* Стили ползунка для музыки */\n\n.input-range {\n  -webkit-appearance: none;\n  background: #e6e6e6;\n  width: 100%;\n  height: 3px;\n  outline: none;\n  border: none;\n  border-radius: 5px;\n  margin-top: 5px;\n  padding: 0;\n  transition: 1s ease;\n  cursor: pointer;\n}\n\n.input-range::-webkit-slider-thumb {\n  -webkit-appearance: none;\n  border-radius: 50%;\n  background-color: #B60F46;\n  width: 12px;\n  height: 12px;\n  cursor: pointer;\n}\n\n.input-range::-webkit-slider-thumb:hover,\n.input-range::-webkit-slider-thumb:active {\n  background-color: #8A1F4F;\n  -webkit-transition: 1s ease;\n  transition: 1s ease;\n}\n\n.input-range::-moz-range-thumb:hover,\n.input-range::-moz-range-thumb:active {\n  background-color: #8A1F4F;\n  -moz-transition: 1s ease;\n  transition: 1s ease;\n}\n\n.input-range::-moz-range-track {\n  -moz-appearance: none;\n  border-radius: 50%;\n  background-color: #B60F46;\n  width: 12px;\n  height: 12px;\n  cursor: pointer;\n}\n\n.input-range::-moz-range-thumb {\n  -moz-appearance: none;\n  border-radius: 50%;\n  background-color: #B60F46;\n  width: 12px;\n  height: 12px;\n  cursor: pointer;\n}\n\n/* Стили поиска */\n\n.search-box {\n  position: relative;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  height: 55px;\n  margin: 5px 5px 10px 5px;\n}\n\n.search-box .input-search {\n  width: 100%;\n  height: 100%;\n  border: none;\n  text-align: center;\n  padding: 5px 5px 5px 10px;\n  outline: 1px dashed #e6e6e6;\n  border-radius: 5px;\n}\n\n.search-box .icon-search {\n  position: absolute;\n  right: 0;\n  margin-right: 10px;\n}\n\n.flex {\n  display: flex;\n}\n\n.flex_column {\n  display: flex;\n  flex-direction: column;\n}\n\n.flex_center_center {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n}\n\n.flex_center_flex-end {\n  display: flex;\n  align-items: center;\n  justify-content: flex-end;\n}\n\n.flex_center_space-between {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n}\n\n.ai_center {\n  align-items: center;\n}\n\n.ai_flex-start {\n  align-items: flex-start;\n}\n\n.ai_flex-end {\n  align-items: flex-end;\n}\n\n.jc_center {\n  justify-content: center;\n}\n\n.jc_space-between {\n  justify-content: space-between;\n}\n\n/* Общий стиль для кебаб с 3 точками */\n\n.kebab {\n  width: 5px;\n  height: 20px;\n  display: flex;\n  flex-direction: column;\n  justify-content: space-between;\n}\n\n.kebab .circle {\n  width: 5px;\n  height: 5px;\n  background-color: var(--black);\n  border-radius: 50%;\n}\n\n.kebab.gray{\n  height: 20px;\n}\n\n.kebab.gray .circle {\n  background-color: var(--light-gray);\n}\n\n.cur_pointer {\n  cursor: pointer;\n}\n\n.no-select {\n  user-select: none;\n  -webkit-touch-callout: none; /* iOS Safari */\n  -webkit-user-select: none; /* Safari */\n  -khtml-user-select: none; /* Konqueror HTML */\n  -moz-user-select: none; /* Old versions of Firefox */\n  -ms-user-select: none; /* Internet Explorer/Edge */\n}\n\n/* Обнуление стилей списков */\n\nul {\n  list-style-type: none;\n}\n\n/* Стили для аватарок разных размеров */\n\n.ava-35, .ava-50, .ava-60, .ava-70 {\n  border-radius: 50%;\n  box-shadow: var(--shadow);\n  -o-object-fit: cover;\n     object-fit: cover;\n}\n\n.ava-35 {\n  width: 35px;\n  height: 35px;\n}\n\n.ava-50 {\n  width: 50px;\n  height: 50px;\n}\n\n.ava-60 {\n  width: 60px;\n  height: 60px;\n}\n\n.ava-70 {\n  width: 70px;\n  height: 70px;\n}\n\n/* Общие стили для имени пользователя */\n\n.username {\n  color: var(--black);\n  cursor: pointer;\n  transition: var(--animate-transition);\n}\n\n.username:hover {\n  color: var(--purple);\n  transition: var(--animate-transition);\n}\n\n/* Общие стили для ссылок */\n\n.link {\n  cursor: pointer;\n  transition: var(--animate-transition);\n}\n\n.link:hover {\n  color: var(--purple);\n  transition: var(--animate-transition);\n}\n\nbody {\n  font-family: 'Roboto';\n}\n\na {\n  text-decoration: none;\n  color: black;\n}\n\n#app {\n  width: 100%;\n  height: 100%;\n}\n\n.main {\n  width: 1220px;\n  height: 100vh;\n  margin: 0 auto;\n}\n\n.auth {\n  width: 100%;\n  height: 100vh;\n  background-size: 100% 100%;\n  font-family: 'Roboto', sans-serif;\n}\n\n.login {\n  width: 331px;\n  position: absolute;\n  left: 50%;\n  top: 50%;\n  transform: translate(-50%, -50%);\n  height: auto;\n  background: rgba(255, 255, 255, 0.9);\n  border-radius: 15px;\n}\n\n.login .login__form  {\n  border: none;\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  text-align: center;\n}\n\n.input {\n  width: 250px;\n  height: 45px;\n  padding-left: 15px;\n  background: #FFFFFF;\n  border: 1px solid #C4C4C4;\n  box-sizing: border-box;\n  border-radius: 15px;\n  outline: none;\n  margin-bottom: 20px;\n  transition: .2s ease;\n}\n\n.input::-webkit-input-placeholder {\n  font-weight: 300;\n  font-size: 16px;\n  color: var(--c4);\n}\n\n.input::-moz-placeholder {\n  font-weight: 300;\n  font-size: 16px;\n  color: var(--c4);\n}\n\n.login .login__form  .input.empty {\n  border: 1px solid #B60F46;\n  transition: .2s ease;\n}\n\n.input.empty::-webkit-input-placeholder {\n  color: #B60F46;\n}\n\n.input.empty::-moz-placeholder {\n  color: #B60F46;\n}\n\n.login form  .input:focus {\n  border-color: #777;\n}\n\n.btn-auth {\n  width: 251px;\n  height: 44px;\n  border: none;\n  margin: 18px auto;\n  font-family: Pacifico;\n  font-size: 18px;\n  line-height: 32px;\n  color: #FFFFFF;\n  background: #B60F46;\n  border-radius: 15px;\n  outline: none;\n  cursor: pointer;\n}\n\n.auth .link { \n  margin-bottom: 30px;\n  font-size: 12px;\n  line-height: 14px;\n  color: #3D3AD4;\n  cursor: pointer;\n  text-decoration: underline;\n}\n\n.error-box {\n  display: flex;\n  border: 1px solid #B60F46;\n  color:#B60F46;\n  border-radius: 10px;\n  width: 250px;\n  min-height: 45px;\n  height: auto;\n  margin-bottom: 20px;\n  align-items: center;\n  justify-content: center;\n}\n\n.error-box.hide {\n  display: none;\n}\n\n.register {\n  width: 331px;\n  position: absolute;\n  left: 50%;\n  top: 50%;\n  transform: translate(-50%, -50%);\n  height: auto;\n  background: rgba(255, 255, 255, 0.9);\n  border-radius: 15px;\n}\n\n.register .register-form  {\n  border: none;\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  text-align: center;\n}\n\n.register .register-form  .input.empty {\n  border: 1px solid #B60F46;\n  transition: .2s ease;\n}\n\n.register .register-form  .input.empty-date {\n  color: #B60F46;\n  border: 1px solid #B60F46;\n  transition: .2s ease;\n}\n\n.input.empty::-webkit-input-placeholder {\n  color: #B60F46;\n}\n\n.input.empty::-moz-placeholder {\n  color: #B60F46;\n}\n\n.register .register-form  .input:focus {\n  border-color: #777;\n}\n\n.login .login-form .link,\n.register .register-form .link {\n  margin-bottom: 30px;\n  font-size: 12px;\n  line-height: 14px;\n  color: #3D3AD4;\n}\n\n.logo {\n  margin: 30px auto;  \n  width: 141px;\n  height: 35px;\n}\n\n.sidebar {\n  padding-top: 30px;\n  width: 300px;\n  height: 100vh;\n  background-color: var(--white);\n  box-shadow: var(--shadow);\n  z-index: 10;\n}\n\n.sidebar .sidebar__user-container {\n  width: 245px;\n  margin: 50px 0 40px 0;\n}\n\n.sidebar .sidebar__user-container .sidebar__user-ava {\n  margin-right: 15px;\n}\n\n.sidebar .sidebar__user-info {\n  margin-right: 20px;\n}\n\n.sidebar .sidebar__user-actions {\n  width: 60px;\n  padding-top: 1px;\n}\n\n.sidebar .sidebar__user-actions .icon-settings,\n.sidebar .sidebar__user-actions .icon-logout {\n  cursor: pointer;\n  transition: var(--animate-transition);\n}\n\n.sidebar .sidebar__user-actions .icon-settings:hover {\n  transition: var(--animate-transition);\n  transform: rotate(360deg);\n}\n\n.sidebar .sidebar__user-actions .icon-logout:hover {\n  transform: scale(1.1);\n  transition: var(--animate-transition);\n}\n\n.sidebar .sidebar__user-info .username {\n  font-weight: 500;\n  font-size: 18px;\n}\n\n.sidebar .sidebar__user-info .sidebar__my-profile {\n  font-weight: 300;\n  font-size: 13px;\n  color: var(--gray);\n}\n\n.sidebar .sidebar__menu-container .sidebar__menu {\n  height: 340px;\n}\n\n.sidebar .sidebar__menu-container .sidebar__menu .sidebar__menu-item {\n  cursor: pointer;\n  transition: var(--animate-transition);\n}\n\n.sidebar .sidebar__menu-container .sidebar__menu .sidebar__item-link:hover {\n  color: var(--purple);\n  transition: var(--animate-transition);\n}\n\n.sidebar__item-link:hover > .sidebar__item-icon {\n  transform: rotate(180deg);\n  transition: var(--animate-transition);\n}\n\n.sidebar .sidebar__menu-container .sidebar__menu .sidebar__item-link .sidebar__item-text {\n  margin-left: 10px;\n  font-size: 20px;\n}\n\n.sidebar__menu-item .sidebar__count-body {\n  padding: 3px 5px;\n  font-size: 12px;\n  font-weight: bold;\n  background-color: var(--purple);\n  color: var(--white);\n  border-radius: 50%;\n}\n\n.sidebar .sidebar__audio {\n  width: 95%;\n  margin-top: 55px;\n  padding: 3px; \n}\n\n.sidebar .sidebar__audio-cover {\n  width: 50px;\n  height: 50px;\n  border-radius: 50%;\n  -o-object-fit: cover;\n     object-fit: cover;\n  margin-right: 15px;\n}\n\n.sidebar .sidebar__audio .sidebar__track-info .sidebar__audio-artist {\n  font-weight: 300;\n  font-size: 13px;\n}\n\n.sidebar .sidebar__audio .sidebar__track-info .sidebar__audio-name {\n  font-weight: 500;\n  font-size: 13px;\n}\n\n.sidebar .sidebar__audio .sidebar__audio-actions {\n  width: 70px;\n}\n\n.sidebar .sidebar__audio-duration .text-duration {\n  font-style: normal;\n  font-weight: 300;\n  font-size: 13px;\n  color: var(--gray);\n  margin-top: 5px;\n}\n\n/* Верстка профиля пользователя */\n\n.profile {\n  width: 920px;\n  padding: 30px 0 0 30px;\n  background-color: var(--white);\n}\n\n.profile .profile__user-avatar .left-circle {\n  padding-left: 3px;\n  border-radius: 164px 0 0 164px;\n  box-shadow: var(--shadow);\n}\n\n.profile .profile__user-avatar .left-circle .icon-msg {\n  position: absolute;\n}\n\n.profile .profile__user-avatar .right-circle {\n  border-radius: 0 164px 164px 0;\n  box-shadow: var(--shadow);\n  padding-right: 3px;\n}\n\n.profile .profile__user-avatar .right-circle .icon-friend {\n  position: absolute;\n}\n\n.profile .profile__user-avatar .profile__avatar {\n  position: absolute;\n  width: 280px;\n  height: 280px;\n  -o-object-fit: cover;\n     object-fit: cover;\n  border-radius: 50%;\n}\n\n.profile .profile__user-avatar .profile__avatar .profile__edit-ava {\n  position: absolute;\n  width: 100%;\n  height: 100%;\n  color: var(--white);\n  background-color: rgba(0,0,0,0.5);\n  border-radius: 50%;\n  opacity: 0;\n  transition: var(--animate-transition);\n  cursor: pointer;\n}\n\n.profile .profile__user-avatar .profile__avatar .profile__edit-ava:hover {\n  transition: var(--animate-transition);\n  opacity: 1;\n}\n\n.profile .profile__user-avatar .profile__avatar .avatar-img {\n  width: 280px;\n  height: 280px;\n  -o-object-fit: cover;\n     object-fit: cover;\n  border-radius: 50%;\n}\n\n.profile .profile__user-avatar .link-btn__left-circle,\n.profile .profile__user-avatar .link-btn__right-circle {\n  transition: var(--animate-transition);\n  cursor: pointer;\n}\n\n.profile .profile__user-container .profile__user-avatar .icon-circle {\n  width: 100%;\n  height: 100%;\n}\n\n.profile .profile__user-avatar .link-btn__left-circle {\n  border-radius: 164px 0 0 164px;\n  \n}\n\n.profile .profile__user-avatar .link-btn__right-circle {\n  border-radius: 0 164px 164px 0; \n}\n\n.profile .profile__user-avatar .link-btn__left-circle:hover,\n.profile .profile__user-avatar .link-btn__right-circle:hover {\n  box-shadow: var(--hover-shadow);\n  transition: var(--animate-transition);\n}\n\n.profile .profile__user-info {\n  width: 470px;\n  margin-left: 30px;\n}\n\n.profile .profile__user-info .profile__name-container {\n  width: 100%;\n}\n\n.profile .profile__user-info .profile__name-container .profile__username {\n  font-size: 30px;\n  font-weight: normal;\n  font-family: 'Pacifico';\n  color: var(--purple);\n}\n\n.profile .profile__user-info .profile__name-container .online-status {\n  width: 45px;\n}\n\n.profile .profile__user-info .profile__name-container .online-status .online-circle {\n  width: 5px;\n  height: 5px;\n  border-radius: 50%;\n  background-color: var(--online-status);\n}\n\n.profile .profile__user-info .profile__name-container .online-status .online-text {\n  font-size: 12px;\n  color: #181818;\n}\n\n.profile .profile__user-info .profile__user-status {\n  width: 100%;\n  height: 35px;\n  background-color: var(--white-gray);\n  border-radius: 10px;\n  padding-left: 10px;\n  margin: 5px 0 20px 0;\n}\n\n.profile .profile__user-info .profile__user-status .profile__status-text {\n  font-size: 18px;\n  font-weight: 300;\n  color: var(--black);\n}\n\n.profile .profile__user-info .profile__more-info {\n  width: 415px;\n}\n\n.profile .profile__user-info .profile__list-info {\n  width: 215px;\n  height: 170px;\n  padding-left: 10px;\n}\n\n.profile .profile__user-info .profile__list-info .profile__list-item {\n  width: 100%;\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n}\n\n.profile .profile__user-info .profile__list-info .profile__list-item .profile__item-caption {\n  font-size: 18px;\n  color: #515151;\n  font-weight: 300;\n}\n\n.profile .profile__user-info .profile__list-info .profile__list-item .profile__item-value {\n  width: 90px;\n  height: 35px;\n  display: flex;\n  align-items: center;\n  background-color: var(--white-gray);\n  border-radius: 10px;\n  padding-left: 10px;\n}\n\n.profile .profile__personal-info {\n  width: 170px;\n  height: 170px;\n  flex-wrap: wrap;\n}\n\n.profile .profile__user-info .profile__info-item  {\n  width: 50%;\n}\n\n.profile .profile__user-info .profile__info-item .profile__item-link {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  cursor: pointer;\n  transition: var(--animate-transition);\n}\n\n.profile .profile__user-info .profile__info-item .profile__item-link .icon-item:hover {\n  transform: scale(1.1);\n  transition: var(--animate-transition);\n}\n\n.profile .profile__personal-info .profile__info-item .profile__item-link .item-text {\n  font-size: 13px;\n  color: #181818;\n  font-weight: 300;\n}\n\n.profile .profile__personal-info .profile__info-item .profile__item-link .item-count {\n  font-size: 20px;\n  color: var(--purple);\n  font-weight: normal;\n}\n\n/* Верстка блока постов пользователя */\n\n.profile .posts .posts__add-post {\n  width: 825px;\n  height: -webkit-fit-content;\n  height: -moz-fit-content;\n  height: fit-content;\n  box-shadow: var(--shadow);\n  border-radius: 15px;\n  margin-top: 25px;\n}\n\n.profile .posts .posts__add-post-avatar {\n  margin: 5px 10px 0 35px;\n}\n\n.profile .posts .posts__add-input {\n  width: 65%;\n  height: 65px;\n  resize: none;\n  outline: var(--white-gray);\n  border: none;\n  padding-top: 22px;\n}\n\n.profile .posts__add-post .posts__post-actions {\n  width: 115px;\n  height: 20px;\n  margin-top: 20px;\n}\n\n.profile .posts__add-post .posts__post-actions .icon-attach {\n  cursor: pointer;\n  transition: var(--animate-transition);\n}\n\n.profile .posts__add-post .posts__post-actions .icon-attach:hover {\n  transform: scale(1.1);\n  transition: var(--animate-transition);\n}\n\n.profile .posts__add-post .posts__add-btn-link {\n  width: 20px;\n  height: 20px;\n}\n\n.profile .posts__add-post .posts__add-btn {\n  margin: 20px 0 0 35px;\n  width: 20px;\n  height: 20px;\n  cursor: pointer;\n  transition: var(--animate-transition);\n}\n\n.profile .posts__add-post .posts__add-btn:hover {\n  transform: scale(1.1);\n  transition: var(--animate-transition);\n}\n\n.profile .posts .post {\n  width: 825px;\n  display: flex;\n  border-radius: 15px;\n  box-shadow: var(--shadow);\n  padding: 25px 25px 0 25px;\n  margin: 25px 0;\n}\n\n.profile .post .post__container {\n  width: 100%;\n  margin-left: 15px;\n}\n\n.profile .post .post__container .post__header {\n  width: 100%;\n}\n\n.profile .post .post__container .post__header .post__username {\n  width: -webkit-fit-content;\n  width: -moz-fit-content;\n  width: fit-content;\n}\n\n.profile .post .post__container .post__header .post__username .username {\n  font-weight: 500;\n  font-size: 18px;\n}\n\n.profile .post .post__container .post__header .post__username .date {\n  font-weight: 300;\n  font-size: 12px;\n  margin-left: 10px;\n  padding-top: 5px;\n}\n\n.profile .post .post__actions {\n  width: 85px;\n}\n\n.profile .post .post__actions .icon-delete,\n.profile .post .post__actions .icon-edit {\n  cursor: pointer;\n  transition: var(--animate-transition);\n} \n\n.profile .post .post__actions .icon-delete:hover {\n  transform: rotate(360deg);\n  transition: var(--animate-transition);\n}\n\n.profile .post .post__actions .icon-edit:hover {\n  transform: scale(1.1);\n  transition: var(--animate-transition);\n}\n\n.profile .post .post__body {\n  font-weight: 300;\n  font-size: 15px;\n  margin-top: 15px;\n}\n\n.profile .post .post__footer {\n  width: 100%;\n  border-top: 1px solid var(--light-gray);\n  margin-top: 10px;\n  padding: 10px 0;\n}\n\n.profile .post .post__footer .post__like .link .icon-like, \n.profile .post .post__footer .post__repost .link .icon-repost,\n.profile .post .post__footer .post__comment .link .icon-comment {\n  margin-right: 5px;\n}\n\n.profile .post .post__footer .post__like .link .text, \n.profile .post .post__footer .post__repost .link .text,\n.profile .post .post__footer .post__comment .link .text {\n  font-weight: 300;\n  font-size: 16px;\n}\n\n/* Верстка страницы сообщений */\n\n.message {\n  width: 920px;\n  display: flex;\n  background-color: var(--white);\n}\n\n.message .message__user-list {\n  width: 300px;\n  height: 100vh;\n  box-shadow: var(--shadow);\n}\n\n.message .message__user-list .message__user-body {\n  width: 100%;\n  padding: 7px 10px;\n  border-top: 1px dashed var(--light-gray);\n  transition: var(--animate-transition);\n}\n\n.message .message__user-list .message__user-body:last-child {\n  border-bottom: 1px dashed var(--light-gray);\n}\n\n.message .message__user-list .message__user-body:hover {\n  background-color: #fafafa;\n  transition: var(--animate-transition);\n}\n\n.message .message__user-list .message__user-body .message__user-container {\n  display: flex;\n  align-items: center;\n}\n\n.message .message__user-list .message__user-body .message__user-container .message__user-ava {\n  margin-right: 10px;\n}\n\n.message .message__user-list .message__user-body .message__user-container .message__user-info {\n  display: flex;\n  justify-content: space-between;\n}\n\n.message .message__user-list .message__user-body .message__user-container .message__user-info .message__name-container {\n  display: flex;\n  flex-direction: column;\n}\n\n.message .message__user-list .message__user-body .message__user-container .message__user-name {\n  font-weight: 300;\n  font-size: 13px;\n  color: var(--gray);\n}\n\n.message .message__user-list .message__user-body .message__user-container .message__last-message {\n  font-style: normal;\n  font-weight: normal;\n  font-size: 15px;\n  color: var(--black);\n}\n\n.message .message__user-list .message__user-body .message__user-container .message__user-ava {\n  margin-right: 10px;\n}\n\n.message .message__user-list .message__user-body .message__user-container .message__send-time {\n  font-weight: 300;\n  font-size: 12px;\n  color: var(--gray);\n  margin-left: 5px;\n}\n\n.message .message__chat-container {\n  width: 620px;\n  position: relative;\n}\n\n.message .message__chat-header {\n  border-bottom: 1px dashed var(--light-gray);\n  padding: 10px 0;\n}\n\n.message .message__chat-header .message__header-container {\n  width: 585px;\n}\n\n.message .message__chat-header .message__header-info .message__header-user {\n  width: 420px;\n}\n\n.message .message__chat-header .message__header-info .message__header-actions {\n  width: 75px;\n}\n\n.message .message__chat-header .message__header-info .message__header-actions .icon-search {\n  width: 20px;\n  height: 20px;\n}\n\n.message .message__chat-header .message__header-ava {\n  position: relative;\n  width: 50px;\n  height: 50px;\n  margin-right: 25px;\n}\n\n.message .message__chat-header .message__header-ava .online-status {\n  width: 13px;\n  height: 13px;  \n  border: 1px solid var(--white);\n  border-radius: 50%;\n  background-color: var(--offline-status);\n  position: absolute;\n  right: 0;\n  top: 70%;\n}\n\n.message .message__chat-header .message__header-info .message__header-user .username {\n  font-style: normal;\n  font-weight: 300;\n  font-size: 24px;\n}\n\n.message .message__chat-box {\n  height: 100%;\n  padding: 0 25px;\n  overflow-y: auto;\n}\n\n.message .message__chat-container .message__chat-header .message__header-info .message__header-user .message__header-online {\n  font-style: normal;\n  font-weight: 300;\n  font-size: 12px;\n  color: var(--dark-gray);\n}\n\n.message .message__chat-container .message__msg {\n  margin: 15px 0;\n}\n\n.message .message__chat-container .message__msg .msg-text {\n  word-wrap: break-word;\n  padding: 8px 16px;\n  box-shadow: 0 0 32px rgb(0, 0, 0/8%) 0 16px 16px -16px rgb(0, 0, 0/10%);\n}\n\n.message .message__chat-container .message__msg-outgoing {\n  display: flex;\n}\n\n.message .message__msg-outgoing .details {\n  max-width: calc(100% - 130px);\n}\n\n.message .message__msg-outgoing .details .msg-text {\n  background: #e6e6e6;\n  color: black;\n  border-radius: 18px 18px 0 18px;\n}\n\n.message .message__msg-outgoing .msg-time,\n.message .message__msg-incoming .msg-time {\n  display: flex;\n  justify-content: flex-end;\n  flex-direction: column;\n  font-weight: 300;\n  font-size: 12px;\n  color: #444;\n}\n\n.message .message__msg-outgoing .msg-time {\n  margin: 0 10px 0 auto;\n}\n\n.message .message__chat-container .message__msg-incoming {\n  display: flex;\n  align-items: flex-end;\n}\n\n.message .message__msg-incoming .details {\n  margin-left: 10px;\n  max-width: calc(100% - 130px);\n}\n\n.message .message__msg-incoming .msg-time {\n  margin: 0 auto 0 10px;\n}\n\n.message .message__msg-incoming .details .msg-text {\n  background: #fff;\n  border-radius: 18px 18px 18px 0;\n  box-shadow: 0px 0px 4px rgba(138, 138, 138, 0.25);\n}\n\n.message .message__form-send-msg {\n  width: 100%;\n  height: 40px;\n  background-color: white;\n  padding-bottom: 15px;\n}\n\n.message .message__form-container {\n  width: 585px;\n  height: 40px;\n  background-color: var(--white);\n  box-shadow: var(--shadow);\n  border-radius: 15px;\n  padding-left: 40px;\n}\n\n.message .message__form-send-msg .message__form-container .message__input-field {\n  width: 80%;\n  height: inherit;\n  resize: none;\n  border: none; \n  outline: none;\n  border-radius: 1px;\n  padding-top: 11px;\n}\n\n.message .message__form-container .message__form-details {\n  width: 110px;\n  margin-right: 20px;\n}\n\n.message .message__form-container .message__btn-send {\n  width: 65px;\n  height: 40px;\n  background-color: var(--purple);\n  border-radius: 15px;\n  border: none;\n}\n\n/* Верстка страницы друзей */\n\n.friend {\n  width: 920px;\n  height: 100vh;\n  display: flex;\n  background-color: var(--white);\n}\n\n.friend .friend__friend-list {\n  width: 620px;\n}\n\n.friend .friend__friend-list .friend__search-container {\n  width: 100%;\n  margin-bottom: 30px;\n}\n\n.friend .friend__friend-list .friend__user {\n  width: 550px;   \n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  margin-bottom: 30px;\n}\n\n.friend .friend__friend-list .friend__users-container {\n  width: 100%;\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  overflow-y: hidden;\n} \n\n.friend .friend__friend-list .friend__users-container:hover {\n  overflow-y: auto;\n}\n\n.friend .friend__friend-list .friend__user .friend__user-info {\n  display: flex;\n  align-items: center;\n}\n\n.friend .friend__friend-list .friend__user .friend__user-info .friend__user-ava {\n  margin-right: 15px;\n}\n\n.friend .friend__friend-list .friend__user .friend__user-info .friend__user-name {\n  display: flex;\n  flex-direction: column;\n}\n\n.friend .friend__friend-list .friend__user .friend__user-info .friend__user-name .username {\n  font-style: normal;\n  font-weight: normal;\n  font-size: 20px;\n}\n\n.friend .friend__friend-list .friend__user .friend__user-info .friend__user-name .online-status {\n  font-style: normal;\n  font-weight: 300;\n  font-size: 15px;\n  color: var(--gray);\n}\n\n.friend .friend__user .friend__user-actions {\n  width: 75px;\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n}\n\n.friend .friend__right-side {\n  width: 300px;\n  box-shadow: var(--shadow);\n}\n\n.friend .friend__right-side .friend__header {\n  width: 100%;\n  text-align: center;\n  color: var(--gray);\n  font-style: normal;\n  font-weight: 500;\n  font-size: 24px;\n  border-bottom: 1px dashed var(--light-gray);\n  padding: 20px 0;\n}\n\n.friend .friend__right-side .link-all-users {\n  padding: 25px 0;\n}\n\n.friend .friend__right-side .friend__all-users {\n  font-style: normal;\n  font-weight: normal;\n  font-size: 20px;\n}\n\n.friend .friend__right-side .friend__friend-request {\n  width: 250px;\n}\n\n.friend .friend__right-side .friend__friend-request .friend__request-header {\n  width: 100%;\n}\n\n.friend .friend__right-side .friend__friend-request .friend__request-header .title {\n  font-style: normal;\n  font-weight: normal;\n  font-size: 20px;\n  color: var(--black);\n}\n\n.friend .friend__right-side .friend__friend-request .friend__request-list {\n  max-height: 315px;\n  border-top: 1px dashed var(--light-gray);\n  border-bottom: 1px dashed var(--light-gray);\n  margin-top: 15px;\n  padding: 0 5px 5px 0;\n  overflow-y: auto;\n}\n\n.friend .friend__right-side .friend__friend-request .friend__request-list .friend__user-request {\n  width: 100%;\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  margin-top: 5px;\n}\n\n.friend .friend__right-side  .friend__request-list .friend__user-request .friend__user-info {\n  display: flex;\n  align-items: center;\n}\n\n.friend .friend__right-side  .friend__request-list .friend__user-request .friend__user-info .link-ava {\n  margin-right: 15px;\n}\n\n.friend .friend__right-side  .friend__request-list .friend__user-request .friend__user-info .username {\n  font-style: normal;\n  font-weight: 500;\n  font-size: 18px;\n}\n\n.friend .friend__right-side  .friend__request-list .friend__user-request .friend__request-actions {\n  width: 45px;\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n}\n\n.friend .friend__right-side  .friend__request-list .friend__user-request .friend__request-actions .btn-add-friend {\n  border: none;\n  background-color: var(--white);\n}\n\n/* Верстка страницы с музыкой */\n\n.music {\n  width: 920px;\n  height: 100vh;\n  display: flex;\n  background-color: var(--white);\n}\n\n.music .music__search-container {\n  width: 100%;\n}\n\n.music .music__playlist {\n  width: 620px;\n}\n\n.music .music__playlist .music__now-playing {\n  width: 550px;\n}\n\n.music .music__playlist .music__now-playing .music__track-header {\n  width: 100%;\n  margin-bottom: 10px;\n}\n\n.music .music__playlist .music__now-playing .music__track-header .music__actions {\n  width: 200px;\n}\n\n.music .music__playlist .music__now-playing .music__track-header .music__actions .text {\n  font-style: normal;\n  font-weight: 500;\n  font-size: 12px;\n}\n\n.music .music__playlist .music__now-playing .music__now-track-info {\n  width: 255px;\n  margin: 0 10px;\n}\n\n.music .music__playlist .track-artist {\n  font-style: normal;\n  font-weight: 300;\n  font-size: 12px;\n  color: var(--dark-gray);\n}\n\n.music .music__playlist .track-name {\n  font-style: normal;\n  font-weight: 500;\n  font-size: 12px;\n  color: var(--dark-gray);\n}\n\n.music .music__playlist .music__now-playing .music__now-track-info .track-time {\n  font-style: normal;\n  font-weight: 300;\n  font-size: 13px;\n  color: var(--gray);\n}\n\n.music .music__playlist .music__now-playing .music__now-track-info .music__track-input .input-range {\n  width: 100%;\n}\n\n.music .music__playlist .music__now-playing .music__now-track {\n  width: 550px;\n  height: 60px;\n  border-radius: 15px;\n  box-shadow: var(--shadow);\n}\n\n.music .music__playlist .music__now-playing .music__now-track .music__track-controls {\n  width: 55px;\n  margin: 0 10px;\n}\n\n.music .music__playlist .track-actions {\n  width: 130px;\n}\n\n.music .music__playlist .music__title {\n  font-style: normal;\n  font-weight: 300;\n  font-size: 15px;\n  color: var(--gray);\n}\n\n.music .music__playlist .music__track-list .music__track-list-header {\n  margin: 20px 0 10px 0;\n}\n\n.music .music__playlist .music__track {\n  width: 550px;\n  height: 65px;\n  border-radius: 15px;\n  cursor: pointer;\n  transition: var(--animate-transition);\n  margin-bottom: 10px;\n  padding: 0 20px;\n}\n\n.music .music__playlist .music__track:hover {\n  background-color: var(--white-gray);\n  transition: var(--animate-transition);\n}\n\n.music .music__playlist .music__track-info .music__track-desc {\n  margin-left: 15px;\n}\n\n.music .music__right-side {\n  width: 300px;\n  box-shadow: var(--shadow);\n}\n\n.music .music__right-side .music__album {\n  width: 120px;\n  height: 120px;\n  border-radius: 15px;\n  /* background-image: url('./img/Audio.jpg'); */\n  background-size: 100% 100%;\n  margin-bottom: 15px;\n}\n\n.music .music__right-side .music__album:hover > .music__album-container {\n  display: flex;\n  transition: var(--animate-transition);\n  opacity: 1;\n}\n\n.music .music__right-side .music__album .music__album-container {\n  opacity: 0;\n  position: relative;\n  width: 100%;\n  height: 100%;\n  border-radius: 15px;\n  background:rgba(0,0,0,0.4);\n  padding: 10px;\n  cursor: pointer;\n  transition: var(--animate-transition);\n}\n\n.music .music__right-side .music__album .music__album-info .album-name {\n  font-style: normal;\n  font-weight: bold;\n  font-size: 15px;\n  color: var(--white);\n}\n\n.music .music__right-side .music__album .music__album-info .album-artist {\n  font-style: normal;\n  font-weight: 300;\n  font-size: 12px;\n  color: var(--white);\n}\n\n.music .music__right-side .music__album .album-year {\n  position: absolute;\n  right: 10px;\n  bottom: 10px;\n  font-style: normal;\n  font-weight: 300;\n  font-size: 10px;\n  color: var(--white);\n  -webkit-user-select: none;\n     -moz-user-select: none;\n      -ms-user-select: none;\n          user-select: none;\n}\n\n.music .music__right-side .music__albums {\n  width: 255px;\n  flex-wrap: wrap;\n}\n\n.gallery {\n  width: 920px;\n  background-color: var(--white);\n  padding: 30px 15px;\n}\n\n.gallery .gallery__header {\n  font-weight: 500;\n  font-size: 24px;\n  color: var(--gray);\n  margin-bottom: 15px;\n}\n\n.gallery .gallery__photos {\n  margin-top: 15px;\n  flex-wrap: wrap;\n}\n\n.gallery .gallery__photos .gallery__photo-body {\n  max-width: 33%;\n}\n\n.gallery .gallery__photos .gallery__photo-body  .gallery__photo {\n  width: 100%;\n}", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "* {\n  margin: 0;\n  padding: 0;\n  box-sizing: border-box;\n}\n\n:root {\n  --purple: #BD2A6C;\n  --purple-disabled: #E1658E;\n  --pink: #D592FF;\n  --white: #fff;\n  --black: #000;\n  --gray: #444;\n  --dark-gray: #181818;\n  --white-gray: #fafafa;\n  --light-gray: #e6e6e6;\n  --shadow: 0px 0px 4px rgba(138, 138, 138, 0.25);\n  --hover-shadow: 0px 0px 4px rgba(138, 138, 138, 0.40);\n  --animate-transition: .4s ease;\n  --online-status: #44C959;\n  --offline-status: #D63737;\n  --c4: #c4c4c4;\n}\n\n/* Стили лоудера */\n\n.loader-wrapper {\n  position: absolute;\n  z-index: 100;\n  width: 100%;\n  height: 100vh;\n  top: 0;\n  left: 0;\n  background-color: rgba(0, 0, 0, 0.4);\n  display: flex;\n  align-items: center;\n  justify-content: center;\n}\n\n.loader-wrapper.hide {\n  display: none;\n}\n\n.loader-box {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  width: 150px;\n  height: 150px;\n  position: absolute;\n  left: 50%;\n  top: 50%;\n  transform: translate(-50%, -50%);\n}\n\n.loader {\n  border: 12px solid #f3f3f3;\n  border-radius: 50%;\n  border-top: 12px solid #BD2A6C;\n  width: 100px;\n  height: 100px;\n  -webkit-animation: spin 2s linear infinite; /* Safari */\n  animation: spin 2s linear infinite;\n}\n\n/* Safari */\n@-webkit-keyframes spin {\n0% { -webkit-transform: rotate(0deg); }\n100% { -webkit-transform: rotate(360deg); }\n}\n\n@keyframes spin {\n0% { transform: rotate(0deg); }\n100% { transform: rotate(360deg); }\n}\n\n/* Стили скроллбара */\n\n::-webkit-scrollbar {\n  width: 4px;\n}\n\n::-webkit-scrollbar-thumb {\n  background-color: #e6e6e6;\n  border-radius: 3px;\n}\n\n::-webkit-scrollbar-thumb:hover {\n  background-color: #c4c4c4;\n}\n\n::-webkit-scrollbar-track {\n  background-color: white;\n}\n\ninput::-moz-placeholder {\n  font-weight: 300;\n  font-size: 16px;\n  color: var(--light-gray);\n}\n\ninput:-ms-input-placeholder {\n  font-weight: 300;\n  font-size: 16px;\n  color: var(--light-gray);\n}\n\ninput::placeholder {\n  font-weight: 300;\n  font-size: 16px;\n  color: var(--light-gray);\n}\n\n/* Стили ползунка для музыки */\n\n.input-range {\n  -webkit-appearance: none;\n  background: #e6e6e6;\n  width: 100%;\n  height: 3px;\n  outline: none;\n  border: none;\n  border-radius: 5px;\n  margin-top: 5px;\n  padding: 0;\n  transition: 1s ease;\n  cursor: pointer;\n}\n\n.input-range::-webkit-slider-thumb {\n  -webkit-appearance: none;\n  border-radius: 50%;\n  background-color: #B60F46;\n  width: 12px;\n  height: 12px;\n  cursor: pointer;\n}\n\n.input-range::-webkit-slider-thumb:hover,\n.input-range::-webkit-slider-thumb:active {\n  background-color: #8A1F4F;\n  -webkit-transition: 1s ease;\n  transition: 1s ease;\n}\n\n.input-range::-moz-range-thumb:hover,\n.input-range::-moz-range-thumb:active {\n  background-color: #8A1F4F;\n  -moz-transition: 1s ease;\n  transition: 1s ease;\n}\n\n.input-range::-moz-range-track {\n  -moz-appearance: none;\n  border-radius: 50%;\n  background-color: #B60F46;\n  width: 12px;\n  height: 12px;\n  cursor: pointer;\n}\n\n.input-range::-moz-range-thumb {\n  -moz-appearance: none;\n  border-radius: 50%;\n  background-color: #B60F46;\n  width: 12px;\n  height: 12px;\n  cursor: pointer;\n}\n\n/* Стили поиска */\n\n.search-box {\n  position: relative;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  height: 55px;\n  margin: 5px 5px 10px 5px;\n}\n\n.search-box .input-search {\n  width: 100%;\n  height: 100%;\n  border: none;\n  text-align: center;\n  padding: 5px 5px 5px 10px;\n  outline: 1px dashed #e6e6e6;\n  border-radius: 5px;\n}\n\n.search-box .icon-search {\n  position: absolute;\n  right: 0;\n  margin-right: 10px;\n}\n\n.flex {\n  display: flex;\n}\n\n.flex_column {\n  display: flex;\n  flex-direction: column;\n}\n\n.flex_center_center {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n}\n\n.flex_center_flex-end {\n  display: flex;\n  align-items: center;\n  justify-content: flex-end;\n}\n\n.flex_center_space-between {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n}\n\n.ai_center {\n  align-items: center;\n}\n\n.ai_flex-start {\n  align-items: flex-start;\n}\n\n.ai_flex-end {\n  align-items: flex-end;\n}\n\n.jc_center {\n  justify-content: center;\n}\n\n.jc_space-between {\n  justify-content: space-between;\n}\n\n/* Общий стиль для кебаб с 3 точками */\n\n.kebab {\n  width: 5px;\n  height: 20px;\n  display: flex;\n  flex-direction: column;\n  justify-content: space-between;\n}\n\n.kebab .circle {\n  width: 5px;\n  height: 5px;\n  background-color: var(--black);\n  border-radius: 50%;\n}\n\n.kebab.gray{\n  height: 20px;\n}\n\n.kebab.gray .circle {\n  background-color: var(--light-gray);\n}\n\n.cur_pointer {\n  cursor: pointer;\n}\n\n.no-select {\n  user-select: none;\n  -webkit-touch-callout: none; /* iOS Safari */\n  -webkit-user-select: none; /* Safari */\n  -khtml-user-select: none; /* Konqueror HTML */\n  -moz-user-select: none; /* Old versions of Firefox */\n  -ms-user-select: none; /* Internet Explorer/Edge */\n}\n\n/* Обнуление стилей списков */\n\nul {\n  list-style-type: none;\n}\n\n/* Стили для аватарок разных размеров */\n\n.ava-35, .ava-50, .ava-60, .ava-70 {\n  border-radius: 50%;\n  box-shadow: var(--shadow);\n  -o-object-fit: cover;\n     object-fit: cover;\n}\n\n.ava-35 {\n  width: 35px;\n  height: 35px;\n}\n\n.ava-50 {\n  width: 50px;\n  height: 50px;\n}\n\n.ava-60 {\n  width: 60px;\n  height: 60px;\n}\n\n.ava-70 {\n  width: 70px;\n  height: 70px;\n}\n\n.icon {\n  width: 20px;\n  height: 20px;\n}\n\n/* Общие стили для имени пользователя */\n\n.username {\n  color: var(--black);\n  cursor: pointer;\n  transition: var(--animate-transition);\n}\n\n.username:hover {\n  color: var(--purple);\n  transition: var(--animate-transition);\n}\n\n/* Общие стили для ссылок */\n\n.link {\n  cursor: pointer;\n  transition: var(--animate-transition);\n}\n\n.link:hover {\n  color: var(--purple);\n  transition: var(--animate-transition);\n}\n\nbody {\n  font-family: 'Roboto';\n}\n\na {\n  text-decoration: none;\n  color: black;\n}\n\n#app {\n  width: 100%;\n  height: 100%;\n}\n\n.main {\n  width: 1220px;\n  height: 100vh;\n  margin: 0 auto;\n}\n\n.auth {\n  width: 100%;\n  height: 100vh;\n  background-size: 100% 100%;\n  font-family: 'Roboto', sans-serif;\n}\n\n.login {\n  width: 331px;\n  position: absolute;\n  left: 50%;\n  top: 50%;\n  transform: translate(-50%, -50%);\n  height: auto;\n  background: rgba(255, 255, 255, 0.9);\n  border-radius: 15px;\n}\n\n.login .login__form  {\n  border: none;\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  text-align: center;\n}\n\n.input {\n  width: 250px;\n  height: 45px;\n  padding-left: 15px;\n  background: #FFFFFF;\n  border: 1px solid #C4C4C4;\n  box-sizing: border-box;\n  border-radius: 15px;\n  outline: none;\n  margin-bottom: 20px;\n  transition: .2s ease;\n}\n\n.input::-webkit-input-placeholder {\n  font-weight: 300;\n  font-size: 16px;\n  color: var(--c4);\n}\n\n.input::-moz-placeholder {\n  font-weight: 300;\n  font-size: 16px;\n  color: var(--c4);\n}\n\n.login .login__form  .input.empty {\n  border: 1px solid #B60F46;\n  transition: .2s ease;\n}\n\n.input.empty::-webkit-input-placeholder {\n  color: #B60F46;\n}\n\n.input.empty::-moz-placeholder {\n  color: #B60F46;\n}\n\n.login form  .input:focus {\n  border-color: #777;\n}\n\n.btn-auth {\n  width: 251px;\n  height: 44px;\n  border: none;\n  margin: 18px auto;\n  font-family: Pacifico;\n  font-size: 18px;\n  line-height: 32px;\n  color: #FFFFFF;\n  background: #B60F46;\n  border-radius: 15px;\n  outline: none;\n  cursor: pointer;\n}\n\n.auth .link { \n  margin-bottom: 30px;\n  font-size: 12px;\n  line-height: 14px;\n  color: #3D3AD4;\n  cursor: pointer;\n  text-decoration: underline;\n}\n\n.error-box {\n  display: flex;\n  border: 1px solid #B60F46;\n  color:#B60F46;\n  border-radius: 10px;\n  width: 250px;\n  min-height: 45px;\n  height: auto;\n  margin-bottom: 20px;\n  align-items: center;\n  justify-content: center;\n}\n\n.error-box.hide {\n  display: none;\n}\n\n.register {\n  width: 331px;\n  position: absolute;\n  left: 50%;\n  top: 50%;\n  transform: translate(-50%, -50%);\n  height: auto;\n  background: rgba(255, 255, 255, 0.9);\n  border-radius: 15px;\n}\n\n.register .register-form  {\n  border: none;\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  text-align: center;\n}\n\n.register .register-form  .input.empty {\n  border: 1px solid #B60F46;\n  transition: .2s ease;\n}\n\n.register .register-form  .input.empty-date {\n  color: #B60F46;\n  border: 1px solid #B60F46;\n  transition: .2s ease;\n}\n\n.input.empty::-webkit-input-placeholder {\n  color: #B60F46;\n}\n\n.input.empty::-moz-placeholder {\n  color: #B60F46;\n}\n\n.register .register-form  .input:focus {\n  border-color: #777;\n}\n\n.login .login-form .link,\n.register .register-form .link {\n  margin-bottom: 30px;\n  font-size: 12px;\n  line-height: 14px;\n  color: #3D3AD4;\n}\n\n.logo {\n  margin: 30px auto;  \n  width: 141px;\n  height: 35px;\n}\n\n.sidebar {\n  padding-top: 30px;\n  width: 300px;\n  height: 100vh;\n  background-color: var(--white);\n  box-shadow: var(--shadow);\n  z-index: 10;\n}\n\n.sidebar .sidebar__user-container {\n  width: 245px;\n  margin: 50px 0 40px 0;\n}\n\n.sidebar .sidebar__user-container .sidebar__user-ava {\n  margin-right: 15px;\n}\n\n.sidebar .sidebar__user-info {\n  margin-right: 20px;\n}\n\n.sidebar .sidebar__user-actions {\n  width: 60px;\n  padding-top: 1px;\n}\n\n.sidebar .sidebar__user-actions .icon-settings,\n.sidebar .sidebar__user-actions .icon-logout {\n  cursor: pointer;\n  transition: var(--animate-transition);\n}\n\n.sidebar .sidebar__user-actions .icon-settings:hover {\n  transition: var(--animate-transition);\n  transform: rotate(360deg);\n}\n\n.sidebar .sidebar__user-actions .icon-logout:hover {\n  transform: scale(1.1);\n  transition: var(--animate-transition);\n}\n\n.sidebar .sidebar__user-info .username {\n  font-weight: 500;\n  font-size: 18px;\n}\n\n.sidebar .sidebar__user-info .sidebar__my-profile {\n  font-weight: 300;\n  font-size: 13px;\n  color: var(--gray);\n}\n\n.sidebar .sidebar__menu-container .sidebar__menu {\n  height: 340px;\n}\n\n.sidebar .sidebar__menu-container .sidebar__menu .sidebar__menu-item {\n  cursor: pointer;\n  transition: var(--animate-transition);\n}\n\n.sidebar .sidebar__menu-container .sidebar__menu .sidebar__item-link:hover {\n  color: var(--purple);\n  transition: var(--animate-transition);\n}\n\n.sidebar__item-link:hover > .sidebar__item-icon {\n  transform: rotate(180deg);\n  transition: var(--animate-transition);\n}\n\n.sidebar .sidebar__menu-container .sidebar__menu .sidebar__item-link .sidebar__item-text {\n  margin-left: 10px;\n  font-size: 20px;\n}\n\n.sidebar__menu-item .sidebar__count-body {\n  position: relative;\n  left: 15px;\n  padding: 3px 5px;\n  font-size: 12px;\n  font-weight: bold;\n  background-color: var(--purple);\n  color: var(--white);\n  border-radius: 7px;\n}\n\n.sidebar .sidebar__audio {\n  width: 95%;\n  margin-top: 55px;\n  padding: 3px; \n}\n\n.sidebar .sidebar__audio-cover {\n  width: 50px;\n  height: 50px;\n  border-radius: 50%;\n  -o-object-fit: cover;\n     object-fit: cover;\n  margin-right: 15px;\n}\n\n.sidebar .sidebar__audio .sidebar__track-info .sidebar__audio-artist {\n  font-weight: 300;\n  font-size: 13px;\n}\n\n.sidebar .sidebar__audio .sidebar__track-info .sidebar__audio-name {\n  font-weight: 500;\n  font-size: 13px;\n}\n\n.sidebar .sidebar__audio .sidebar__audio-actions {\n  width: 70px;\n}\n\n.sidebar .sidebar__audio-duration .text-duration {\n  font-style: normal;\n  font-weight: 300;\n  font-size: 13px;\n  color: var(--gray);\n  margin-top: 5px;\n}\n\n/* Верстка профиля пользователя */\n\n.profile {\n  width: 920px;\n  padding: 30px 0 0 30px;\n  background-color: var(--white);\n}\n\n.profile .profile__user-avatar .left-circle {\n  padding-left: 3px;\n  border-radius: 164px 0 0 164px;\n  box-shadow: var(--shadow);\n}\n\n.profile .profile__user-avatar .left-circle .icon-msg {\n  position: absolute;\n}\n\n.profile .profile__user-avatar .right-circle {\n  border-radius: 0 164px 164px 0;\n  box-shadow: var(--shadow);\n  padding-right: 3px;\n}\n\n.profile .profile__user-avatar .right-circle .icon-friend {\n  position: absolute;\n}\n\n.profile .profile__user-avatar .profile__avatar {\n  position: absolute;\n  width: 280px;\n  height: 280px;\n  -o-object-fit: cover;\n     object-fit: cover;\n  border-radius: 50%;\n}\n\n.profile .profile__user-avatar .profile__avatar .profile__edit-ava {\n  position: absolute;\n  width: 100%;\n  height: 100%;\n  color: var(--white);\n  background-color: rgba(0,0,0,0.5);\n  border-radius: 50%;\n  opacity: 0;\n  transition: var(--animate-transition);\n  cursor: pointer;\n}\n\n.profile .profile__user-avatar .profile__avatar .profile__edit-ava:hover {\n  transition: var(--animate-transition);\n  opacity: 1;\n}\n\n.profile .profile__user-avatar .profile__avatar .avatar-img {\n  width: 280px;\n  height: 280px;\n  -o-object-fit: cover;\n     object-fit: cover;\n  border-radius: 50%;\n}\n\n.profile .profile__user-avatar .link-btn__left-circle,\n.profile .profile__user-avatar .link-btn__right-circle {\n  transition: var(--animate-transition);\n  cursor: pointer;\n}\n\n.profile .profile__user-container .profile__user-avatar .icon-circle {\n  width: 100%;\n  height: 100%;\n}\n\n.profile .profile__user-avatar .link-btn__left-circle {\n  border-radius: 164px 0 0 164px;\n  \n}\n\n.profile .profile__user-avatar .link-btn__right-circle {\n  border-radius: 0 164px 164px 0; \n}\n\n.profile .profile__user-avatar .link-btn__left-circle:hover,\n.profile .profile__user-avatar .link-btn__right-circle:hover {\n  box-shadow: var(--hover-shadow);\n  transition: var(--animate-transition);\n}\n\n.profile .profile__user-info {\n  width: 470px;\n  margin-left: 30px;\n}\n\n.profile .profile__user-info .profile__name-container {\n  width: 100%;\n}\n\n.profile .profile__user-info .profile__name-container .profile__username {\n  font-size: 30px;\n  font-weight: normal;\n  font-family: 'Pacifico';\n  color: var(--purple);\n}\n\n.profile .profile__user-info .profile__name-container .online-status {\n  width: 45px;\n}\n\n.profile .profile__user-info .profile__name-container .online-status .online-circle {\n  width: 5px;\n  height: 5px;\n  border-radius: 50%;\n  background-color: var(--online-status);\n}\n\n.profile .profile__user-info .profile__name-container .online-status .online-text {\n  font-size: 12px;\n  color: #181818;\n}\n\n.profile .profile__user-info .profile__user-status {\n  width: 100%;\n  height: 35px;\n  background-color: var(--white-gray);\n  border-radius: 10px;\n  padding-left: 10px;\n  margin: 5px 0 20px 0;\n}\n\n.profile .profile__user-info .profile__user-status .profile__status-text {\n  font-size: 18px;\n  font-weight: 300;\n  color: var(--black);\n}\n\n.profile .profile__user-info .profile__more-info {\n  width: 415px;\n}\n\n.profile .profile__user-info .profile__list-info {\n  width: 215px;\n  height: 170px;\n  padding-left: 10px;\n}\n\n.profile .profile__user-info .profile__list-info .profile__list-item {\n  width: 100%;\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n}\n\n.profile .profile__user-info .profile__list-info .profile__list-item .profile__item-caption {\n  font-size: 18px;\n  color: #515151;\n  font-weight: 300;\n}\n\n.profile .profile__user-info .profile__list-info .profile__list-item .profile__item-value {\n  width: 90px;\n  height: 35px;\n  display: flex;\n  align-items: center;\n  background-color: var(--white-gray);\n  border-radius: 10px;\n  padding-left: 10px;\n}\n\n.profile .profile__personal-info {\n  width: 170px;\n  height: 170px;\n  flex-wrap: wrap;\n}\n\n.profile .profile__user-info .profile__info-item  {\n  width: 50%;\n}\n\n.profile .profile__user-info .profile__info-item .profile__item-link {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  cursor: pointer;\n  transition: var(--animate-transition);\n}\n\n.profile .profile__user-info .profile__info-item .profile__item-link .icon-item:hover {\n  transform: scale(1.1);\n  transition: var(--animate-transition);\n}\n\n.profile .profile__personal-info .profile__info-item .profile__item-link .item-text {\n  font-size: 13px;\n  color: #181818;\n  font-weight: 300;\n}\n\n.profile .profile__personal-info .profile__info-item .profile__item-link .item-count {\n  font-size: 20px;\n  color: var(--purple);\n  font-weight: normal;\n}\n\n/* Верстка блока постов пользователя */\n\n.profile .posts .posts__add-post {\n  width: 825px;\n  height: -webkit-fit-content;\n  height: -moz-fit-content;\n  height: fit-content;\n  box-shadow: var(--shadow);\n  border-radius: 15px;\n  margin-top: 25px;\n}\n\n.profile .posts .posts__add-post-avatar {\n  margin: 5px 10px 0 35px;\n}\n\n.profile .posts .posts__add-input {\n  width: 65%;\n  height: 65px;\n  resize: none;\n  outline: var(--white-gray);\n  border: none;\n  padding-top: 22px;\n}\n\n.profile .posts__add-post .posts__post-actions {\n  width: 115px;\n  height: 20px;\n  margin-top: 20px;\n}\n\n.profile .posts__add-post .posts__post-actions .icon-attach {\n  cursor: pointer;\n  transition: var(--animate-transition);\n}\n\n.profile .posts__add-post .posts__post-actions .icon-attach:hover {\n  transform: scale(1.1);\n  transition: var(--animate-transition);\n}\n\n.profile .posts__add-post .posts__add-btn-link {\n  width: 20px;\n  height: 20px;\n}\n\n.profile .posts__add-post .posts__add-btn {\n  margin: 20px 0 0 35px;\n  width: 20px;\n  height: 20px;\n  cursor: pointer;\n  transition: var(--animate-transition);\n}\n\n.profile .posts__add-post .posts__add-btn:hover {\n  transform: scale(1.1);\n  transition: var(--animate-transition);\n}\n\n.profile .posts .post {\n  width: 825px;\n  display: flex;\n  border-radius: 15px;\n  box-shadow: var(--shadow);\n  padding: 25px 25px 0 25px;\n  margin: 25px 0;\n}\n\n.profile .post .post__container {\n  width: 100%;\n  margin-left: 15px;\n}\n\n.profile .post .post__container .post__header {\n  width: 100%;\n}\n\n.profile .post .post__container .post__header .post__username {\n  width: -webkit-fit-content;\n  width: -moz-fit-content;\n  width: fit-content;\n}\n\n.profile .post .post__container .post__header .post__username .username {\n  font-weight: 500;\n  font-size: 18px;\n}\n\n.profile .post .post__container .post__header .post__username .date {\n  font-weight: 300;\n  font-size: 12px;\n  margin-left: 10px;\n  padding-top: 5px;\n}\n\n.profile .post .post__actions {\n  width: 85px;\n}\n\n.profile .post .post__actions .icon-delete,\n.profile .post .post__actions .icon-edit {\n  cursor: pointer;\n  transition: var(--animate-transition);\n} \n\n.profile .post .post__actions .icon-delete:hover {\n  transform: rotate(360deg);\n  transition: var(--animate-transition);\n}\n\n.profile .post .post__actions .icon-edit:hover {\n  transform: scale(1.1);\n  transition: var(--animate-transition);\n}\n\n.profile .post .post__body {\n  font-weight: 300;\n  font-size: 15px;\n  margin-top: 15px;\n}\n\n.profile .post .post__footer {\n  width: 100%;\n  border-top: 1px solid var(--light-gray);\n  margin-top: 10px;\n  padding: 10px 0;\n}\n\n.profile .post .post__footer .post__like .link .icon-like, \n.profile .post .post__footer .post__repost .link .icon-repost,\n.profile .post .post__footer .post__comment .link .icon-comment {\n  margin-right: 5px;\n}\n\n.profile .post .post__footer .post__like .link .text, \n.profile .post .post__footer .post__repost .link .text,\n.profile .post .post__footer .post__comment .link .text {\n  font-weight: 300;\n  font-size: 16px;\n}\n\n/* Верстка страницы сообщений */\n\n.message {\n  width: 920px;\n  display: flex;\n  background-color: var(--white);\n}\n\n.message .message__user-list {\n  width: 300px;\n  height: 100vh;\n  box-shadow: var(--shadow);\n}\n\n.message .message__user-list .message__user-body {\n  width: 100%;\n  padding: 7px 10px;\n  border-top: 1px dashed var(--light-gray);\n  transition: var(--animate-transition);\n}\n\n.message .message__user-list .message__user-body:last-child {\n  border-bottom: 1px dashed var(--light-gray);\n}\n\n.message .message__user-list .message__user-body:hover {\n  background-color: #fafafa;\n  transition: var(--animate-transition);\n}\n\n.message .message__user-list .message__user-body .message__user-container {\n  display: flex;\n  align-items: center;\n}\n\n.message .message__user-list .message__user-body .message__user-container .message__user-ava {\n  margin-right: 10px;\n}\n\n.message .message__user-list .message__user-body .message__user-container .message__user-info {\n  display: flex;\n  justify-content: space-between;\n}\n\n.message .message__user-list .message__user-body .message__user-container .message__user-info .message__name-container {\n  display: flex;\n  flex-direction: column;\n}\n\n.message .message__user-list .message__user-body .message__user-container .message__user-name {\n  font-weight: 300;\n  font-size: 13px;\n  color: var(--gray);\n}\n\n.message .message__user-list .message__user-body .message__user-container .message__last-message {\n  font-style: normal;\n  font-weight: normal;\n  font-size: 15px;\n  color: var(--black);\n}\n\n.message .message__user-list .message__user-body .message__user-container .message__user-ava {\n  margin-right: 10px;\n}\n\n.message .message__user-list .message__user-body .message__user-container .message__send-time {\n  font-weight: 300;\n  font-size: 12px;\n  color: var(--gray);\n  margin-left: 5px;\n}\n\n.message .message__chat-container {\n  width: 620px;\n  position: relative;\n}\n\n.message .message__chat-header {\n  border-bottom: 1px dashed var(--light-gray);\n  padding: 10px 0;\n}\n\n.message .message__chat-header .message__header-container {\n  width: 585px;\n}\n\n.message .message__chat-header .message__header-info .message__header-user {\n  width: 420px;\n}\n\n.message .message__chat-header .message__header-info .message__header-actions {\n  width: 75px;\n}\n\n.message .message__chat-header .message__header-info .message__header-actions .icon-search {\n  width: 20px;\n  height: 20px;\n}\n\n.message .message__chat-header .message__header-ava {\n  position: relative;\n  width: 50px;\n  height: 50px;\n  margin-right: 25px;\n}\n\n.message .message__chat-header .message__header-ava .online-status {\n  width: 13px;\n  height: 13px;  \n  border: 1px solid var(--white);\n  border-radius: 50%;\n  background-color: var(--offline-status);\n  position: absolute;\n  right: 0;\n  top: 70%;\n}\n\n.message .message__chat-header .message__header-info .message__header-user .username {\n  font-style: normal;\n  font-weight: 300;\n  font-size: 24px;\n}\n\n.message .message__chat-box {\n  height: 100%;\n  padding: 0 25px;\n  overflow-y: auto;\n}\n\n.message .message__chat-container .message__chat-header .message__header-info .message__header-user .message__header-online {\n  font-style: normal;\n  font-weight: 300;\n  font-size: 12px;\n  color: var(--dark-gray);\n}\n\n.message .message__chat-container .message__msg {\n  margin: 15px 0;\n}\n\n.message .message__chat-container .message__msg .msg-text {\n  word-wrap: break-word;\n  padding: 8px 16px;\n  box-shadow: 0 0 32px rgb(0, 0, 0/8%) 0 16px 16px -16px rgb(0, 0, 0/10%);\n}\n\n.message .message__chat-container .message__msg-outgoing {\n  display: flex;\n}\n\n.message .message__msg-outgoing .details {\n  max-width: calc(100% - 130px);\n}\n\n.message .message__msg-outgoing .details .msg-text {\n  background: #e6e6e6;\n  color: black;\n  border-radius: 18px 18px 0 18px;\n}\n\n.message .message__msg-outgoing .msg-time,\n.message .message__msg-incoming .msg-time {\n  display: flex;\n  justify-content: flex-end;\n  flex-direction: column;\n  font-weight: 300;\n  font-size: 12px;\n  color: #444;\n}\n\n.message .message__msg-outgoing .msg-time {\n  margin: 0 10px 0 auto;\n}\n\n.message .message__chat-container .message__msg-incoming {\n  display: flex;\n  align-items: flex-end;\n}\n\n.message .message__msg-incoming .details {\n  margin-left: 10px;\n  max-width: calc(100% - 130px);\n}\n\n.message .message__msg-incoming .msg-time {\n  margin: 0 auto 0 10px;\n}\n\n.message .message__msg-incoming .details .msg-text {\n  background: #fff;\n  border-radius: 18px 18px 18px 0;\n  box-shadow: 0px 0px 4px rgba(138, 138, 138, 0.25);\n}\n\n.message .message__form-send-msg {\n  width: 100%;\n  height: 40px;\n  background-color: white;\n  padding-bottom: 15px;\n}\n\n.message .message__form-container {\n  width: 585px;\n  height: 40px;\n  background-color: var(--white);\n  box-shadow: var(--shadow);\n  border-radius: 15px;\n  padding-left: 40px;\n}\n\n.message .message__form-send-msg .message__form-container .message__input-field {\n  width: 80%;\n  height: inherit;\n  resize: none;\n  border: none; \n  outline: none;\n  border-radius: 1px;\n  padding-top: 11px;\n}\n\n.message .message__form-container .message__form-details {\n  width: 110px;\n  margin-right: 20px;\n}\n\n.message .message__form-container .message__btn-send {\n  width: 65px;\n  height: 40px;\n  background-color: var(--purple);\n  border-radius: 15px;\n  border: none;\n}\n\n/* Верстка страницы друзей */\n\n.friend {\n  width: 920px;\n  height: 100vh;\n  display: flex;\n  background-color: var(--white);\n}\n\n.friend .friend__friend-list {\n  width: 620px;\n}\n\n.friend .friend__friend-list .friend__search-container {\n  width: 100%;\n  margin-bottom: 30px;\n}\n\n.friend .friend__friend-list .friend__user {\n  width: 550px;   \n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  margin-bottom: 30px;\n}\n\n.friend .friend__friend-list .friend__users-container {\n  width: 100%;\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  overflow-y: hidden;\n} \n\n.friend .friend__friend-list .friend__users-container:hover {\n  overflow-y: auto;\n}\n\n.friend .friend__friend-list .friend__user .friend__user-info {\n  display: flex;\n  align-items: center;\n}\n\n.friend .friend__friend-list .friend__user .friend__user-info .friend__user-ava {\n  margin-right: 15px;\n}\n\n.friend .friend__friend-list .friend__user .friend__user-info .friend__user-name {\n  display: flex;\n  flex-direction: column;\n}\n\n.friend .friend__friend-list .friend__user .friend__user-info .friend__user-name .username {\n  font-style: normal;\n  font-weight: normal;\n  font-size: 20px;\n}\n\n.friend .friend__friend-list .friend__user .friend__user-info .friend__user-name .online-status {\n  font-style: normal;\n  font-weight: 300;\n  font-size: 15px;\n  color: var(--gray);\n}\n\n.friend .friend__user .friend__user-actions {\n  width: 75px;\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n}\n\n.friend .friend__right-side {\n  width: 300px;\n  box-shadow: var(--shadow);\n}\n\n.friend .friend__right-side .friend__header {\n  width: 100%;\n  text-align: center;\n  color: var(--gray);\n  font-style: normal;\n  font-weight: 500;\n  font-size: 24px;\n  border-bottom: 1px dashed var(--light-gray);\n  padding: 20px 0;\n}\n\n.friend .friend__right-side .link-all-users {\n  padding: 25px 0;\n}\n\n.friend .friend__right-side .friend__all-users {\n  font-style: normal;\n  font-weight: normal;\n  font-size: 20px;\n}\n\n.friend .friend__right-side .friend__friend-request {\n  width: 250px;\n}\n\n.friend .friend__right-side .friend__friend-request .friend__request-header {\n  width: 100%;\n}\n\n.friend .friend__right-side .friend__friend-request .friend__request-header .title {\n  font-style: normal;\n  font-weight: normal;\n  font-size: 20px;\n  color: var(--black);\n}\n\n.friend .friend__right-side .friend__friend-request .friend__request-list {\n  max-height: 315px;\n  border-top: 1px dashed var(--light-gray);\n  border-bottom: 1px dashed var(--light-gray);\n  margin-top: 15px;\n  padding: 0 5px 5px 0;\n  overflow-y: auto;\n}\n\n.friend .friend__right-side .friend__friend-request .friend__request-list .friend__user-request {\n  width: 100%;\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  margin-top: 5px;\n}\n\n.friend .friend__right-side  .friend__request-list .friend__user-request .friend__user-info {\n  display: flex;\n  align-items: center;\n}\n\n.friend .friend__right-side  .friend__request-list .friend__user-request .friend__user-info .link-ava {\n  margin-right: 15px;\n}\n\n.friend .friend__right-side  .friend__request-list .friend__user-request .friend__user-info .username {\n  font-style: normal;\n  font-weight: 500;\n  font-size: 18px;\n}\n\n.friend .friend__right-side  .friend__request-list .friend__user-request .friend__request-actions {\n  width: 45px;\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n}\n\n.friend .friend__right-side  .friend__request-list .friend__user-request .friend__request-actions .btn-add-friend {\n  border: none;\n  background-color: var(--white);\n}\n\n/* Верстка страницы с музыкой */\n\n.music {\n  width: 920px;\n  height: 100vh;\n  display: flex;\n  background-color: var(--white);\n}\n\n.music .music__search-container {\n  width: 100%;\n}\n\n.music .music__playlist {\n  width: 620px;\n}\n\n.music .music__playlist .music__now-playing {\n  width: 550px;\n}\n\n.music .music__playlist .music__now-playing .music__track-header {\n  width: 100%;\n  margin-bottom: 10px;\n}\n\n.music .music__playlist .music__now-playing .music__track-header .music__actions {\n  width: 200px;\n}\n\n.music .music__playlist .music__now-playing .music__track-header .music__actions .text {\n  font-style: normal;\n  font-weight: 500;\n  font-size: 12px;\n}\n\n.music .music__playlist .music__now-playing .music__now-track-info {\n  width: 255px;\n  margin: 0 10px;\n}\n\n.music .music__playlist .track-artist {\n  font-style: normal;\n  font-weight: 300;\n  font-size: 12px;\n  color: var(--dark-gray);\n}\n\n.music .music__playlist .track-name {\n  font-style: normal;\n  font-weight: 500;\n  font-size: 12px;\n  color: var(--dark-gray);\n}\n\n.music .music__playlist .music__now-playing .music__now-track-info .track-time {\n  font-style: normal;\n  font-weight: 300;\n  font-size: 13px;\n  color: var(--gray);\n}\n\n.music .music__playlist .music__now-playing .music__now-track-info .music__track-input .input-range {\n  width: 100%;\n}\n\n.music .music__playlist .music__now-playing .music__now-track {\n  width: 550px;\n  height: 60px;\n  border-radius: 15px;\n  box-shadow: var(--shadow);\n}\n\n.music .music__playlist .music__now-playing .music__now-track .music__track-controls {\n  width: 55px;\n  margin: 0 10px;\n}\n\n.music .music__playlist .track-actions {\n  width: 130px;\n}\n\n.music .music__playlist .music__title {\n  font-style: normal;\n  font-weight: 300;\n  font-size: 15px;\n  color: var(--gray);\n}\n\n.music .music__playlist .music__track-list .music__track-list-header {\n  margin: 20px 0 10px 0;\n}\n\n.music .music__playlist .music__track {\n  width: 550px;\n  height: 65px;\n  border-radius: 15px;\n  cursor: pointer;\n  transition: var(--animate-transition);\n  margin-bottom: 10px;\n  padding: 0 20px;\n}\n\n.music .music__playlist .music__track:hover {\n  background-color: var(--white-gray);\n  transition: var(--animate-transition);\n}\n\n.music .music__playlist .music__track-info .music__track-desc {\n  margin-left: 15px;\n}\n\n.music .music__right-side {\n  width: 300px;\n  box-shadow: var(--shadow);\n}\n\n.music .music__right-side .music__album {\n  width: 120px;\n  height: 120px;\n  border-radius: 15px;\n  /* background-image: url('./img/Audio.jpg'); */\n  background-size: 100% 100%;\n  margin-bottom: 15px;\n}\n\n.music .music__right-side .music__album:hover > .music__album-container {\n  display: flex;\n  transition: var(--animate-transition);\n  opacity: 1;\n}\n\n.music .music__right-side .music__album .music__album-container {\n  opacity: 0;\n  position: relative;\n  width: 100%;\n  height: 100%;\n  border-radius: 15px;\n  background:rgba(0,0,0,0.4);\n  padding: 10px;\n  cursor: pointer;\n  transition: var(--animate-transition);\n}\n\n.music .music__right-side .music__album .music__album-info .album-name {\n  font-style: normal;\n  font-weight: bold;\n  font-size: 15px;\n  color: var(--white);\n}\n\n.music .music__right-side .music__album .music__album-info .album-artist {\n  font-style: normal;\n  font-weight: 300;\n  font-size: 12px;\n  color: var(--white);\n}\n\n.music .music__right-side .music__album .album-year {\n  position: absolute;\n  right: 10px;\n  bottom: 10px;\n  font-style: normal;\n  font-weight: 300;\n  font-size: 10px;\n  color: var(--white);\n  -webkit-user-select: none;\n     -moz-user-select: none;\n      -ms-user-select: none;\n          user-select: none;\n}\n\n.music .music__right-side .music__albums {\n  width: 255px;\n  flex-wrap: wrap;\n}\n\n.gallery {\n  width: 920px;\n  background-color: var(--white);\n  padding: 30px 15px;\n}\n\n.gallery .gallery__header {\n  font-weight: 500;\n  font-size: 24px;\n  color: var(--gray);\n  margin-bottom: 15px;\n}\n\n.gallery .gallery__photos {\n  margin-top: 15px;\n  flex-wrap: wrap;\n}\n\n.gallery .gallery__photos .gallery__photo-body {\n  max-width: 33%;\n}\n\n.gallery .gallery__photos .gallery__photo-body  .gallery__photo {\n  width: 100%;\n}", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 

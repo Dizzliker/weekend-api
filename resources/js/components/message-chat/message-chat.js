@@ -14,7 +14,9 @@ export default class MessageChat extends Component {
             chat: [],
             chatList: [],
             reload: false,
+            read: false,
         };
+        this.chatBox = React.createRef();
         this.chatService = new ChatService();
         this.handleInputChange = this.handleInputChange.bind(this);
     }
@@ -26,12 +28,24 @@ export default class MessageChat extends Component {
         return formData;
     }
 
+    scrollChatToBottom() {
+        this.chatBox.current.scrollTop = this.chatBox.current.scrollHeight;
+    }
+
     updateChat = () => {
         if (this.props.user_id != 0) {
             this.chatService.get(this.getChatUsersId())
                 .then(res => {
                     if (res) {
-                        this.setState({companion: res.user, chat: res.chat, reload: false, loading: false});
+                        this.setState({companion: res.user, chat: res.chat, reload: false, loading: false, read: true});
+                        this.scrollChatToBottom(); 
+                        this.chatService.readMessages(this.getChatUsersId())
+                            .then(res => {
+                                this.setState({read: false});
+                            })
+                            .catch(error => {
+                               console.warn(error);
+                            });
                     }
                 })
                 .catch(error => {
@@ -45,7 +59,7 @@ export default class MessageChat extends Component {
     }
 
     componentDidUpdate(prevProps) {
-        if ((this.props.user_id != prevProps.user_id) || this.state.reload) {
+        if ((this.props.user_id != prevProps.user_id) || this.state.reload || prevProps.countMessages != this.props.countMessages) {
             this.updateChat();
         }
     }
@@ -60,7 +74,8 @@ export default class MessageChat extends Component {
 
     sendMessage = (event) => {
         event.preventDefault();
-        this.chatService.sendMessage(this.getFormData())
+        if (this.state.text.trim() != '') {
+            this.chatService.sendMessage(this.getFormData())
             .then(res => {
                 if (res) {
                     this.setState({text: '', reload: true});
@@ -69,6 +84,7 @@ export default class MessageChat extends Component {
             .catch(error => {
                 console.warn(error);
             });
+        }
     }
 
     handleInputChange(event) {
@@ -138,7 +154,7 @@ export default class MessageChat extends Component {
                         </div>
                     </div>
                 </div>
-                <div className="message__chat-box">
+                <div className="message__chat-box" ref={this.chatBox}>
                     {messageBox}
                 </div>
                 <form onSubmit={this.sendMessage} method="post" className="message__form-send-msg flex_center_center">

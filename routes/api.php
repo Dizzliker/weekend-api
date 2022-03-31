@@ -37,6 +37,8 @@ Route::group(['middleware' => ['auth:sanctum']], function() {
     Route::get('/post/{id}/delete', [PostApiController::class, 'delete']);
     // Сообщения
     Route::post('/sendMessage', [MessageApiController::class, 'send_message']);
+    Route::post('/readMessages', [MessageApiController::class, 'read_messages']);
+    Route::get('/getCountMessages/{id}', [MessageApiController::class, 'get_count_messages']);
     Route::post('/getChat', [MessageApiController::class, 'get_chat']);
     Route::get('/getChatList/{id}', [MessageApiController::class, 'get_chat_list']);
     // Музыка

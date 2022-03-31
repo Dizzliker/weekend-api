@@ -3,7 +3,6 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import Form from '../../../services/Form';
 import Session from '../../../services/Session';
-import Weekend from '../../../services/Weekend';
 
 export default class LoginForm extends Component {
     constructor(props) {

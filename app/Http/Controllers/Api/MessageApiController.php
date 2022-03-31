@@ -25,6 +25,34 @@ class MessageApiController extends Controller
         ]);
     }
 
+    public function get_count_messages($id) {
+        $count = DB::select('
+            select count(*) count
+              from messages m 
+             where m.read = 0
+               and m.inc_user_id = '.$id.' 
+        ');
+
+        return response(['count' => $count[0]->count]);
+    }
+
+    public function read_messages(Request $request) {
+        $fields = $request->validate([
+            'out_user_id' => 'required|integer',
+            'inc_user_id' => 'required|integer',
+        ]);
+
+        $affected = DB::table('messages')->where([
+            ['out_user_id', '=', $fields['inc_user_id']],
+            ['inc_user_id', '=', $fields['out_user_id']],
+            ['read', '=', 0]
+        ])->update(['read' => 1]);
+
+        if ($affected) {
+            return response(['success' => true]);
+        }
+    }
+
     public function get_chat_list($id) {
         $users = DB::select('
         select u.id,
