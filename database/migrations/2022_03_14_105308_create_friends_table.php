@@ -12,7 +12,8 @@ class CreateFriendsTable extends Migration
      * @return void
      */
     public function up()
-    {
+    { 
+        Schema::dropIfExists('friends');
         Schema::create('friends', function (Blueprint $table) {
             $table->id();
             $table->integer('user_id');
