@@ -8,6 +8,7 @@ export default class FriendList extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            message: '',
             loading: true,
             friends: [],
             text: '',
@@ -15,17 +16,29 @@ export default class FriendList extends Component {
         this.friend = new FriendService();
         this.handleInputChange = this.handleInputChange.bind(this);
     }
-    
-    componentDidMount() {
+
+    updateFriendList = () => {
         this.friend.get(Session.getId())
             .then(res => {
                 if (res.data) {
-                    this.setState({friends: res.data, loading: false,});
+                    this.setState({friends: res.data, loading: false});
                 }
             })
             .catch(error => {
                 console.warn(error);
-            })
+            });
+    }
+    
+    componentDidMount() {
+        this.updateFriendList();
+    }
+
+    componentDidUpdate() {
+        if (this.props.reload) {
+            this.setState({loading: true});
+            this.props.afterReload();
+            this.updateFriendList();
+        }
     }
 
     getFormData = () => {
@@ -52,7 +65,9 @@ export default class FriendList extends Component {
                 this.friend.searchFriends(this.getFormData())
                     .then(res => {
                         if (res.friends) {
-                            this.setState({friends: res.friends});
+                            this.setState({friends: res.friends, message: ''});
+                        } else if (res.message_not_found) {
+                            this.setState({message: res.message_not_found});
                         }
                     })
                     .catch(error => {
@@ -63,8 +78,8 @@ export default class FriendList extends Component {
     }
 
     render() {
-        const {friends, loading} = this.state;
-        const friendList = friends ? friends.map(friend => {
+        const {friends, loading, message} = this.state;
+        const friendList = friends.length > 0 ? friends.map(friend => {
             return (
                 <div className="friend__user" key={friend.user_id}>
                     <div className="friend__user-info">
@@ -105,6 +120,10 @@ export default class FriendList extends Component {
                     </div> 
                 </div>
                 <div className="friend__users-container">
+                    {message && 
+                    <div className="error-box">
+                        {message}
+                    </div>}
                     {friendList}
                 </div>
             </div>

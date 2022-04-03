@@ -2700,6 +2700,19 @@ var FriendList = /*#__PURE__*/function (_Component) {
 
     _this = _super.call(this, props);
 
+    _defineProperty(_assertThisInitialized(_this), "updateFriendList", function () {
+      _this.friend.get(_services_Session__WEBPACK_IMPORTED_MODULE_2__["default"].getId()).then(function (res) {
+        if (res.data) {
+          _this.setState({
+            friends: res.data,
+            loading: false
+          });
+        }
+      })["catch"](function (error) {
+        console.warn(error);
+      });
+    });
+
     _defineProperty(_assertThisInitialized(_this), "getFormData", function () {
       var formData = new FormData();
       formData.append("user_id", _services_Session__WEBPACK_IMPORTED_MODULE_2__["default"].getId());
@@ -2715,7 +2728,12 @@ var FriendList = /*#__PURE__*/function (_Component) {
           _this.friend.searchFriends(_this.getFormData()).then(function (res) {
             if (res.friends) {
               _this.setState({
-                friends: res.friends
+                friends: res.friends,
+                message: ''
+              });
+            } else if (res.message_not_found) {
+              _this.setState({
+                message: res.message_not_found
               });
             }
           })["catch"](function (error) {
@@ -2726,6 +2744,7 @@ var FriendList = /*#__PURE__*/function (_Component) {
     });
 
     _this.state = {
+      message: '',
       loading: true,
       friends: [],
       text: ''
@@ -2738,18 +2757,18 @@ var FriendList = /*#__PURE__*/function (_Component) {
   _createClass(FriendList, [{
     key: "componentDidMount",
     value: function componentDidMount() {
-      var _this2 = this;
-
-      this.friend.get(_services_Session__WEBPACK_IMPORTED_MODULE_2__["default"].getId()).then(function (res) {
-        if (res.data) {
-          _this2.setState({
-            friends: res.data,
-            loading: false
-          });
-        }
-      })["catch"](function (error) {
-        console.warn(error);
-      });
+      this.updateFriendList();
+    }
+  }, {
+    key: "componentDidUpdate",
+    value: function componentDidUpdate() {
+      if (this.props.reload) {
+        this.setState({
+          loading: true
+        });
+        this.props.afterReload();
+        this.updateFriendList();
+      }
     }
   }, {
     key: "handleInputChange",
@@ -2762,12 +2781,13 @@ var FriendList = /*#__PURE__*/function (_Component) {
   }, {
     key: "render",
     value: function render() {
-      var _this3 = this;
+      var _this2 = this;
 
       var _this$state = this.state,
           friends = _this$state.friends,
-          loading = _this$state.loading;
-      var friendList = friends ? friends.map(function (friend) {
+          loading = _this$state.loading,
+          message = _this$state.message;
+      var friendList = friends.length > 0 ? friends.map(function (friend) {
         return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
           className: "friend__user",
           children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
@@ -2829,7 +2849,7 @@ var FriendList = /*#__PURE__*/function (_Component) {
                 type: "text",
                 value: this.state.text,
                 onChange: function onChange(event) {
-                  _this3.searchFriends(event);
+                  _this2.searchFriends(event);
                 },
                 name: "text",
                 className: "input-search",
@@ -2840,9 +2860,12 @@ var FriendList = /*#__PURE__*/function (_Component) {
                 alt: "Search"
               })]
             })
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
             className: "friend__users-container",
-            children: friendList
+            children: [message && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+              className: "error-box",
+              children: message
+            }), friendList]
           })]
         })]
       });
@@ -2870,9 +2893,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 /* harmony import */ var _friend_list_friend_list__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../friend-list/friend-list */ "./resources/js/components/friend-list/friend-list.js");
 /* harmony import */ var _right_side__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./right-side */ "./resources/js/components/friend/right-side.js");
-/* harmony import */ var _services_Friend__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../services/Friend */ "./resources/js/services/Friend.js");
-/* harmony import */ var _services_Session__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../services/Session */ "./resources/js/services/Session.js");
-/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
 function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -2901,25 +2922,43 @@ function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.g
 
 
 
-
-
 var Friend = /*#__PURE__*/function (_Component) {
   _inherits(Friend, _Component);
 
   var _super = _createSuper(Friend);
 
-  function Friend() {
+  function Friend(props) {
+    var _this;
+
     _classCallCheck(this, Friend);
 
-    return _super.apply(this, arguments);
+    _this = _super.call(this, props);
+    _this.state = {
+      relaod: false
+    };
+    return _this;
   }
 
   _createClass(Friend, [{
     key: "render",
     value: function render() {
-      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsxs)("div", {
+      var _this2 = this;
+
+      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
         className: "friend",
-        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)(_friend_list_friend_list__WEBPACK_IMPORTED_MODULE_1__["default"], {}), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)(_right_side__WEBPACK_IMPORTED_MODULE_2__["default"], {
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_friend_list_friend_list__WEBPACK_IMPORTED_MODULE_1__["default"], {
+          reload: this.state.reload,
+          afterReload: function afterReload() {
+            _this2.setState({
+              reload: false
+            });
+          }
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_right_side__WEBPACK_IMPORTED_MODULE_2__["default"], {
+          afterAcceptRequest: function afterAcceptRequest() {
+            _this2.setState({
+              reload: true
+            });
+          },
           countRequests: this.props.countFriendRequests
         })]
       });
@@ -2945,10 +2984,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (/* binding */ RightSide)
 /* harmony export */ });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-/* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router-dom/index.js");
+/* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router-dom/index.js");
 /* harmony import */ var _services_Friend__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../services/Friend */ "./resources/js/services/Friend.js");
 /* harmony import */ var _services_Session__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../services/Session */ "./resources/js/services/Session.js");
-/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
+/* harmony import */ var _spinner__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../spinner */ "./resources/js/components/spinner/index.js");
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
 function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -2980,6 +3020,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 
 
+
 var RightSide = /*#__PURE__*/function (_Component) {
   _inherits(RightSide, _Component);
 
@@ -2997,16 +3038,36 @@ var RightSide = /*#__PURE__*/function (_Component) {
     _this = _super.call.apply(_super, [this].concat(args));
 
     _defineProperty(_assertThisInitialized(_this), "state", {
-      requests: []
+      requests: [],
+      reload: false
     });
 
     _defineProperty(_assertThisInitialized(_this), "request", new _services_Friend__WEBPACK_IMPORTED_MODULE_1__.FriendService());
+
+    _defineProperty(_assertThisInitialized(_this), "updateRequests", function () {
+      _this.request.getRequests(_services_Session__WEBPACK_IMPORTED_MODULE_2__["default"].getId()).then(function (res) {
+        if (res) {
+          _this.setState({
+            requests: res.requests,
+            countRequests: res.count
+          });
+        }
+      })["catch"](function (error) {
+        console.warn(error);
+      });
+    });
 
     _defineProperty(_assertThisInitialized(_this), "addFriend", function (e) {
       e.preventDefault();
 
       _this.request.addFriend(e.target.querySelector('.request_id').value).then(function (res) {
-        console.log(res);
+        if (res) {
+          _this.setState({
+            reload: true
+          });
+
+          _this.props.afterAcceptRequest();
+        }
       })["catch"](function (error) {
         console.warn(error);
       });
@@ -3018,103 +3079,102 @@ var RightSide = /*#__PURE__*/function (_Component) {
   _createClass(RightSide, [{
     key: "componentDidMount",
     value: function componentDidMount() {
-      var _this2 = this;
-
-      this.request.getRequests(_services_Session__WEBPACK_IMPORTED_MODULE_2__["default"].getId()).then(function (res) {
-        if (res) {
-          _this2.setState({
-            requests: res.requests,
-            countRequests: res.count
-          });
-        }
-      })["catch"](function (error) {
-        console.warn(error);
-      });
+      this.updateRequests();
+    }
+  }, {
+    key: "componentDidUpdate",
+    value: function componentDidUpdate() {
+      if (this.state.reload) {
+        this.setState({
+          reload: false
+        });
+        this.updateRequests();
+      }
     }
   }, {
     key: "render",
     value: function render() {
-      var _this3 = this;
+      var _this2 = this;
 
       var requests = this.state.requests;
       var requestList = requests.map(function (request) {
-        return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("li", {
+        return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("li", {
           className: "friend__user-request",
-          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
             className: "friend__user-info flex ai_center",
-            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_4__.Link, {
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_5__.Link, {
               to: "/profile/".concat(request.user_id),
               className: "link-ava",
-              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("img", {
+              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("img", {
                 src: request.avatar,
                 className: "ava-50",
                 alt: "User avatar"
               })
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_4__.Link, {
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_5__.Link, {
               to: "/profile/".concat(request.user_id),
-              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("span", {
+              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("span", {
                 className: "username",
                 children: [request.name, " ", request.surname]
               })
             })]
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
             className: "friend__request-actions",
-            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("form", {
-              onSubmit: _this3.addFriend,
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("form", {
+              onSubmit: _this2.addFriend,
               method: "get",
-              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("input", {
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("input", {
                 type: "hidden",
                 className: "request_id",
                 value: request.request_id
-              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("button", {
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("button", {
                 className: "btn-add-friend",
-                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("img", {
+                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("img", {
                   src: "../images/plus.svg",
                   className: "icon-plus",
                   alt: "Add friend"
                 })
               })]
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
               className: "kebab gray",
-              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("div", {
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
                 className: "circle"
-              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("div", {
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
                 className: "circle"
-              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("div", {
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
                 className: "circle"
               })]
             })]
           })]
         }, request.request_id);
       });
-      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
+      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
         className: "friend__right-side flex_column ai_center",
-        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("h3", {
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("h3", {
           className: "friend__header",
           children: "User actions"
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_4__.Link, {
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_5__.Link, {
           to: "/users",
           className: "link link-all-users",
-          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("span", {
+          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("span", {
             className: "friend__all-users",
             children: "All users"
           })
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
           className: "friend__friend-request",
-          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
             className: "friend__request-header flex_center_space-between",
-            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
               className: "friend__count-request",
               children: ["+", this.props.countRequests]
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("span", {
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("span", {
               className: "title",
               children: "Friend requests"
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("img", {
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("img", {
               src: "../images/arrow-down.svg",
               className: "icon-toggle-arrow",
               alt: "Show all requests"
             })]
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("ul", {
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("ul", {
             className: "friend__request-list",
             children: requestList
           })]

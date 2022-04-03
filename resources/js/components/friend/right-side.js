@@ -2,14 +2,16 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import { FriendService } from '../../services/Friend';
 import Session from '../../services/Session';
+import Spinner from '../spinner';
 
 export default class RightSide extends Component {
     state = {
         requests: [],
+        reload: false,
     };
     request = new FriendService();
 
-    componentDidMount() {
+    updateRequests = () => {
         this.request.getRequests(Session.getId())
             .then(res => {
                 if (res) {
@@ -21,11 +23,25 @@ export default class RightSide extends Component {
             });
     }
 
+    componentDidMount() {
+        this.updateRequests();
+    }
+
+    componentDidUpdate() {
+        if (this.state.reload) {
+            this.setState({reload: false});
+            this.updateRequests();
+        }
+    }
+
     addFriend = (e) => {
         e.preventDefault();
         this.request.addFriend(e.target.querySelector('.request_id').value)
             .then(res => {
-                console.log(res);
+                if (res) {
+                    this.setState({reload: true});
+                    this.props.afterAcceptRequest();
+                }
             })
             .catch(error => {
                 console.warn(error);

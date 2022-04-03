@@ -158,7 +158,7 @@ class UserApiController extends Controller
         if (!empty($friends)) {
             return response(['friends' => UserResource::collection($friends)]);
         }
-        return response(['message' => 'Users is not found']);
+        return response(['message_not_found' => 'Users is not found']);
     }
 
     public function get_all() {
