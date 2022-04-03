@@ -16,10 +16,11 @@ class PostResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'post_id' => $this->id,
+            'post_id' => $this->post_id,
             'user_id' => $this->user_id,
             'text' => $this->text,
             'likes' => $this->likes,
+            'i_like' => $this->i_like,
             'reposts' => $this->reposts,
             'comments' => $this->comments,
             'created_at' => $this->created_at,

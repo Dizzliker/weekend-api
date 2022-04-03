@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import { FriendService } from '../../services/Friend';
 import Session from '../../services/Session';
-import Spinner from '../spinner';
 
 export default class RightSide extends Component {
     state = {

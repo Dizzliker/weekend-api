@@ -34,6 +34,8 @@ Route::group(['middleware' => ['auth:sanctum']], function() {
     // Посты
     Route::get('/post/{id}', [PostApiController::class, 'index']);
     Route::post('/post/create', [PostApiController::class, 'store']);
+    Route::post('/post/{id}/like', [PostApiController::class, 'like']);
+    Route::post('/post/{id}/unlike', [PostApiController::class, 'unlike']);
     Route::get('/post/{id}/delete', [PostApiController::class, 'delete']);
     // Сообщения
     Route::post('/sendMessage', [MessageApiController::class, 'send_message']);

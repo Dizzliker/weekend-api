@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import Post from '../../../services/Post';
+import Session from '../../../services/Session';
 
 export default class PostList extends Component {
     state = {
         posts: [],
+        reload: false,
     };
 
     post = new Post();
@@ -13,7 +15,9 @@ export default class PostList extends Component {
         const {user_id} = this.props;
         this.post.getUserPosts(user_id)
             .then((res) => {
-                this.setState({posts: res});
+                if (res.posts) {
+                    this.setState({posts: res.posts});
+                }
             })
             .catch((error) => {
                 console.warn(error);
@@ -24,19 +28,55 @@ export default class PostList extends Component {
         this.updatePosts();
     }
 
-    componentDidUpdate() {
+    componentDidUpdate(prevProps) {
         if (this.props.reload) {
             this.updatePosts();
             this.props.afterUpdatePosts();
         }
+        if (this.state.reload || this.props.user_id != prevProps.user_id) {
+            this.setState({reload: false});
+            this.updatePosts();
+        }
+    }
+
+    getUserId = () => {
+        let formData = new FormData()
+        formData.append('user_id', Session.getId());
+        return formData;
+    }
+
+    like = (event, post_id) => {
+        event.preventDefault();
+        this.post.like(post_id, this.getUserId())
+            .then(res => {
+                if (res.success) {
+                    this.setState({reload: true});
+                }
+            })
+            .catch(error => {
+                console.warn(error);
+            });
+    }
+
+    unlike = (event, post_id) => {
+        event.preventDefault();
+        this.post.unlike(post_id, this.getUserId())
+            .then(res => {
+                if (res.success) {
+                    this.setState({reload: true});
+                }
+            })
+            .catch(error => {
+                console.warn(error);
+            });
     }
 
     render() {
         const postsList = this.state.posts.map(post => {
             const {avatar, name, surname} = this.props.user;
-            const {id, user_id, text, likes, reposts, comments, created_at} = post;
+            const {post_id, user_id, text, likes, i_like, reposts, comments, created_at} = post;
             return (
-                <div className="post" key={id}>
+                <div className="post" key={post_id}>
                     <Link to={`/profile/${user_id}`}>
                         <img src={avatar} className="ava-70" alt="User avatar" srcset="" />
                     </Link>
@@ -67,10 +107,19 @@ export default class PostList extends Component {
                         </div>
                         <div className="post__footer flex jc_space-between">
                             <div className="post__like">
-                                <span className="link flex ai_center">
-                                    <img src="../images/like.svg" className="icon-like" alt="Like" />
-                                    <span className="text">{likes}</span>
-                                </span>
+                                {i_like ? 
+                                <form onSubmit={(e) => {this.unlike(e, post_id)}} method="post">
+                                    <button className="btn-like link flex ai_center">
+                                        <img src="/images/like(purple).svg" className="icon-like" alt="Like" />
+                                        <span className="text">{likes}</span>
+                                    </button>
+                                </form> :
+                                <form onSubmit={(e) => {this.like(e, post_id)}} method="post">
+                                    <button className="btn-like link flex ai_center">
+                                        <img src="/images/like.svg" className="icon-like" alt="Like" />
+                                        <span className="text">{likes}</span>
+                                    </button>
+                                </form>}
                             </div>
                             <div className="post__repost">
                                 <span className="link flex ai_center">

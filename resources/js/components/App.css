@@ -965,6 +965,11 @@ a {
   padding: 10px 0;
 }
 
+.profile .post .post__footer .btn-like {
+  background-color: white;
+  border: none;
+}
+
 .profile .post .post__footer .post__like .link .icon-like, 
 .profile .post .post__footer .post__repost .link .icon-repost,
 .profile .post .post__footer .post__comment .link .icon-comment {
@@ -1210,6 +1215,7 @@ a {
   background-color: var(--purple);
   border-radius: 15px;
   border: none;
+  cursor: pointer;
 }
 
 /* Верстка страницы друзей */

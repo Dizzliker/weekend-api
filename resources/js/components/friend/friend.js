@@ -6,7 +6,7 @@ export default class Friend extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            relaod: false,
+            reload: false,
         };
     }
 
