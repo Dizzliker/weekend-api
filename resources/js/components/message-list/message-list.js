@@ -14,10 +14,10 @@ export default class MessageList extends Component {
     }
 
     componentDidMount() {
-        this.getChatList();
+        this.updateChatList();
     }
 
-    getChatList = () => {
+    updateChatList = () => {
         this.chatService.getChatList(Session.getId())
             .then(res => {
                 if (res.users) {
@@ -27,6 +27,13 @@ export default class MessageList extends Component {
             .catch(error => {
                 console.warn(error);
             });
+    }
+
+    componentDidUpdate() {
+        if (this.props.reload) {
+            this.props.afterReloadChatList();
+            this.updateChatList();
+        }
     }
 
     render() {

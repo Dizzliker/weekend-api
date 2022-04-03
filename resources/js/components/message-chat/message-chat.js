@@ -38,6 +38,7 @@ export default class MessageChat extends Component {
                 .then(res => {
                     if (res) {
                         this.setState({companion: res.user, chat: res.chat, reload: false, loading: false, read: true});
+                        this.props.reloadChatList();
                         this.scrollChatToBottom(); 
                         this.chatService.readMessages(this.getChatUsersId())
                             .then(res => {

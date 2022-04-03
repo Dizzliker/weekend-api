@@ -7,6 +7,7 @@ import PostForm from './post-list/post-form';
 import {FriendService} from '../../services/Friend';
 import PopupEditAva from './popup-edit-ava/popup-edit-ava';
 import InfoItem from './info-item/info-item';
+import {Link} from 'react-router-dom';
 
 class Profile extends Component {
     constructor(props) {
@@ -81,7 +82,7 @@ class Profile extends Component {
     }
 
     render() {
-        const {name, surname, avatar, count_friends, count_photos} = this.state.profile;
+        const {user_id, name, surname, avatar, count_friends, count_photos} = this.state.profile;
         const {loading, messages, popupAddFriend, popupEditAva} = this.state;
 
         return(
@@ -96,12 +97,12 @@ class Profile extends Component {
             <div className="profile flex_column ai_flex-start">
             <div className="profile__user-container flex">
                 <div className="profile__user-avatar flex_center_center">
-                    <span className="link-btn__left-circle">
+                    <Link to={`/messages/${user_id}`} className="link-btn__left-circle">
                         <span className="left-circle flex ai_center">
                             <img src="../images/message.svg" className="icon-msg" alt="Send message" />
                             <img src="../images/left-circle.svg" className="icon-circle" alt="" />
                         </span>
-                    </span>
+                    </Link>
                     <div className="profile__avatar">
                         {(this.props.user_id == Session.getId()) && 
                         <div className="profile__edit-ava flex_center_center" onClick={() => {this.setState({popupEditAva: true})}}>
