@@ -12,17 +12,22 @@ class AudioApiController extends Controller
         $fields = $request->validate([
             'author' => 'required',
             'name' => 'required',
-            'src' => 'required',
-            'duration' => 'required|float',
-            'cover' => 'required',
+            'cover' => 'required|image',
+            'audio' => 'required|mimes:mp3'
         ]);
+        
+        $srcAudio = time().rand(1,100).'.'.$request->audio->extension();
+        $request->audio->move(public_path('music'), $srcAudio);
 
-        Audio::create([
+        $srcCover = time().rand(1,100).'.'.$request->cover->extension();
+        $request->cover->move(public_path('images/covers'), $srcCover);
+
+        return Audio::create([
             'author' => $fields['author'],
             'name' => $fields['name'],
-            'src' => $fields['src'],
-            'duration' => $fields['duration'],
-            'cover' => $fields['cover'],
+            'src' => $srcAudio,
+            'duration' => 0,
+            'cover' => $srcCover,
         ]);
     }
 }

@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { Routes, Route } from "react-router-dom";
 import Friend from '../friend/friend';
-import Message from '../message/message';
 import Music from '../music';
 import Sidebar from '../sidebar';
 import bg from '../../img/bg.png';

@@ -9,6 +9,8 @@ class Audio extends Model
 {
     use HasFactory;
 
+    protected $table = 'audios';
+
     protected $fillable = [
         'author',
         'cover',

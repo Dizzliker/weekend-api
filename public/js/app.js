@@ -3395,17 +3395,16 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (/* binding */ Main)
 /* harmony export */ });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-/* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router/index.js");
+/* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router/index.js");
 /* harmony import */ var _friend_friend__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../friend/friend */ "./resources/js/components/friend/friend.js");
-/* harmony import */ var _message_message__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../message/message */ "./resources/js/components/message/message.js");
-/* harmony import */ var _music__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../music */ "./resources/js/components/music/index.js");
-/* harmony import */ var _sidebar__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../sidebar */ "./resources/js/components/sidebar/index.js");
-/* harmony import */ var _img_bg_png__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../img/bg.png */ "./resources/js/img/bg.png");
-/* harmony import */ var _profile_profile_container__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../profile/profile-container */ "./resources/js/components/profile/profile-container.js");
-/* harmony import */ var _user_user__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../user/user */ "./resources/js/components/user/user.js");
-/* harmony import */ var _gallery_gallery__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../gallery/gallery */ "./resources/js/components/gallery/gallery.js");
-/* harmony import */ var _message_container_message_container__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../message-container/message-container */ "./resources/js/components/message-container/message-container.js");
-/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
+/* harmony import */ var _music__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../music */ "./resources/js/components/music/index.js");
+/* harmony import */ var _sidebar__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../sidebar */ "./resources/js/components/sidebar/index.js");
+/* harmony import */ var _img_bg_png__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../img/bg.png */ "./resources/js/img/bg.png");
+/* harmony import */ var _profile_profile_container__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../profile/profile-container */ "./resources/js/components/profile/profile-container.js");
+/* harmony import */ var _user_user__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../user/user */ "./resources/js/components/user/user.js");
+/* harmony import */ var _gallery_gallery__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../gallery/gallery */ "./resources/js/components/gallery/gallery.js");
+/* harmony import */ var _message_container_message_container__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../message-container/message-container */ "./resources/js/components/message-container/message-container.js");
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
 function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -3441,7 +3440,6 @@ function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.g
 
 
 
-
 var Main = /*#__PURE__*/function (_Component) {
   _inherits(Main, _Component);
 
@@ -3459,39 +3457,39 @@ var Main = /*#__PURE__*/function (_Component) {
       var bgStyle = {
         width: '100%',
         height: '100vh',
-        backgroundImage: "url(".concat(_img_bg_png__WEBPACK_IMPORTED_MODULE_5__["default"], ")")
+        backgroundImage: "url(".concat(_img_bg_png__WEBPACK_IMPORTED_MODULE_4__["default"], ")")
       };
-      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_10__.jsx)("div", {
+      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)("div", {
         className: "bg",
         style: bgStyle,
-        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_10__.jsxs)("div", {
+        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsxs)("div", {
           className: "main flex",
-          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_10__.jsx)(_sidebar__WEBPACK_IMPORTED_MODULE_4__["default"], {
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)(_sidebar__WEBPACK_IMPORTED_MODULE_3__["default"], {
             countFriendRequests: this.props.countFriendRequests,
             countMessages: this.props.countMessages
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_10__.jsxs)(react_router_dom__WEBPACK_IMPORTED_MODULE_11__.Routes, {
-            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_10__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_11__.Route, {
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsxs)(react_router_dom__WEBPACK_IMPORTED_MODULE_10__.Routes, {
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_10__.Route, {
               path: "profile/:id",
-              element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_10__.jsx)(_profile_profile_container__WEBPACK_IMPORTED_MODULE_6__["default"], {})
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_10__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_11__.Route, {
+              element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)(_profile_profile_container__WEBPACK_IMPORTED_MODULE_5__["default"], {})
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_10__.Route, {
               path: "messages/:id",
-              element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_10__.jsx)(_message_container_message_container__WEBPACK_IMPORTED_MODULE_9__["default"], {
+              element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)(_message_container_message_container__WEBPACK_IMPORTED_MODULE_8__["default"], {
                 countMessages: this.props.countMessages
               })
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_10__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_11__.Route, {
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_10__.Route, {
               path: "friends",
-              element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_10__.jsx)(_friend_friend__WEBPACK_IMPORTED_MODULE_1__["default"], {
+              element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)(_friend_friend__WEBPACK_IMPORTED_MODULE_1__["default"], {
                 countFriendRequests: this.props.countFriendRequests
               })
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_10__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_11__.Route, {
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_10__.Route, {
               path: "users",
-              element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_10__.jsx)(_user_user__WEBPACK_IMPORTED_MODULE_7__["default"], {})
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_10__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_11__.Route, {
+              element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)(_user_user__WEBPACK_IMPORTED_MODULE_6__["default"], {})
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_10__.Route, {
               path: "music",
-              element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_10__.jsx)(_music__WEBPACK_IMPORTED_MODULE_3__["default"], {})
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_10__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_11__.Route, {
+              element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)(_music__WEBPACK_IMPORTED_MODULE_2__["default"], {})
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_10__.Route, {
               path: "photos",
-              element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_10__.jsx)(_gallery_gallery__WEBPACK_IMPORTED_MODULE_8__["default"], {})
+              element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)(_gallery_gallery__WEBPACK_IMPORTED_MODULE_7__["default"], {})
             })]
           })]
         })
@@ -4781,7 +4779,7 @@ var PopupAddMusic = /*#__PURE__*/function (_Component) {
       var ext = parts.length > 1 ? parts.pop() : '';
 
       _this.setState({
-        form: ext.toLowerCase() === 'mp3' ? true : false,
+        form: ext.toLowerCase() === 'mp3',
         author: parts[0],
         name: parts[1] && parts[0]
       });
@@ -4802,17 +4800,20 @@ var PopupAddMusic = /*#__PURE__*/function (_Component) {
     });
 
     _defineProperty(_assertThisInitialized(_this), "getFormData", function () {
-      var _this$state = _this.state,
-          author = _this$state.author,
-          name = _this$state.name;
       var formData = new FormData();
-      formData.append("author", author);
-      formData.append("name", name);
-      formData.append("cover", _this.inputMp3.current.files[0].duration);
+      formData.append("author", _this.state.author);
+      formData.append("name", _this.state.name);
+      formData.append("cover", _this.inputImg.current.files[0]);
+      formData.append("audio", _this.inputMp3.current.files[0]);
+      return formData;
     });
 
-    _defineProperty(_assertThisInitialized(_this), "addAudio", function () {
-      _this.audio.addAudio().then(function (res) {})["catch"](function (error) {
+    _defineProperty(_assertThisInitialized(_this), "addAudio", function (event) {
+      event.preventDefault();
+
+      _this.audio.addAudio(_this.getFormData()).then(function (res) {
+        console.log(res);
+      })["catch"](function (error) {
         console.warn(error);
       });
     });
@@ -4841,11 +4842,11 @@ var PopupAddMusic = /*#__PURE__*/function (_Component) {
   }, {
     key: "render",
     value: function render() {
-      var _this$state2 = this.state,
-          form = _this$state2.form,
-          author = _this$state2.author,
-          name = _this$state2.name,
-          previewCover = _this$state2.previewCover;
+      var _this$state = this.state,
+          form = _this$state.form,
+          author = _this$state.author,
+          name = _this$state.name,
+          previewCover = _this$state.previewCover;
       return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_popup__WEBPACK_IMPORTED_MODULE_2__["default"], {
         onClose: this.props.onClose,
         children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("form", {
@@ -4857,6 +4858,7 @@ var PopupAddMusic = /*#__PURE__*/function (_Component) {
             ref: this.inputMp3,
             onChange: this.handleSubmit,
             name: "audio",
+            accept: "audio/*",
             className: "audio",
             id: "audio",
             hidden: true

@@ -34,8 +34,8 @@ export default class PopupAddMusic extends Component {
         const parts = file.name.split('.');
         const ext = parts.length > 1 ? parts.pop() : '';
         this.setState(
-            {
-            form: ext.toLowerCase() === 'mp3' ? true : false,
+        {
+            form: ext.toLowerCase() === 'mp3',
             author: parts[0],
             name: parts[1] && parts[0],
         });
@@ -53,17 +53,19 @@ export default class PopupAddMusic extends Component {
     }
 
     getFormData = () => {
-        const {author, name} = this.state;
         let formData = new FormData();
-        formData.append("author", author);
-        formData.append("name", name);
-        formData.append("cover", this.inputMp3.current.files[0].duration);
+        formData.append("author", this.state.author);
+        formData.append("name", this.state.name);
+        formData.append("cover", this.inputImg.current.files[0]);
+        formData.append("audio", this.inputMp3.current.files[0]);
+        return formData;
     }
 
-    addAudio = () => {
-        this.audio.addAudio()
+    addAudio = (event) => {
+        event.preventDefault();
+        this.audio.addAudio(this.getFormData())
             .then(res => {
-
+                console.log(res);
             })
             .catch(error => {
                 console.warn(error);
@@ -76,7 +78,7 @@ export default class PopupAddMusic extends Component {
         return(
         <Popup onClose={this.props.onClose}>
             <form onSubmit={this.addAudio} method="post" encType="multipart/form-data">
-                <input type="file" ref={this.inputMp3} onChange={this.handleSubmit} name="audio" className="audio" id="audio"
+                <input type="file" ref={this.inputMp3} onChange={this.handleSubmit} name="audio" accept="audio/*" className="audio" id="audio"
                 hidden/>
                 <label htmlFor="audio" className="upload_audio">
                     <div className="btn-upload flex_center_center">
