@@ -44,6 +44,7 @@ Route::group(['middleware' => ['auth:sanctum']], function() {
     Route::post('/getChat', [MessageApiController::class, 'get_chat']);
     Route::get('/getChatList/{id}', [MessageApiController::class, 'get_chat_list']);
     // Музыка
+    Route::get('/getAllAudios', [AudioApiController::class, 'get_all_audios']);
     Route::post('/addAudio', [AudioApiController::class, 'add_audio']);
     // Профиль
     Route::get('/profile/{id}', [ProfileApiController::class, 'profile']);

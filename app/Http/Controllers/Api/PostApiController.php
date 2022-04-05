@@ -27,8 +27,8 @@ class PostApiController extends Controller
                          from post_likes pl
                         where pl.user_id = '.Auth::id().'
                           and pl.post_id = p.id) i_like,
-                   p.comments,
-                   p.reposts,
+                   0 comments,
+                   0 reposts,
                    date_format(p.created_at, "%d.%m.%Y %H:%i") updated_at,
                    date_format(p.created_at, "%d.%m.%Y %H:%i") created_at
               from users u
@@ -49,9 +49,6 @@ class PostApiController extends Controller
         $post = Post::create([
             'user_id' => $fields['user_id'],
             'text' => $fields['text'],
-            'likes' => 0,
-            'reposts' => 0,
-            'comments' => 0
         ]);
 
         return new PostResource($post);
@@ -77,9 +74,9 @@ class PostApiController extends Controller
 
         DB::select('
             delete 
-              from post_likes pl
-             where pl.post_id = '.$id.'
-               and pl.user_id = '.$fields['user_id'].' 
+              from post_likes
+             where post_likes.post_id = '.$id.'
+               and post_likes.user_id = '.$fields['user_id'].' 
         ');
 
         return response(['success' => true]);

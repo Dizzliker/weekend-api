@@ -19,7 +19,6 @@ class CreateAudiosTable extends Migration
             $table->string('cover');
             $table->string('name');
             $table->string('src');
-            $table->float('duration');
             $table->timestamps();
         });
     }

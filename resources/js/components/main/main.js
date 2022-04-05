@@ -27,7 +27,7 @@ export default class Main extends Component {
                         <Route path="messages/:id" element={<MessageContainer countMessages = {this.props.countMessages}/>}/>
                         <Route path="friends"  element={<Friend countFriendRequests = {this.props.countFriendRequests}/>}/>
                         <Route path="users" element={<User />}/>
-                        <Route path="music"   element={<Music/>}/>
+                        <Route path="audio"   element={<Music/>}/>
                         <Route path="photos" element={<Gallery />}/>
                     </Routes>
                 </div>

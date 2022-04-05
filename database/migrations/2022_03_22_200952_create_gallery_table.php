@@ -18,9 +18,6 @@ class CreateGalleryTable extends Migration
             $table->integer('user_id');
             $table->string('img');
             $table->text('description')->nullable();
-            $table->integer('likes')->default(0)->nullable();
-            $table->integer('reposts')->default(0)->nullable();
-            $table->integer('comments')->default(0)->nullable();
             $table->timestamps();
         });
     }

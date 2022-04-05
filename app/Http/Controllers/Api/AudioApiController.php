@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
 use App\Models\Audio;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
 
 class AudioApiController extends Controller
 {
@@ -25,9 +26,22 @@ class AudioApiController extends Controller
         return Audio::create([
             'author' => $fields['author'],
             'name' => $fields['name'],
-            'src' => $srcAudio,
+            'src' => '/images/covers/'.$srcAudio,
             'duration' => 0,
             'cover' => $srcCover,
         ]);
+    }
+
+    public function get_all_audios() {
+        $audios = DB::select('
+            select a.id audio_id,
+                   a.name,
+                   a.author,
+                   a.src,
+                   a.cover
+              from audios a
+        ');
+
+        return response(['audios' => $audios]);
     }
 }

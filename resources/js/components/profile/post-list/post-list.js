@@ -72,7 +72,8 @@ export default class PostList extends Component {
     }
 
     render() {
-        const postsList = this.state.posts.map(post => {
+        const {posts} = this.state;
+        const postsList = posts.length > 0 ? posts.map(post => {
             const {avatar, name, surname} = this.props.user;
             const {post_id, user_id, text, likes, i_like, reposts, comments, created_at} = post;
             return (
@@ -137,7 +138,7 @@ export default class PostList extends Component {
                     </div>
                 </div>
             );
-        });
+        }): null;
 
         return (
             <>
