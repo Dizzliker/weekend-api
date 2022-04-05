@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import Audio from '../../services/Audio';
+import { AudioService } from '../../services/Audio';
 import Spinner from '../spinner';
 
 export default class MusicList extends Component {
@@ -9,13 +9,12 @@ export default class MusicList extends Component {
             loading: true,
             audios: [],
         };
-        this.audio = new Audio();
+        this.audio = new AudioService();
     }
 
     componentDidMount() {
         this.audio.getAll()
             .then(res => {
-                console.log(res);
                 if (res.audios) {
                     this.setState({audios: res.audios, loading: false});
                 }
@@ -29,7 +28,7 @@ export default class MusicList extends Component {
         const {audios, loading} = this.state;
         const musicList = audios.length > 0 ? audios.map(audio => {
             return (
-                <div className="music__track flex_center_space-between" title="Click to play audio">
+                <div className="music__track flex_center_space-between" key={audio.audio_id} title="Click to play audio">
                     <div className="music__track-info flex ai_center">
                         <img src={audio.cover} className="ava-50" alt="Audio cover" />
                         <div className="music__track-desc flex_column">

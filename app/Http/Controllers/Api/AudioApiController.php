@@ -20,15 +20,14 @@ class AudioApiController extends Controller
         $srcAudio = time().rand(1,100).'.'.$request->audio->extension();
         $request->audio->move(public_path('music'), $srcAudio);
 
-        $srcCover = time().rand(1,100).'.'.$request->cover->extension();
+        $srcCover = $fields['author'].'-'.$fields['name'].time().rand(1,100).'.'.$request->cover->extension();
         $request->cover->move(public_path('images/covers'), $srcCover);
 
         return Audio::create([
             'author' => $fields['author'],
             'name' => $fields['name'],
-            'src' => '/images/covers/'.$srcAudio,
-            'duration' => 0,
-            'cover' => $srcCover,
+            'src' => '/music/'.$srcAudio,
+            'cover' => '/images/covers/'.$srcCover,
         ]);
     }
 

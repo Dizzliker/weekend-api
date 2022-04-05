@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import Audio from '../../../services/Audio';
+import {AudioService} from '../../../services/Audio';
 import Popup from '../../popup';
 import './popup-add-music.css';
 
@@ -11,7 +11,7 @@ export default class PopupAddMusic extends Component {
             author: '',
             name: '',
         };
-        this.audio = new Audio();
+        this.audio = new AudioService();
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleInputChange = this.handleInputChange.bind(this);
         this.inputMp3 = React.createRef();

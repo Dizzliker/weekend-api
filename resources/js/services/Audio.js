@@ -1,6 +1,6 @@
 import Weekend from './Weekend';
 
-export default class Audio extends Weekend {
+class Audio extends Weekend {
     getAll = async () => {
         return await this.getData('/getAllAudios');
     }
@@ -9,3 +9,5 @@ export default class Audio extends Weekend {
         return await this.postData(`/addAudio`, data, true);
     }
 }
+
+export {Audio as AudioService};
