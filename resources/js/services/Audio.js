@@ -8,6 +8,18 @@ class Audio extends Weekend {
     addAudio = async (data) => {
         return await this.postData(`/addAudio`, data, true);
     }
+
+    savePlayList = (playlist) => {
+        localStorage.setItem('playlist', playlist);
+    }
+
+    check = () => {
+        return localStorage.getItem('playlist') ? true : false;
+    }
+
+    getPlayListFromLocal = () => {
+        return localStorage.getItem('playlist');
+    }
 }
 
 export {Audio as AudioService};

@@ -6,35 +6,72 @@ export default class Player extends Component {
         super(props);
         this.state = {
             playlist: [],
+            currentAudioIndex: 0,
+            currentAudioTime: '',
+            volume: 0.5,
             currentAudio: {
                 audio: '',
                 author: '',
                 name: '',
                 src: '',
                 cover: '',
+                volume: '',
                 duration: 0,
                 time: 0,
             }
         };
         this.audio = new AudioService();
+        this.changeVolume = this.changeVolume.bind(this);
+        this.rewind = this.rewind.bind(this);
     }
 
     componentDidMount() {
-        this.audio.getAll()
-            .then(res => {
-                if (res.audios) {
-                    this.setState({playlist: res.audios});
-                    this.initAudio(this.state.playlist[0]);
-                }
-            })
-            .catch(error => {
-                console.warn(error);
-            });
+        if (this.audio.check()) {
+            this.setState({playlist: this.audio.getPlayListFromLocal()});
+            this.initAudio(this.state.playlist[this.state.currentAudioIndex]);
+        } else {
+            this.audio.getAll()
+                .then(res => {
+                    if (res.audios) {
+                        this.setState({playlist: res.audios});
+                        this.initAudio(this.state.playlist[this.state.currentAudioIndex]);
+                    }
+                })
+                .catch(error => {
+                    console.warn(error);
+                });
+        }
+    }
+
+    rewind = (event) => {
+        this.state.currentAudio.audio.volume = 0;
+        const target = event.target;
+        const value = target.value;
+        const name = target.name;
+
+        this.setState({
+          [name]: value
+        });
+
+        this.state.currentAudio.audio.currentTime = value;
+        this.state.currentAudio.audio.volume = this.state.volume;
+    }
+
+    changeVolume = (event) => {
+        const target = event.target;
+        const value = target.value;
+        const name = target.name;
+
+        this.setState({
+          [name]: value
+        });
+        this.state.currentAudio.audio.volume = value;
     }
 
     initAudio = (audio) => {
+        const newAudio = new Audio(audio.src);
         this.setState({currentAudio: {
-            audio: new Audio(audio.src),
+            audio: newAudio,
             author: audio.author,
             name: audio.name,
             cover: audio.cover,
@@ -50,11 +87,12 @@ export default class Player extends Component {
     }
 
     render() {
+        const {currentAudioTime, volume} = this.state;
         const {author, name, duration, time, cover} = this.state.currentAudio;
 
         return (
             <div className="sidebar__audio flex_column">
-                <input type="range" className="input-range" min="0" max="100" step="1" />
+                <input type="range" className="input-range" name="volume" onChange={this.changeVolume} value={volume} min="0" max="1" step="0.1" />
                 <div className="sidebar__audio-container flex_center_space-between">
                     <div className="sidebar__audio-info flex ai_center">
                         <div className="sidebar__audio-img">
@@ -74,7 +112,7 @@ export default class Player extends Component {
                     </div>
                 </div>
                 <div className="sidebar__audio-duration flex_column ai_flex-end">
-                    <input type="range" className="input-range" min="0" max={duration} step="1" />
+                    <input type="range" className="input-range" onChange={this.rewind} value={currentAudioTime} name="currentAudioTime" min="0" max={duration} step="1" />
                     <span className="text-duration">{time}</span>
                 </div>
             </div>
