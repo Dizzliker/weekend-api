@@ -86,12 +86,7 @@ class PostApiController extends Controller
         $post = Post::find($id);
         if ($post) {
             $post->delete();
-            return response([
-                "messages" => [
-                    "success" => true,
-                ],
-                "post" => $post,
-            ], 201);
+            return response(["success" => true], 201);
         }
         return response(["messages" => "Post with this id is not found"], 400);
     }

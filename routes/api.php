@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\AdminPostController;
 use App\Http\Controllers\Api\AudioApiController;
 use App\Http\Controllers\Api\AuthApiController;
 use App\Http\Controllers\Api\GalleryApiController;
@@ -56,6 +57,11 @@ Route::group(['middleware' => ['auth:sanctum']], function() {
     Route::post('/logout', [AuthApiController::class, 'logout']);
     // Все пользователи
     Route::get('/users', [UserApiController::class, 'get_all']);
+
+    // Админка
+    Route::get('/getAllPosts', [AdminPostController::class, 'get_all']);
+    Route::get('/user/{id}', [UserApiController::class, 'get_user_info']);
+    Route::get('/user/{id}/delete', [UserApiController::class, 'delete']);
 });
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {

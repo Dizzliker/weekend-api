@@ -99,6 +99,12 @@ input::placeholder {
   color: var(--light-gray);
 }
 
+/* cursor: pointer */
+
+.cp {
+  cursor: pointer;
+}
+
 /* Стили ползунка для музыки */
 
 .input-range {
@@ -513,6 +519,12 @@ a {
   margin: 30px auto;  
   width: 141px;
   height: 35px;
+}
+
+.btn-submit-icon {
+  cursor: pointer;
+  background-color: var(--white);
+  border: none
 }
 
 .sidebar {

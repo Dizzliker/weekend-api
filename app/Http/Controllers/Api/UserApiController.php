@@ -161,16 +161,31 @@ class UserApiController extends Controller
         return response(['message_not_found' => 'Users is not found']);
     }
 
+    public function get_user_info($id) {
+        return response(['user' => User::find($id)]);
+    }
+
     public function get_all() {
         $users = DB::select('
-            select u.id,
+            select u.id user_id,
                    u.name,
                    u.surname,
-                   u.avatar
+                   u.avatar,
+                   u.email
               from users u
-             where u.id not in ('.Auth::id().') 
         ');
 
-        return UserResource::collection($users);
+        return response(['users' => $users]);
+    }
+
+    public function delete($id) {
+        if (auth()->user()->is_admin) {
+            $user = User::find($id);
+            if ($user) {
+                $user->delete();
+                return response(['success' => true]);
+            }
+        }
+        return response(['message' => "Access denied"]);
     }
 }

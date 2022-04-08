@@ -96,9 +96,9 @@ export default class FriendList extends Component {
                         </div>
                     </div>
                     <div className="friend__user-actions">
-                        <a href="#">
+                        <Link to={`/messages/${friend.user_id}`}>
                             <img src="../images/message.svg" alt="Send message" />
-                        </a>
+                        </Link>
                         <div className="kebab">
                             <div className="circle"></div>
                             <div className="circle"></div>

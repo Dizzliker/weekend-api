@@ -1,25 +1,24 @@
 import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
 import {PostService} from '../../../services/Post';
-import Session from '../../../services/Session';
+import { Link } from 'react-router-dom';
 
-export default class PostList extends Component {
-    state = {
-        posts: [],
-        reload: false,
-    };
-
-    post = new PostService();
+export default class Post extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            posts: [],
+        };
+        this.post = new PostService();
+    }
 
     updatePosts = () => {
-        const {user_id} = this.props;
-        this.post.getUserPosts(user_id)
-            .then((res) => {
+        this.post.getAllPosts()
+            .then(res => {
                 if (res.posts) {
                     this.setState({posts: res.posts});
                 }
             })
-            .catch((error) => {
+            .catch(error => {
                 console.warn(error);
             });
     }
@@ -28,35 +27,11 @@ export default class PostList extends Component {
         this.updatePosts();
     }
 
-    componentDidUpdate(prevProps) {
-        if (this.props.reload) {
-            this.updatePosts();
-            this.props.afterUpdatePosts();
-        }
-        if (this.state.reload || this.props.user_id != prevProps.user_id) {
+    componentDidUpdate() {
+        if (this.state.reload) {
             this.setState({reload: false});
             this.updatePosts();
         }
-    }
-
-    getUserId = () => {
-        let formData = new FormData()
-        formData.append('user_id', Session.getId());
-        return formData;
-    }
-
-    delete = (event, post_id) => {
-        event.preventDefault();
-        this.post.delete(post_id)
-            .then(res => {
-                console.log(res);
-                if (res.success) {
-                    this.setState({reload: true});
-                }
-            })
-            .catch(error => {
-                console.warn(error);
-            });
     }
 
     like = (event, post_id) => {
@@ -85,11 +60,24 @@ export default class PostList extends Component {
             });
     }
 
+    delete = (event, post_id) => {
+        event.preventDefault();
+        this.post.delete(post_id)
+            .then(res => {
+                console.log(res);
+                if (res.success) {
+                    this.setState({reload: true});
+                }
+            })
+            .catch(error => {
+                console.warn(error);
+            });
+    }
+
     render() {
         const {posts} = this.state;
         const postsList = posts.length > 0 ? posts.map(post => {
-            const {avatar, name, surname} = this.props.user;
-            const {post_id, user_id, text, likes, i_like, reposts, comments, created_at} = post;
+            const {post_id, user_id, text, likes, i_like, reposts, comments, created_at, avatar, name, surname} = post;
             return (
                 <div className="post" key={post_id}>
                     <Link to={`/profile/${user_id}`}>
@@ -154,12 +142,15 @@ export default class PostList extends Component {
                     </div>
                 </div>
             );
-        }): null;
-
-        return (
-            <>
-                {postsList}
-            </>
+        }) : <h2>Posts is not found</h2>;
+        return(
+            <div className="profile">
+                <div className="posts">
+                    <h1>Admin post</h1>
+                    {postsList}
+                </div>
+            </div>
+            
         );
     }
 }

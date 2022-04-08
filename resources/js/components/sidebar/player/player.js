@@ -9,6 +9,7 @@ export default class Player extends Component {
             currentAudioIndex: 0,
             currentAudioTime: '',
             volume: 0.5,
+            paused: true,
             currentAudio: {
                 audio: '',
                 author: '',
@@ -44,7 +45,6 @@ export default class Player extends Component {
     }
 
     rewind = (event) => {
-        this.state.currentAudio.audio.volume = 0;
         const target = event.target;
         const value = target.value;
         const name = target.name;
@@ -54,7 +54,6 @@ export default class Player extends Component {
         });
 
         this.state.currentAudio.audio.currentTime = value;
-        this.state.currentAudio.audio.volume = this.state.volume;
     }
 
     changeVolume = (event) => {
@@ -78,16 +77,17 @@ export default class Player extends Component {
             duration: audio.duration,
             time: audio.duration,
             src: audio.src,
-        }})
+        }});
     }
 
     togglePlay = () => {
         const {audio} = this.state.currentAudio;
         audio.paused ? audio.play() : audio.pause();
+        this.setState({paused: audio.paused});
     }
 
     render() {
-        const {currentAudioTime, volume} = this.state;
+        const {currentAudioTime, volume, paused} = this.state;
         const {author, name, duration, time, cover} = this.state.currentAudio;
 
         return (
@@ -107,7 +107,10 @@ export default class Player extends Component {
     
                     <div className="sidebar__audio-actions flex_center_space-between">
                         <img src="../images/arrow-left.svg" alt="" />
-                        <img src="../images/pause.svg" alt="" onClick={this.togglePlay}/>
+                        {paused ? 
+                        <img src="/images/arrow-right.svg" alt="Play" width="20" height="20" onClick={this.togglePlay} /> :
+                        <img src="/images/pause.svg" alt="Pause" onClick={this.togglePlay}/>}
+                        
                         <img src="../images/arrow-right.svg" alt="" />
                     </div>
                 </div>

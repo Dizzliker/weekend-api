@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import Session from '../../../services/Session';
-import Post from '../../../services/Post';
+import {PostService} from '../../../services/Post';
 import PostList from './post-list';
 
 export default class PostForm extends Component {
@@ -11,7 +11,7 @@ export default class PostForm extends Component {
             reload: false,
         };
         this.handleInputChange = this.handleInputChange.bind(this);
-        this.post = new Post();
+        this.post = new PostService();
     }
 
     getFormData = () => {

@@ -1,6 +1,6 @@
 import Weekend from './Weekend';
 
-export default class Post extends Weekend {
+class Post extends Weekend {
     getUserPosts = async (id) => {
         return await this.getData(`/post/${id}`);
     }
@@ -12,4 +12,15 @@ export default class Post extends Weekend {
     unlike = async (id, data) => {
         return await this.postData(`/post/${id}/unlike`, data, true);
     }
+
+    delete = async (id) => {
+        return await this.getData(`/post/${id}/delete`);
+    }
+
+    // Админка
+    getAllPosts = async () => {
+        return await this.getData('/getAllPosts');
+    }
 }
+
+export {Post as PostService};
