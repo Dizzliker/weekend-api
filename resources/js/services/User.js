@@ -12,4 +12,12 @@ export default class User extends Weekend {
     delete = async (id) => {
         return await this.getData(`/user/${id}/delete`)
     }
+
+    unban = async (id) => {
+        return await this.getData(`/user/${id}/unban`);
+    }
+    
+    ban = async (id) => {
+        return await this.getData(`/user/${id}/ban`);
+    }
 }

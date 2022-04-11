@@ -2172,8 +2172,8 @@ var App = /*#__PURE__*/function (_Component) {
     key: "componentDidMount",
     value: function componentDidMount() {
       if (_services_Session__WEBPACK_IMPORTED_MODULE_4__["default"].check()) {
-        var user_id = _services_Session__WEBPACK_IMPORTED_MODULE_4__["default"].getId(); // this.getCountMessages(user_id);
-
+        var user_id = _services_Session__WEBPACK_IMPORTED_MODULE_4__["default"].getId();
+        this.getCountMessages(user_id);
         this.getCountFriendRequests(user_id);
       }
     }
@@ -2209,7 +2209,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (/* binding */ Admin)
 /* harmony export */ });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
+/* harmony import */ var _services_Admin__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../services/Admin */ "./resources/js/services/Admin.js");
+/* harmony import */ var _admin_css__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./admin.css */ "./resources/js/components/admin/admin.css");
+/* harmony import */ var _right_side_right_side__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./right-side/right-side */ "./resources/js/components/admin/right-side/right-side.js");
+/* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router-dom/index.js");
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
 function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -2235,22 +2239,95 @@ function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.g
 
 
 
+
+
+
+
+
+
 var Admin = /*#__PURE__*/function (_Component) {
   _inherits(Admin, _Component);
 
   var _super = _createSuper(Admin);
 
-  function Admin() {
+  function Admin(props) {
+    var _this;
+
     _classCallCheck(this, Admin);
 
-    return _super.apply(this, arguments);
+    _this = _super.call(this, props);
+    _this.state = {
+      counts: {}
+    };
+    _this.admin = new _services_Admin__WEBPACK_IMPORTED_MODULE_1__.AdminService();
+    return _this;
   }
 
   _createClass(Admin, [{
+    key: "componentDidMount",
+    value: function componentDidMount() {
+      var _this2 = this;
+
+      this.admin.getCounts().then(function (res) {
+        if (res.counts) {
+          _this2.setState({
+            counts: res.counts
+          });
+        }
+      })["catch"](function (error) {
+        console.warn(error);
+      });
+    }
+  }, {
     key: "render",
     value: function render() {
-      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("h1", {
-        children: "Admin panel"
+      var _this$state$counts = this.state.counts,
+          count_users = _this$state$counts.count_users,
+          count_posts = _this$state$counts.count_posts,
+          count_audios = _this$state$counts.count_audios;
+      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.Fragment, {
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
+          className: "adminpanel",
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("h1", {
+            children: "Admin panel"
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
+            className: "adminpanel__categories",
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_5__.Link, {
+              to: "/admin/users",
+              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
+                className: "adminpanel__category",
+                children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("img", {
+                  src: "images/friends(purple).svg"
+                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("span", {
+                  children: "Users"
+                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("span", {
+                  children: count_users
+                })]
+              })
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_5__.Link, {
+              to: "/admin/posts",
+              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
+                className: "adminpanel__category",
+                children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("img", {
+                  src: "images/news.svg"
+                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("span", {
+                  children: "Posts"
+                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("span", {
+                  children: count_posts
+                })]
+              })
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
+              className: "adminpanel__category",
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("img", {
+                src: "images/music(purple).svg"
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("span", {
+                children: "Audios"
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("span", {
+                children: count_audios
+              })]
+            })]
+          })]
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_right_side_right_side__WEBPACK_IMPORTED_MODULE_3__["default"], {})]
       });
     }
   }]);
@@ -2602,6 +2679,88 @@ var Post = /*#__PURE__*/function (_Component) {
 
 /***/ }),
 
+/***/ "./resources/js/components/admin/right-side/right-side.js":
+/*!****************************************************************!*\
+  !*** ./resources/js/components/admin/right-side/right-side.js ***!
+  \****************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ RightSide)
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router-dom/index.js");
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+
+
+
+
+
+var RightSide = /*#__PURE__*/function (_Component) {
+  _inherits(RightSide, _Component);
+
+  var _super = _createSuper(RightSide);
+
+  function RightSide() {
+    _classCallCheck(this, RightSide);
+
+    return _super.apply(this, arguments);
+  }
+
+  _createClass(RightSide, [{
+    key: "render",
+    value: function render() {
+      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("div", {
+        className: "adminpanel__right-side flex_center_center",
+        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("ul", {
+          className: "flex_column",
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("li", {
+            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_2__.Link, {
+              to: "/admin/users",
+              children: "All users"
+            })
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("li", {
+            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_2__.Link, {
+              to: "/admin/posts",
+              children: "All posts"
+            })
+          })]
+        })
+      });
+    }
+  }]);
+
+  return RightSide;
+}(react__WEBPACK_IMPORTED_MODULE_0__.Component);
+
+
+
+/***/ }),
+
 /***/ "./resources/js/components/admin/user/index.js":
 /*!*****************************************************!*\
   !*** ./resources/js/components/admin/user/index.js ***!
@@ -2616,6 +2775,110 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _user__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./user */ "./resources/js/components/admin/user/user.js");
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_user__WEBPACK_IMPORTED_MODULE_0__["default"]);
+
+/***/ }),
+
+/***/ "./resources/js/components/admin/user/popup/popup-ban.js":
+/*!***************************************************************!*\
+  !*** ./resources/js/components/admin/user/popup/popup-ban.js ***!
+  \***************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ PopupBan)
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var _services_User__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../../services/User */ "./resources/js/services/User.js");
+/* harmony import */ var _popup__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../popup */ "./resources/js/components/popup/index.js");
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+
+
+
+
+
+
+var PopupBan = /*#__PURE__*/function (_Component) {
+  _inherits(PopupBan, _Component);
+
+  var _super = _createSuper(PopupBan);
+
+  function PopupBan(props) {
+    var _this;
+
+    _classCallCheck(this, PopupBan);
+
+    _this = _super.call(this, props);
+
+    _defineProperty(_assertThisInitialized(_this), "banUser", function (event) {
+      event.preventDefault();
+
+      _this.user.ban(_this.props.user.user_id).then(function (res) {
+        if (res) {
+          console.log(res);
+        }
+      })["catch"](function (error) {
+        console.warn(error);
+      });
+    });
+
+    _this.state = {};
+    _this.user = new _services_User__WEBPACK_IMPORTED_MODULE_1__["default"]();
+    return _this;
+  }
+
+  _createClass(PopupBan, [{
+    key: "render",
+    value: function render() {
+      var _this$props$user = this.props.user,
+          name = _this$props$user.name,
+          surname = _this$props$user.surname;
+      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_popup__WEBPACK_IMPORTED_MODULE_2__["default"], {
+        onClose: this.props.onClose,
+        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("form", {
+          onSubmit: this.banUser,
+          method: "get",
+          className: "flex_column",
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("span", {
+            children: ["Are you sure want to ban user ", name, " ", surname, "?"]
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("button", {
+            className: "btn-auth",
+            children: "Ban"
+          })]
+        })
+      });
+    }
+  }]);
+
+  return PopupBan;
+}(react__WEBPACK_IMPORTED_MODULE_0__.Component);
+
+
 
 /***/ }),
 
@@ -2866,10 +3129,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 /* harmony import */ var _services_User__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../services/User */ "./resources/js/services/User.js");
-/* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router-dom/index.js");
+/* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router-dom/index.js");
 /* harmony import */ var _popup_popup_edit__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./popup/popup-edit */ "./resources/js/components/admin/user/popup/popup-edit.js");
 /* harmony import */ var _popup_popup_delete__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./popup/popup-delete */ "./resources/js/components/admin/user/popup/popup-delete.js");
-/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
+/* harmony import */ var _popup_popup_ban__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./popup/popup-ban */ "./resources/js/components/admin/user/popup/popup-ban.js");
+/* harmony import */ var _right_side_right_side__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../right-side/right-side */ "./resources/js/components/admin/right-side/right-side.js");
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
 function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -2903,6 +3168,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 
 
+
+
 var AdminUser = /*#__PURE__*/function (_Component) {
   _inherits(AdminUser, _Component);
 
@@ -2914,6 +3181,37 @@ var AdminUser = /*#__PURE__*/function (_Component) {
     _classCallCheck(this, AdminUser);
 
     _this = _super.call(this, props);
+
+    _defineProperty(_assertThisInitialized(_this), "updateUsers", function () {
+      _this.user.getAll().then(function (res) {
+        if (res.users) {
+          _this.setState({
+            users: res.users
+          });
+        }
+      })["catch"](function (error) {
+        console.warn(error);
+      });
+    });
+
+    _defineProperty(_assertThisInitialized(_this), "unban", function (user_id) {
+      _this.user.unban(user_id).then(function (res) {
+        if (res.success) {
+          _this.setState({
+            reload: true
+          });
+        }
+      })["catch"](function (error) {
+        console.warn(error);
+      });
+    });
+
+    _defineProperty(_assertThisInitialized(_this), "openPopupBan", function (user) {
+      _this.setState({
+        popupBan: true,
+        currentUser: user
+      });
+    });
 
     _defineProperty(_assertThisInitialized(_this), "openPopupEdit", function (user) {
       _this.setState({
@@ -2930,6 +3228,8 @@ var AdminUser = /*#__PURE__*/function (_Component) {
     });
 
     _this.state = {
+      reload: false,
+      popupBan: false,
       popupEdit: false,
       popupDelete: false,
       users: [],
@@ -2942,75 +3242,86 @@ var AdminUser = /*#__PURE__*/function (_Component) {
   _createClass(AdminUser, [{
     key: "componentDidMount",
     value: function componentDidMount() {
-      var _this2 = this;
-
-      this.user.getAll().then(function (res) {
-        if (res.users) {
-          _this2.setState({
-            users: res.users
-          });
-        }
-      })["catch"](function (error) {
-        console.warn(error);
-      });
+      this.updateUsers();
+    }
+  }, {
+    key: "componentDidUpdate",
+    value: function componentDidUpdate() {
+      if (this.state.reload) {
+        this.setState({
+          reload: false
+        });
+        this.updateUsers();
+      }
     }
   }, {
     key: "render",
     value: function render() {
-      var _this3 = this;
+      var _this2 = this;
 
       var users = this.state.users;
       var userList = users.length > 0 ? users.map(function (user) {
         var user_id = user.user_id,
-            email = user.email,
             name = user.name,
             surname = user.surname,
             avatar = user.avatar,
-            online = user.online;
-        return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
+            online = user.online,
+            is_banned = user.is_banned;
+        return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsxs)("div", {
           className: "friend__user",
-          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsxs)("div", {
             className: "friend__user-info",
-            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)("div", {
               className: "friend__user-ava",
-              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_5__.Link, {
+              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_7__.Link, {
                 to: "/profile/".concat(user_id),
-                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("img", {
+                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)("img", {
                   src: avatar,
                   className: "ava-60",
                   alt: "User avatar"
                 })
               })
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsxs)("div", {
               className: "friend__user-name",
-              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_5__.Link, {
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_7__.Link, {
                 to: "/profile/".concat(user_id),
-                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("span", {
+                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsxs)("span", {
                   className: "username",
                   children: [name, " ", surname]
                 })
-              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("span", {
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)("span", {
                 className: "online-status",
                 children: online
               })]
             })]
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsxs)("div", {
             className: "friend__user-actions",
-            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("button", {
+            children: [is_banned ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)("button", {
+              type: "button",
               "class": "btn",
+              onClick: function onClick() {
+                _this2.unban(user_id);
+              },
+              children: "Unban"
+            }) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)("button", {
+              type: "button",
+              "class": "btn",
+              onClick: function onClick() {
+                _this2.openPopupBan(user);
+              },
               children: "Ban"
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("img", {
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)("img", {
               src: "/images/edit.svg",
               onClick: function onClick() {
-                _this3.openPopupEdit(user);
+                _this2.openPopupEdit(user);
               },
               alt: "Edit user info",
               title: "Edit user information",
               className: "cp"
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("img", {
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)("img", {
               src: "/images/close.svg",
               onClick: function onClick() {
-                _this3.openPopupDelete(user);
+                _this2.openPopupDelete(user);
               },
               alt: "Delete user",
               title: "Delete user",
@@ -3020,35 +3331,43 @@ var AdminUser = /*#__PURE__*/function (_Component) {
         }, user_id);
       }) : null;
       var _this$state = this.state,
+          popupBan = _this$state.popupBan,
           popupEdit = _this$state.popupEdit,
           popupDelete = _this$state.popupDelete,
           currentUser = _this$state.currentUser;
-      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.Fragment, {
-        children: [popupEdit && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_popup_popup_edit__WEBPACK_IMPORTED_MODULE_2__["default"], {
+      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.Fragment, {
+        children: [popupBan && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)(_popup_popup_ban__WEBPACK_IMPORTED_MODULE_4__["default"], {
+          user: currentUser,
+          onClose: function onClose() {
+            _this2.setState({
+              popupBan: false
+            });
+          }
+        }), popupEdit && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)(_popup_popup_edit__WEBPACK_IMPORTED_MODULE_2__["default"], {
           user_id: currentUser.user_id,
           onClose: function onClose() {
-            _this3.setState({
+            _this2.setState({
               popupEdit: false
             });
           }
-        }), popupDelete && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_popup_popup_delete__WEBPACK_IMPORTED_MODULE_3__["default"], {
+        }), popupDelete && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)(_popup_popup_delete__WEBPACK_IMPORTED_MODULE_3__["default"], {
           user: currentUser,
           onClose: function onClose() {
-            _this3.setState({
+            _this2.setState({
               popupDelete: false
             });
           }
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsxs)("div", {
           className: "friend",
-          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsxs)("div", {
             className: "friend__friend-list flex_column ai_center",
-            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("h1", {
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)("h1", {
               children: "All users"
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)("div", {
               className: "friend__users-container",
               children: userList
             })]
-          })
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)(_right_side_right_side__WEBPACK_IMPORTED_MODULE_5__["default"], {})]
         })]
       });
     }
@@ -4259,7 +4578,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (/* binding */ Main)
 /* harmony export */ });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-/* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router/index.js");
+/* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router/index.js");
 /* harmony import */ var _friend_friend__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../friend/friend */ "./resources/js/components/friend/friend.js");
 /* harmony import */ var _music__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../music */ "./resources/js/components/music/index.js");
 /* harmony import */ var _sidebar__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../sidebar */ "./resources/js/components/sidebar/index.js");
@@ -4271,7 +4590,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _admin__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../admin */ "./resources/js/components/admin/index.js");
 /* harmony import */ var _admin_post__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../admin/post */ "./resources/js/components/admin/post/index.js");
 /* harmony import */ var _admin_user__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ../admin/user */ "./resources/js/components/admin/user/index.js");
-/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
+/* harmony import */ var _services_Session__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ../../services/Session */ "./resources/js/services/Session.js");
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
 function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -4311,6 +4631,8 @@ function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.g
 
 
 
+
+
 var Main = /*#__PURE__*/function (_Component) {
   _inherits(Main, _Component);
 
@@ -4330,47 +4652,49 @@ var Main = /*#__PURE__*/function (_Component) {
         height: '100vh',
         backgroundImage: "url(".concat(_img_bg_png__WEBPACK_IMPORTED_MODULE_4__["default"], ")")
       };
-      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_12__.jsx)("div", {
+      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_13__.jsx)("div", {
         className: "bg",
         style: bgStyle,
-        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_12__.jsxs)("div", {
+        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_13__.jsxs)("div", {
           className: "main flex",
-          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_12__.jsx)(_sidebar__WEBPACK_IMPORTED_MODULE_3__["default"], {
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_13__.jsx)(_sidebar__WEBPACK_IMPORTED_MODULE_3__["default"], {
             countFriendRequests: this.props.countFriendRequests,
             countMessages: this.props.countMessages
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_12__.jsxs)(react_router_dom__WEBPACK_IMPORTED_MODULE_13__.Routes, {
-            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_12__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_13__.Route, {
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_13__.jsxs)(react_router_dom__WEBPACK_IMPORTED_MODULE_14__.Routes, {
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_13__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_14__.Route, {
               path: "profile/:id",
-              element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_12__.jsx)(_profile_profile_container__WEBPACK_IMPORTED_MODULE_5__["default"], {})
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_12__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_13__.Route, {
+              element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_13__.jsx)(_profile_profile_container__WEBPACK_IMPORTED_MODULE_5__["default"], {})
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_13__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_14__.Route, {
               path: "messages/:id",
-              element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_12__.jsx)(_message_container_message_container__WEBPACK_IMPORTED_MODULE_8__["default"], {
+              element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_13__.jsx)(_message_container_message_container__WEBPACK_IMPORTED_MODULE_8__["default"], {
                 countMessages: this.props.countMessages
               })
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_12__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_13__.Route, {
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_13__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_14__.Route, {
               path: "friends",
-              element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_12__.jsx)(_friend_friend__WEBPACK_IMPORTED_MODULE_1__["default"], {
+              element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_13__.jsx)(_friend_friend__WEBPACK_IMPORTED_MODULE_1__["default"], {
                 countFriendRequests: this.props.countFriendRequests
               })
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_12__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_13__.Route, {
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_13__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_14__.Route, {
               path: "users",
-              element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_12__.jsx)(_user_user__WEBPACK_IMPORTED_MODULE_6__["default"], {})
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_12__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_13__.Route, {
+              element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_13__.jsx)(_user_user__WEBPACK_IMPORTED_MODULE_6__["default"], {})
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_13__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_14__.Route, {
               path: "audio",
-              element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_12__.jsx)(_music__WEBPACK_IMPORTED_MODULE_2__["default"], {})
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_12__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_13__.Route, {
+              element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_13__.jsx)(_music__WEBPACK_IMPORTED_MODULE_2__["default"], {})
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_13__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_14__.Route, {
               path: "photos",
-              element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_12__.jsx)(_gallery_gallery__WEBPACK_IMPORTED_MODULE_7__["default"], {})
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_12__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_13__.Route, {
-              path: "admin",
-              element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_12__.jsx)(_admin__WEBPACK_IMPORTED_MODULE_9__["default"], {})
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_12__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_13__.Route, {
-              path: "admin/posts",
-              element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_12__.jsx)(_admin_post__WEBPACK_IMPORTED_MODULE_10__["default"], {})
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_12__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_13__.Route, {
-              path: "admin/users",
-              element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_12__.jsx)(_admin_user__WEBPACK_IMPORTED_MODULE_11__["default"], {})
-            })]
+              element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_13__.jsx)(_gallery_gallery__WEBPACK_IMPORTED_MODULE_7__["default"], {})
+            }), _services_Session__WEBPACK_IMPORTED_MODULE_12__["default"].isAdmin() ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_13__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_13__.Fragment, {
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_13__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_14__.Route, {
+                path: "admin",
+                element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_13__.jsx)(_admin__WEBPACK_IMPORTED_MODULE_9__["default"], {})
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_13__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_14__.Route, {
+                path: "admin/posts",
+                element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_13__.jsx)(_admin_post__WEBPACK_IMPORTED_MODULE_10__["default"], {})
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_13__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_14__.Route, {
+                path: "admin/users",
+                element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_13__.jsx)(_admin_user__WEBPACK_IMPORTED_MODULE_11__["default"], {})
+              })]
+            }) : null]
           })]
         })
       });
@@ -6636,7 +6960,7 @@ var PostList = /*#__PURE__*/function (_Component) {
                   className: "date",
                   children: created_at
                 })]
-              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
+              }), _this2.props.user_id == _services_Session__WEBPACK_IMPORTED_MODULE_2__["default"].getId() && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
                 className: "post__actions flex_center_space-between",
                 children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
                   className: "kebab",
@@ -6854,6 +7178,8 @@ var Profile = /*#__PURE__*/function (_Component) {
   var _super = _createSuper(Profile);
 
   function Profile(props) {
+    var _this$state;
+
     var _this;
 
     _classCallCheck(this, Profile);
@@ -6879,12 +7205,12 @@ var Profile = /*#__PURE__*/function (_Component) {
 
     _defineProperty(_assertThisInitialized(_this), "getUserInfo", function (user_id) {
       _this.user.get(user_id).then(function (info) {
-        console.log(info.data);
-
-        _this.setState({
-          profile: info.data,
-          loading: false
-        });
+        if (info.data) {
+          _this.setState({
+            profile: info.data,
+            loading: false
+          });
+        }
       })["catch"](function (error) {
         console.error(error);
       });
@@ -6904,14 +7230,10 @@ var Profile = /*#__PURE__*/function (_Component) {
       });
     });
 
-    _this.state = {
-      loading: true,
-      profile: [],
-      messages: [],
-      reload: false,
-      popupAddFriend: false,
-      popupEditAva: false
-    };
+    _this.state = (_this$state = {
+      profile: {},
+      loading: true
+    }, _defineProperty(_this$state, "profile", []), _defineProperty(_this$state, "messages", []), _defineProperty(_this$state, "reload", false), _defineProperty(_this$state, "popupAddFriend", false), _defineProperty(_this$state, "popupEditAva", false), _this$state);
     _this.user = new _services_Profile__WEBPACK_IMPORTED_MODULE_1__.ProfileService();
     _this.friend = new _services_Friend__WEBPACK_IMPORTED_MODULE_6__.FriendService();
     return _this;
@@ -6956,190 +7278,198 @@ var Profile = /*#__PURE__*/function (_Component) {
           surname = _this$state$profile.surname,
           avatar = _this$state$profile.avatar,
           count_friends = _this$state$profile.count_friends,
-          count_photos = _this$state$profile.count_photos;
-      var _this$state = this.state,
-          loading = _this$state.loading,
-          messages = _this$state.messages,
-          popupAddFriend = _this$state.popupAddFriend,
-          popupEditAva = _this$state.popupEditAva;
-      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.Fragment, {
-        children: [loading && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)(_spinner__WEBPACK_IMPORTED_MODULE_4__["default"], {}), popupAddFriend && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)(_popup_popup__WEBPACK_IMPORTED_MODULE_3__["default"], {
-          onClose: function onClose() {
-            return _this2.setState({
-              popupAddFriend: false
-            });
-          },
-          children: messages[0]
-        }), popupEditAva && this.props.user_id == _services_Session__WEBPACK_IMPORTED_MODULE_2__["default"].getId() && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)(_popup_edit_ava_popup_edit_ava__WEBPACK_IMPORTED_MODULE_7__["default"], {
-          onClose: function onClose() {
-            return _this2.setState({
-              popupEditAva: false
-            });
-          },
-          afterImgLoaded: function afterImgLoaded() {
-            _this2.setState({
-              reload: true
-            });
-          }
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsxs)("div", {
-          className: "profile flex_column ai_flex-start",
-          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsxs)("div", {
-            className: "profile__user-container flex",
+          count_photos = _this$state$profile.count_photos,
+          is_banned = _this$state$profile.is_banned;
+      var _this$state2 = this.state,
+          loading = _this$state2.loading,
+          messages = _this$state2.messages,
+          popupAddFriend = _this$state2.popupAddFriend,
+          popupEditAva = _this$state2.popupEditAva;
+      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.Fragment, {
+        children: is_banned ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)("div", {
+          className: "profile flex_Center_center",
+          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)("h1", {
+            children: "User is banned"
+          })
+        }) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.Fragment, {
+          children: [loading && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)(_spinner__WEBPACK_IMPORTED_MODULE_4__["default"], {}), popupAddFriend && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)(_popup_popup__WEBPACK_IMPORTED_MODULE_3__["default"], {
+            onClose: function onClose() {
+              return _this2.setState({
+                popupAddFriend: false
+              });
+            },
+            children: messages[0]
+          }), popupEditAva && this.props.user_id == _services_Session__WEBPACK_IMPORTED_MODULE_2__["default"].getId() && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)(_popup_edit_ava_popup_edit_ava__WEBPACK_IMPORTED_MODULE_7__["default"], {
+            onClose: function onClose() {
+              return _this2.setState({
+                popupEditAva: false
+              });
+            },
+            afterImgLoaded: function afterImgLoaded() {
+              _this2.setState({
+                reload: true
+              });
+            }
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsxs)("div", {
+            className: "profile flex_column ai_flex-start",
             children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsxs)("div", {
-              className: "profile__user-avatar flex_center_center",
-              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_10__.Link, {
-                to: "/messages/".concat(user_id),
-                className: "link-btn__left-circle",
-                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsxs)("span", {
-                  className: "left-circle flex ai_center",
-                  children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)("img", {
-                    src: "../images/message.svg",
-                    className: "icon-msg",
-                    alt: "Send message"
-                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)("img", {
-                    src: "../images/left-circle.svg",
-                    className: "icon-circle",
-                    alt: ""
-                  })]
-                })
-              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsxs)("div", {
-                className: "profile__avatar",
-                children: [this.props.user_id == _services_Session__WEBPACK_IMPORTED_MODULE_2__["default"].getId() && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)("div", {
-                  className: "profile__edit-ava flex_center_center",
-                  onClick: function onClick() {
-                    _this2.setState({
-                      popupEditAva: true
-                    });
-                  },
-                  children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)("span", {
-                    children: "Click to edit avatar"
-                  })
-                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)("img", {
-                  src: avatar,
-                  className: "avatar-img",
-                  alt: "User avatar"
-                })]
-              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)("span", {
-                className: "link-btn__right-circle",
-                onClick: this.sendRequest,
-                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsxs)("span", {
-                  className: "right-circle flex_center_flex-end",
-                  children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)("img", {
-                    src: "../images/friends.svg",
-                    className: "icon-friend",
-                    alt: ""
-                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)("img", {
-                    src: "../images/right-circle.svg",
-                    className: "icon-circle",
-                    alt: ""
-                  })]
-                })
-              })]
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsxs)("div", {
-              className: "profile__user-info",
+              className: "profile__user-container flex",
               children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsxs)("div", {
-                className: "profile__name-container flex_center_space-between",
-                children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsxs)("h1", {
-                  className: "profile__username",
-                  children: [name, " ", surname]
+                className: "profile__user-avatar flex_center_center",
+                children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_10__.Link, {
+                  to: "/messages/".concat(user_id),
+                  className: "link-btn__left-circle",
+                  children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsxs)("span", {
+                    className: "left-circle flex ai_center",
+                    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)("img", {
+                      src: "../images/message.svg",
+                      className: "icon-msg",
+                      alt: "Send message"
+                    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)("img", {
+                      src: "../images/left-circle.svg",
+                      className: "icon-circle",
+                      alt: ""
+                    })]
+                  })
                 }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsxs)("div", {
-                  className: "online-status flex_center_space-between",
-                  children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)("div", {
-                    className: "online-circle"
-                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)("span", {
-                    className: "online-text",
-                    children: "Online"
+                  className: "profile__avatar",
+                  children: [this.props.user_id == _services_Session__WEBPACK_IMPORTED_MODULE_2__["default"].getId() && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)("div", {
+                    className: "profile__edit-ava flex_center_center",
+                    onClick: function onClick() {
+                      _this2.setState({
+                        popupEditAva: true
+                      });
+                    },
+                    children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)("span", {
+                      children: "Click to edit avatar"
+                    })
+                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)("img", {
+                    src: avatar,
+                    className: "avatar-img",
+                    alt: "User avatar"
                   })]
+                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)("span", {
+                  className: "link-btn__right-circle",
+                  onClick: this.sendRequest,
+                  children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsxs)("span", {
+                    className: "right-circle flex_center_flex-end",
+                    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)("img", {
+                      src: "../images/friends.svg",
+                      className: "icon-friend",
+                      alt: ""
+                    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)("img", {
+                      src: "../images/right-circle.svg",
+                      className: "icon-circle",
+                      alt: ""
+                    })]
+                  })
                 })]
-              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)("div", {
-                className: "profile__user-status flex ai_center",
-                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)("span", {
-                  className: "profile__status-text",
-                  children: "Dead inside"
-                })
               }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsxs)("div", {
-                className: "profile__more-info flex_center_space-between",
+                className: "profile__user-info",
                 children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsxs)("div", {
-                  className: "profile__list-info flex_column jc_space-between",
-                  children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsxs)("div", {
-                    className: "profile__list-item",
-                    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)("span", {
-                      className: "profile__item-caption",
-                      children: "Sex:"
-                    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)("div", {
-                      className: "profile__item-value",
-                      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)("span", {
-                        className: "profile__item-text",
-                        children: "Male"
-                      })
-                    })]
+                  className: "profile__name-container flex_center_space-between",
+                  children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsxs)("h1", {
+                    className: "profile__username",
+                    children: [name, " ", surname]
                   }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsxs)("div", {
-                    className: "profile__list-item",
-                    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)("span", {
-                      className: "profile__item-caption",
-                      children: "Birthday:"
-                    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)("div", {
-                      className: "profile__item-value",
-                      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)("span", {
-                        className: "profile__item-text",
-                        children: "18.11.02"
-                      })
-                    })]
-                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsxs)("div", {
-                    className: "profile__list-item",
-                    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)("span", {
-                      className: "profile__item-caption",
-                      children: "Language:"
-                    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)("div", {
-                      className: "profile__item-value",
-                      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)("span", {
-                        className: "profile__item-text",
-                        children: "Russian"
-                      })
-                    })]
-                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsxs)("div", {
-                    className: "profile__list-item",
-                    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)("span", {
-                      className: "profile__item-caption",
-                      children: "Relationship:"
-                    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)("div", {
-                      className: "profile__item-value",
-                      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)("span", {
-                        className: "profile__item-text",
-                        children: "None"
-                      })
+                    className: "online-status flex_center_space-between",
+                    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)("div", {
+                      className: "online-circle"
+                    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)("span", {
+                      className: "online-text",
+                      children: "Online"
                     })]
                   })]
+                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)("div", {
+                  className: "profile__user-status flex ai_center",
+                  children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)("span", {
+                    className: "profile__status-text",
+                    children: "Dead inside"
+                  })
                 }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsxs)("div", {
-                  className: "profile__personal-info flex jc_space-between",
-                  children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)(_info_item_info_item__WEBPACK_IMPORTED_MODULE_8__["default"], {
-                    img: "/images/friends(purple).svg",
-                    text: "Friends",
-                    count: count_friends
-                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)(_info_item_info_item__WEBPACK_IMPORTED_MODULE_8__["default"], {
-                    img: "/images/music(purple).svg",
-                    text: "Music",
-                    count: 0
-                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)(_info_item_info_item__WEBPACK_IMPORTED_MODULE_8__["default"], {
-                    img: "/images/photo(purple).svg",
-                    text: "Photos",
-                    count: count_photos
-                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)(_info_item_info_item__WEBPACK_IMPORTED_MODULE_8__["default"], {
-                    img: "/images/video(purple).svg",
-                    text: "Videos",
-                    count: 0
+                  className: "profile__more-info flex_center_space-between",
+                  children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsxs)("div", {
+                    className: "profile__list-info flex_column jc_space-between",
+                    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsxs)("div", {
+                      className: "profile__list-item",
+                      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)("span", {
+                        className: "profile__item-caption",
+                        children: "Sex:"
+                      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)("div", {
+                        className: "profile__item-value",
+                        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)("span", {
+                          className: "profile__item-text",
+                          children: "Male"
+                        })
+                      })]
+                    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsxs)("div", {
+                      className: "profile__list-item",
+                      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)("span", {
+                        className: "profile__item-caption",
+                        children: "Birthday:"
+                      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)("div", {
+                        className: "profile__item-value",
+                        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)("span", {
+                          className: "profile__item-text",
+                          children: "18.11.02"
+                        })
+                      })]
+                    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsxs)("div", {
+                      className: "profile__list-item",
+                      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)("span", {
+                        className: "profile__item-caption",
+                        children: "Language:"
+                      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)("div", {
+                        className: "profile__item-value",
+                        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)("span", {
+                          className: "profile__item-text",
+                          children: "Russian"
+                        })
+                      })]
+                    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsxs)("div", {
+                      className: "profile__list-item",
+                      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)("span", {
+                        className: "profile__item-caption",
+                        children: "Relationship:"
+                      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)("div", {
+                        className: "profile__item-value",
+                        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)("span", {
+                          className: "profile__item-text",
+                          children: "None"
+                        })
+                      })]
+                    })]
+                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsxs)("div", {
+                    className: "profile__personal-info flex jc_space-between",
+                    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)(_info_item_info_item__WEBPACK_IMPORTED_MODULE_8__["default"], {
+                      img: "/images/friends(purple).svg",
+                      text: "Friends",
+                      count: count_friends
+                    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)(_info_item_info_item__WEBPACK_IMPORTED_MODULE_8__["default"], {
+                      img: "/images/music(purple).svg",
+                      text: "Music",
+                      count: 0
+                    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)(_info_item_info_item__WEBPACK_IMPORTED_MODULE_8__["default"], {
+                      img: "/images/photo(purple).svg",
+                      text: "Photos",
+                      count: count_photos
+                    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)(_info_item_info_item__WEBPACK_IMPORTED_MODULE_8__["default"], {
+                      img: "/images/video(purple).svg",
+                      text: "Videos",
+                      count: 0
+                    })]
                   })]
                 })]
               })]
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)("div", {
+              className: "posts",
+              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)(_post_list_post_form__WEBPACK_IMPORTED_MODULE_5__["default"], {
+                user_id: this.props.user_id,
+                user: this.state.profile
+              })
             })]
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)("div", {
-            className: "posts",
-            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)(_post_list_post_form__WEBPACK_IMPORTED_MODULE_5__["default"], {
-              user_id: this.props.user_id,
-              user: this.state.profile
-            })
           })]
-        })]
+        })
       });
     }
   }]);
@@ -7572,13 +7902,10 @@ var Sidebar = /*#__PURE__*/function (_Component) {
               })]
             }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsxs)("div", {
               className: "sidebar__user-actions flex_center_space-between",
-              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)("a", {
-                href: "#",
-                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)("img", {
-                  src: "../images/settings.svg",
-                  alt: "Settings",
-                  className: "icon icon-settings"
-                })
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)("img", {
+                src: "../images/settings.svg",
+                alt: "Settings",
+                className: "icon icon-settings"
               }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)("img", {
                 src: "../images/logout.svg",
                 alt: "Logout",
@@ -7778,10 +8105,12 @@ var UserList = /*#__PURE__*/function (_Component) {
     value: function componentDidMount() {
       var _this2 = this;
 
-      this.user.getAll().then(function (users) {
-        _this2.setState({
-          users: users.data
-        });
+      this.user.getAll().then(function (res) {
+        if (res.users) {
+          _this2.setState({
+            users: res.users
+          });
+        }
       })["catch"](function (error) {
         console.warn(error);
       });
@@ -7789,7 +8118,8 @@ var UserList = /*#__PURE__*/function (_Component) {
   }, {
     key: "render",
     value: function render() {
-      var userList = this.state.users.map(function (user) {
+      var users = this.state.users;
+      var userList = users.length > 0 ? users.map(function (user) {
         return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
           className: "friend__user",
           children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
@@ -7837,7 +8167,7 @@ var UserList = /*#__PURE__*/function (_Component) {
             })]
           })]
         }, user.user_id);
-      });
+      }) : null;
       return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
         className: "friend__friend-list flex_column ai_center",
         children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
@@ -7935,6 +8265,97 @@ var User = /*#__PURE__*/function (_Component) {
 
   return User;
 }(react__WEBPACK_IMPORTED_MODULE_0__.Component);
+
+
+
+/***/ }),
+
+/***/ "./resources/js/services/Admin.js":
+/*!****************************************!*\
+  !*** ./resources/js/services/Admin.js ***!
+  \****************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "AdminService": () => (/* binding */ Admin)
+/* harmony export */ });
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _Weekend__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Weekend */ "./resources/js/services/Weekend.js");
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+
+
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+
+
+var Admin = /*#__PURE__*/function (_Weekend) {
+  _inherits(Admin, _Weekend);
+
+  var _super = _createSuper(Admin);
+
+  function Admin() {
+    var _this;
+
+    _classCallCheck(this, Admin);
+
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    _this = _super.call.apply(_super, [this].concat(args));
+
+    _defineProperty(_assertThisInitialized(_this), "getCounts", /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().mark(function _callee() {
+      return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().wrap(function _callee$(_context) {
+        while (1) {
+          switch (_context.prev = _context.next) {
+            case 0:
+              _context.next = 2;
+              return _this.getData('/counts');
+
+            case 2:
+              return _context.abrupt("return", _context.sent);
+
+            case 3:
+            case "end":
+              return _context.stop();
+          }
+        }
+      }, _callee);
+    })));
+
+    return _this;
+  }
+
+  return _createClass(Admin);
+}(_Weekend__WEBPACK_IMPORTED_MODULE_1__["default"]);
 
 
 
@@ -9062,6 +9483,10 @@ _defineProperty(Session, "fill", function (session) {
   sessionStorage.setItem('user', JSON.stringify(user_info));
 });
 
+_defineProperty(Session, "isAdmin", function () {
+  return JSON.parse(sessionStorage.getItem('user')).user.is_admin;
+});
+
 _defineProperty(Session, "check", function () {
   if (Session.get()) {
     return true;
@@ -9206,6 +9631,56 @@ var User = /*#__PURE__*/function (_Weekend) {
 
       return function (_x2) {
         return _ref3.apply(this, arguments);
+      };
+    }());
+
+    _defineProperty(_assertThisInitialized(_this), "unban", /*#__PURE__*/function () {
+      var _ref4 = _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().mark(function _callee4(id) {
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().wrap(function _callee4$(_context4) {
+          while (1) {
+            switch (_context4.prev = _context4.next) {
+              case 0:
+                _context4.next = 2;
+                return _this.getData("/user/".concat(id, "/unban"));
+
+              case 2:
+                return _context4.abrupt("return", _context4.sent);
+
+              case 3:
+              case "end":
+                return _context4.stop();
+            }
+          }
+        }, _callee4);
+      }));
+
+      return function (_x3) {
+        return _ref4.apply(this, arguments);
+      };
+    }());
+
+    _defineProperty(_assertThisInitialized(_this), "ban", /*#__PURE__*/function () {
+      var _ref5 = _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().mark(function _callee5(id) {
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().wrap(function _callee5$(_context5) {
+          while (1) {
+            switch (_context5.prev = _context5.next) {
+              case 0:
+                _context5.next = 2;
+                return _this.getData("/user/".concat(id, "/ban"));
+
+              case 2:
+                return _context5.abrupt("return", _context5.sent);
+
+              case 3:
+              case "end":
+                return _context5.stop();
+            }
+          }
+        }, _callee5);
+      }));
+
+      return function (_x4) {
+        return _ref5.apply(this, arguments);
       };
     }());
 
@@ -9376,6 +9851,30 @@ __webpack_require__.r(__webpack_exports__);
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
 ___CSS_LOADER_EXPORT___.push([module.id, "* {\r\n  margin: 0;\r\n  padding: 0;\r\n  box-sizing: border-box;\r\n}\r\n\r\n:root {\r\n  --purple: #BD2A6C;\r\n  --purple-disabled: #E1658E;\r\n  --pink: #D592FF;\r\n  --white: #fff;\r\n  --black: #000;\r\n  --gray: #444;\r\n  --dark-gray: #181818;\r\n  --white-gray: #fafafa;\r\n  --light-gray: #e6e6e6;\r\n  --shadow: 0px 0px 4px rgba(138, 138, 138, 0.25);\r\n  --hover-shadow: 0px 0px 4px rgba(138, 138, 138, 0.40);\r\n  --animate-transition: .4s ease;\r\n  --online-status: #44C959;\r\n  --offline-status: #D63737;\r\n  --c4: #c4c4c4;\r\n}\r\n\r\n/* Стили лоудера */\r\n\r\n.loader-wrapper {\r\n  position: absolute;\r\n  z-index: 100;\r\n  width: 100%;\r\n  height: 100vh;\r\n  top: 0;\r\n  left: 0;\r\n  background-color: rgba(0, 0, 0, 0.4);\r\n  display: flex;\r\n  align-items: center;\r\n  justify-content: center;\r\n}\r\n\r\n.loader-wrapper.hide {\r\n  display: none;\r\n}\r\n\r\n.loader-box {\r\n  display: flex;\r\n  align-items: center;\r\n  justify-content: center;\r\n  width: 150px;\r\n  height: 150px;\r\n  position: absolute;\r\n  left: 50%;\r\n  top: 50%;\r\n  transform: translate(-50%, -50%);\r\n}\r\n\r\n.loader {\r\n  border: 12px solid #f3f3f3;\r\n  border-radius: 50%;\r\n  border-top: 12px solid #BD2A6C;\r\n  width: 100px;\r\n  height: 100px;\r\n  -webkit-animation: spin 2s linear infinite; /* Safari */\r\n  animation: spin 2s linear infinite;\r\n}\r\n\r\n/* Safari */\r\n@-webkit-keyframes spin {\r\n0% { -webkit-transform: rotate(0deg); }\r\n100% { -webkit-transform: rotate(360deg); }\r\n}\r\n\r\n@keyframes spin {\r\n0% { transform: rotate(0deg); }\r\n100% { transform: rotate(360deg); }\r\n}\r\n\r\n/* Стили скроллбара */\r\n\r\n::-webkit-scrollbar {\r\n  width: 4px;\r\n}\r\n\r\n::-webkit-scrollbar-thumb {\r\n  background-color: #e6e6e6;\r\n  border-radius: 3px;\r\n}\r\n\r\n::-webkit-scrollbar-thumb:hover {\r\n  background-color: #c4c4c4;\r\n}\r\n\r\n::-webkit-scrollbar-track {\r\n  background-color: white;\r\n}\r\n\r\ninput::-moz-placeholder {\r\n  font-weight: 300;\r\n  font-size: 16px;\r\n  color: var(--light-gray);\r\n}\r\n\r\ninput:-ms-input-placeholder {\r\n  font-weight: 300;\r\n  font-size: 16px;\r\n  color: var(--light-gray);\r\n}\r\n\r\ninput::placeholder {\r\n  font-weight: 300;\r\n  font-size: 16px;\r\n  color: var(--light-gray);\r\n}\r\n\r\n/* cursor: pointer */\r\n\r\n.cp {\r\n  cursor: pointer;\r\n}\r\n\r\n/* Стили ползунка для музыки */\r\n\r\n.input-range {\r\n  -webkit-appearance: none;\r\n  background: #e6e6e6;\r\n  width: 100%;\r\n  height: 3px;\r\n  outline: none;\r\n  border: none;\r\n  border-radius: 5px;\r\n  margin-top: 5px;\r\n  padding: 0;\r\n  transition: 1s ease;\r\n  cursor: pointer;\r\n}\r\n\r\n.input-range::-webkit-slider-thumb {\r\n  -webkit-appearance: none;\r\n  border-radius: 50%;\r\n  background-color: #B60F46;\r\n  width: 12px;\r\n  height: 12px;\r\n  cursor: pointer;\r\n}\r\n\r\n.input-range::-webkit-slider-thumb:hover,\r\n.input-range::-webkit-slider-thumb:active {\r\n  background-color: #8A1F4F;\r\n  -webkit-transition: 1s ease;\r\n  transition: 1s ease;\r\n}\r\n\r\n.input-range::-moz-range-thumb:hover,\r\n.input-range::-moz-range-thumb:active {\r\n  background-color: #8A1F4F;\r\n  -moz-transition: 1s ease;\r\n  transition: 1s ease;\r\n}\r\n\r\n.input-range::-moz-range-track {\r\n  -moz-appearance: none;\r\n  border-radius: 50%;\r\n  background-color: #B60F46;\r\n  width: 12px;\r\n  height: 12px;\r\n  cursor: pointer;\r\n}\r\n\r\n.input-range::-moz-range-thumb {\r\n  -moz-appearance: none;\r\n  border-radius: 50%;\r\n  background-color: #B60F46;\r\n  width: 12px;\r\n  height: 12px;\r\n  cursor: pointer;\r\n}\r\n\r\n/* Стили поиска */\r\n\r\n.search-box {\r\n  position: relative;\r\n  display: flex;\r\n  align-items: center;\r\n  justify-content: center;\r\n  height: 55px;\r\n  margin: 5px 5px 10px 5px;\r\n}\r\n\r\n.search-box .input-search {\r\n  width: 100%;\r\n  height: 100%;\r\n  border: none;\r\n  text-align: center;\r\n  padding: 5px 5px 5px 10px;\r\n  outline: 1px dashed #e6e6e6;\r\n  border-radius: 5px;\r\n}\r\n\r\n.search-box .icon-search {\r\n  position: absolute;\r\n  right: 0;\r\n  margin-right: 10px;\r\n}\r\n\r\n.flex {\r\n  display: flex;\r\n}\r\n\r\n.flex_column {\r\n  display: flex;\r\n  flex-direction: column;\r\n}\r\n\r\n.flex_center_center {\r\n  display: flex;\r\n  align-items: center;\r\n  justify-content: center;\r\n}\r\n\r\n.flex_center_flex-end {\r\n  display: flex;\r\n  align-items: center;\r\n  justify-content: flex-end;\r\n}\r\n\r\n.flex_center_space-between {\r\n  display: flex;\r\n  align-items: center;\r\n  justify-content: space-between;\r\n}\r\n\r\n.ai_center {\r\n  align-items: center;\r\n}\r\n\r\n.ai_flex-start {\r\n  align-items: flex-start;\r\n}\r\n\r\n.ai_flex-end {\r\n  align-items: flex-end;\r\n}\r\n\r\n.jc_center {\r\n  justify-content: center;\r\n}\r\n\r\n.jc_space-between {\r\n  justify-content: space-between;\r\n}\r\n\r\n/* Общий стиль для кебаб с 3 точками */\r\n\r\n.kebab {\r\n  width: 5px;\r\n  height: 20px;\r\n  display: flex;\r\n  flex-direction: column;\r\n  justify-content: space-between;\r\n}\r\n\r\n.kebab .circle {\r\n  width: 5px;\r\n  height: 5px;\r\n  background-color: var(--black);\r\n  border-radius: 50%;\r\n}\r\n\r\n.kebab.gray{\r\n  height: 20px;\r\n}\r\n\r\n.kebab.gray .circle {\r\n  background-color: var(--light-gray);\r\n}\r\n\r\n.cur_pointer {\r\n  cursor: pointer;\r\n}\r\n\r\n.no-select {\r\n  user-select: none;\r\n  -webkit-touch-callout: none; /* iOS Safari */\r\n  -webkit-user-select: none; /* Safari */\r\n  -khtml-user-select: none; /* Konqueror HTML */\r\n  -moz-user-select: none; /* Old versions of Firefox */\r\n  -ms-user-select: none; /* Internet Explorer/Edge */\r\n}\r\n\r\n/* Обнуление стилей списков */\r\n\r\nul {\r\n  list-style-type: none;\r\n}\r\n\r\n/* Стили для аватарок разных размеров */\r\n\r\n.ava-35, .ava-50, .ava-60, .ava-70 {\r\n  border-radius: 50%;\r\n  box-shadow: var(--shadow);\r\n  -o-object-fit: cover;\r\n     object-fit: cover;\r\n}\r\n\r\n.ava-35 {\r\n  width: 35px;\r\n  height: 35px;\r\n}\r\n\r\n.ava-50 {\r\n  width: 50px;\r\n  height: 50px;\r\n}\r\n\r\n.ava-60 {\r\n  width: 60px;\r\n  height: 60px;\r\n}\r\n\r\n.ava-70 {\r\n  width: 70px;\r\n  height: 70px;\r\n}\r\n\r\n.icon {\r\n  width: 20px;\r\n  height: 20px;\r\n}\r\n\r\n/* Общие стили для имени пользователя */\r\n\r\n.username {\r\n  color: var(--black);\r\n  cursor: pointer;\r\n  transition: var(--animate-transition);\r\n}\r\n\r\n.username:hover {\r\n  color: var(--purple);\r\n  transition: var(--animate-transition);\r\n}\r\n\r\n/* Общие стили для ссылок */\r\n\r\n.link {\r\n  cursor: pointer;\r\n  transition: var(--animate-transition);\r\n}\r\n\r\n.link:hover {\r\n  color: var(--purple);\r\n  transition: var(--animate-transition);\r\n}\r\n\r\nbody {\r\n  font-family: 'Roboto';\r\n}\r\n\r\na {\r\n  text-decoration: none;\r\n  color: black;\r\n}\r\n\r\n#app {\r\n  width: 100%;\r\n  height: 100%;\r\n}\r\n\r\n.main {\r\n  width: 1220px;\r\n  height: 100vh;\r\n  margin: 0 auto;\r\n}\r\n\r\n.auth {\r\n  width: 100%;\r\n  height: 100vh;\r\n  background-size: 100% 100%;\r\n  font-family: 'Roboto', sans-serif;\r\n}\r\n\r\n.login {\r\n  width: 331px;\r\n  position: absolute;\r\n  left: 50%;\r\n  top: 50%;\r\n  transform: translate(-50%, -50%);\r\n  height: auto;\r\n  background: rgba(255, 255, 255, 0.9);\r\n  border-radius: 15px;\r\n}\r\n\r\n.login .login__form  {\r\n  border: none;\r\n  display: flex;\r\n  flex-direction: column;\r\n  align-items: center;\r\n  text-align: center;\r\n}\r\n\r\n.input {\r\n  width: 250px;\r\n  height: 45px;\r\n  padding-left: 15px;\r\n  background: #FFFFFF;\r\n  border: 1px solid #C4C4C4;\r\n  box-sizing: border-box;\r\n  border-radius: 15px;\r\n  outline: none;\r\n  margin-bottom: 20px;\r\n  transition: .2s ease;\r\n}\r\n\r\n.input::-webkit-input-placeholder {\r\n  font-weight: 300;\r\n  font-size: 16px;\r\n  color: var(--c4);\r\n}\r\n\r\n.input::-moz-placeholder {\r\n  font-weight: 300;\r\n  font-size: 16px;\r\n  color: var(--c4);\r\n}\r\n\r\n.login .login__form  .input.empty {\r\n  border: 1px solid #B60F46;\r\n  transition: .2s ease;\r\n}\r\n\r\n.input.empty::-webkit-input-placeholder {\r\n  color: #B60F46;\r\n}\r\n\r\n.input.empty::-moz-placeholder {\r\n  color: #B60F46;\r\n}\r\n\r\n.login form  .input:focus {\r\n  border-color: #777;\r\n}\r\n\r\n.btn-auth {\r\n  width: 251px;\r\n  height: 44px;\r\n  border: none;\r\n  margin: 18px auto;\r\n  font-family: Pacifico;\r\n  font-size: 18px;\r\n  line-height: 32px;\r\n  color: #FFFFFF;\r\n  background: #B60F46;\r\n  border-radius: 15px;\r\n  outline: none;\r\n  cursor: pointer;\r\n}\r\n\r\n.auth .link { \r\n  margin-bottom: 30px;\r\n  font-size: 12px;\r\n  line-height: 14px;\r\n  color: #3D3AD4;\r\n  cursor: pointer;\r\n  text-decoration: underline;\r\n}\r\n\r\n.error-box {\r\n  display: flex;\r\n  border: 1px solid #B60F46;\r\n  color:#B60F46;\r\n  border-radius: 10px;\r\n  width: 250px;\r\n  min-height: 45px;\r\n  height: auto;\r\n  margin-bottom: 20px;\r\n  align-items: center;\r\n  justify-content: center;\r\n}\r\n\r\n.error-box.hide {\r\n  display: none;\r\n}\r\n\r\n.register {\r\n  width: 331px;\r\n  position: absolute;\r\n  left: 50%;\r\n  top: 50%;\r\n  transform: translate(-50%, -50%);\r\n  height: auto;\r\n  background: rgba(255, 255, 255, 0.9);\r\n  border-radius: 15px;\r\n}\r\n\r\n.register .register-form  {\r\n  border: none;\r\n  display: flex;\r\n  flex-direction: column;\r\n  align-items: center;\r\n  text-align: center;\r\n}\r\n\r\n.register .register-form  .input.empty {\r\n  border: 1px solid #B60F46;\r\n  transition: .2s ease;\r\n}\r\n\r\n.register .register-form  .input.empty-date {\r\n  color: #B60F46;\r\n  border: 1px solid #B60F46;\r\n  transition: .2s ease;\r\n}\r\n\r\n.input.empty::-webkit-input-placeholder {\r\n  color: #B60F46;\r\n}\r\n\r\n.input.empty::-moz-placeholder {\r\n  color: #B60F46;\r\n}\r\n\r\n.register .register-form  .input:focus {\r\n  border-color: #777;\r\n}\r\n\r\n.login .login-form .link,\r\n.register .register-form .link {\r\n  margin-bottom: 30px;\r\n  font-size: 12px;\r\n  line-height: 14px;\r\n  color: #3D3AD4;\r\n}\r\n\r\n.logo {\r\n  margin: 30px auto;  \r\n  width: 141px;\r\n  height: 35px;\r\n}\r\n\r\n.btn-submit-icon {\r\n  cursor: pointer;\r\n  background-color: var(--white);\r\n  border: none\r\n}\r\n\r\n.sidebar {\r\n  padding-top: 30px;\r\n  width: 300px;\r\n  height: 100vh;\r\n  background-color: var(--white);\r\n  box-shadow: var(--shadow);\r\n  z-index: 10;\r\n}\r\n\r\n.sidebar .sidebar__user-container {\r\n  width: 245px;\r\n  margin: 50px 0 40px 0;\r\n}\r\n\r\n.sidebar .sidebar__user-container .sidebar__user-ava {\r\n  margin-right: 15px;\r\n}\r\n\r\n.sidebar .sidebar__user-info {\r\n  margin-right: 20px;\r\n}\r\n\r\n.sidebar .sidebar__user-actions {\r\n  width: 60px;\r\n  padding-top: 1px;\r\n}\r\n\r\n.sidebar .sidebar__user-actions .icon-settings,\r\n.sidebar .sidebar__user-actions .icon-logout {\r\n  cursor: pointer;\r\n  transition: var(--animate-transition);\r\n}\r\n\r\n.sidebar .sidebar__user-actions .icon-settings:hover {\r\n  transition: var(--animate-transition);\r\n  transform: rotate(360deg);\r\n}\r\n\r\n.sidebar .sidebar__user-actions .icon-logout:hover {\r\n  transform: scale(1.1);\r\n  transition: var(--animate-transition);\r\n}\r\n\r\n.sidebar .sidebar__user-info .username {\r\n  font-weight: 500;\r\n  font-size: 18px;\r\n}\r\n\r\n.sidebar .sidebar__user-info .sidebar__my-profile {\r\n  font-weight: 300;\r\n  font-size: 13px;\r\n  color: var(--gray);\r\n}\r\n\r\n.sidebar .sidebar__menu-container .sidebar__menu {\r\n  height: 340px;\r\n}\r\n\r\n.sidebar .sidebar__menu-container .sidebar__menu .sidebar__menu-item {\r\n  cursor: pointer;\r\n  transition: var(--animate-transition);\r\n}\r\n\r\n.sidebar .sidebar__menu-container .sidebar__menu .sidebar__item-link:hover {\r\n  color: var(--purple);\r\n  transition: var(--animate-transition);\r\n}\r\n\r\n.sidebar__item-link:hover > .sidebar__item-icon {\r\n  transform: rotate(180deg);\r\n  transition: var(--animate-transition);\r\n}\r\n\r\n.sidebar .sidebar__menu-container .sidebar__menu .sidebar__item-link .sidebar__item-text {\r\n  margin-left: 10px;\r\n  font-size: 20px;\r\n}\r\n\r\n.sidebar__menu-item .sidebar__count-body {\r\n  position: relative;\r\n  left: 15px;\r\n  padding: 3px 5px;\r\n  font-size: 12px;\r\n  font-weight: bold;\r\n  background-color: var(--purple);\r\n  color: var(--white);\r\n  border-radius: 7px;\r\n}\r\n\r\n.sidebar .sidebar__audio {\r\n  width: 95%;\r\n  margin-top: 55px;\r\n  padding: 3px; \r\n}\r\n\r\n.sidebar .sidebar__audio-cover {\r\n  width: 50px;\r\n  height: 50px;\r\n  border-radius: 50%;\r\n  -o-object-fit: cover;\r\n     object-fit: cover;\r\n  margin-right: 15px;\r\n}\r\n\r\n.sidebar .sidebar__audio .sidebar__track-info .sidebar__audio-artist {\r\n  font-weight: 300;\r\n  font-size: 13px;\r\n}\r\n\r\n.sidebar .sidebar__audio .sidebar__track-info .sidebar__audio-name {\r\n  font-weight: 500;\r\n  font-size: 13px;\r\n}\r\n\r\n.sidebar .sidebar__audio .sidebar__audio-actions {\r\n  width: 70px;\r\n}\r\n\r\n.sidebar .sidebar__audio-duration .text-duration {\r\n  font-style: normal;\r\n  font-weight: 300;\r\n  font-size: 13px;\r\n  color: var(--gray);\r\n  margin-top: 5px;\r\n}\r\n\r\n/* Верстка профиля пользователя */\r\n\r\n.profile {\r\n  width: 920px;\r\n  padding: 30px 0 0 30px;\r\n  background-color: var(--white);\r\n}\r\n\r\n.profile .profile__user-avatar .left-circle {\r\n  padding-left: 3px;\r\n  border-radius: 164px 0 0 164px;\r\n  box-shadow: var(--shadow);\r\n}\r\n\r\n.profile .profile__user-avatar .left-circle .icon-msg {\r\n  position: absolute;\r\n}\r\n\r\n.profile .profile__user-avatar .right-circle {\r\n  border-radius: 0 164px 164px 0;\r\n  box-shadow: var(--shadow);\r\n  padding-right: 3px;\r\n}\r\n\r\n.profile .profile__user-avatar .right-circle .icon-friend {\r\n  position: absolute;\r\n}\r\n\r\n.profile .profile__user-avatar .profile__avatar {\r\n  position: absolute;\r\n  width: 280px;\r\n  height: 280px;\r\n  -o-object-fit: cover;\r\n     object-fit: cover;\r\n  border-radius: 50%;\r\n}\r\n\r\n.profile .profile__user-avatar .profile__avatar .profile__edit-ava {\r\n  position: absolute;\r\n  width: 100%;\r\n  height: 100%;\r\n  color: var(--white);\r\n  background-color: rgba(0,0,0,0.5);\r\n  border-radius: 50%;\r\n  opacity: 0;\r\n  transition: var(--animate-transition);\r\n  cursor: pointer;\r\n}\r\n\r\n.profile .profile__user-avatar .profile__avatar .profile__edit-ava:hover {\r\n  transition: var(--animate-transition);\r\n  opacity: 1;\r\n}\r\n\r\n.profile .profile__user-avatar .profile__avatar .avatar-img {\r\n  width: 280px;\r\n  height: 280px;\r\n  -o-object-fit: cover;\r\n     object-fit: cover;\r\n  border-radius: 50%;\r\n}\r\n\r\n.profile .profile__user-avatar .link-btn__left-circle,\r\n.profile .profile__user-avatar .link-btn__right-circle {\r\n  transition: var(--animate-transition);\r\n  cursor: pointer;\r\n}\r\n\r\n.profile .profile__user-container .profile__user-avatar .icon-circle {\r\n  width: 100%;\r\n  height: 100%;\r\n}\r\n\r\n.profile .profile__user-avatar .link-btn__left-circle {\r\n  border-radius: 164px 0 0 164px;\r\n  \r\n}\r\n\r\n.profile .profile__user-avatar .link-btn__right-circle {\r\n  border-radius: 0 164px 164px 0; \r\n}\r\n\r\n.profile .profile__user-avatar .link-btn__left-circle:hover,\r\n.profile .profile__user-avatar .link-btn__right-circle:hover {\r\n  box-shadow: var(--hover-shadow);\r\n  transition: var(--animate-transition);\r\n}\r\n\r\n.profile .profile__user-info {\r\n  width: 470px;\r\n  margin-left: 30px;\r\n}\r\n\r\n.profile .profile__user-info .profile__name-container {\r\n  width: 100%;\r\n}\r\n\r\n.profile .profile__user-info .profile__name-container .profile__username {\r\n  font-size: 30px;\r\n  font-weight: normal;\r\n  font-family: 'Pacifico';\r\n  color: var(--purple);\r\n}\r\n\r\n.profile .profile__user-info .profile__name-container .online-status {\r\n  width: 45px;\r\n}\r\n\r\n.profile .profile__user-info .profile__name-container .online-status .online-circle {\r\n  width: 5px;\r\n  height: 5px;\r\n  border-radius: 50%;\r\n  background-color: var(--online-status);\r\n}\r\n\r\n.profile .profile__user-info .profile__name-container .online-status .online-text {\r\n  font-size: 12px;\r\n  color: #181818;\r\n}\r\n\r\n.profile .profile__user-info .profile__user-status {\r\n  width: 100%;\r\n  height: 35px;\r\n  background-color: var(--white-gray);\r\n  border-radius: 10px;\r\n  padding-left: 10px;\r\n  margin: 5px 0 20px 0;\r\n}\r\n\r\n.profile .profile__user-info .profile__user-status .profile__status-text {\r\n  font-size: 18px;\r\n  font-weight: 300;\r\n  color: var(--black);\r\n}\r\n\r\n.profile .profile__user-info .profile__more-info {\r\n  width: 415px;\r\n}\r\n\r\n.profile .profile__user-info .profile__list-info {\r\n  width: 215px;\r\n  height: 170px;\r\n  padding-left: 10px;\r\n}\r\n\r\n.profile .profile__user-info .profile__list-info .profile__list-item {\r\n  width: 100%;\r\n  display: flex;\r\n  align-items: center;\r\n  justify-content: space-between;\r\n}\r\n\r\n.profile .profile__user-info .profile__list-info .profile__list-item .profile__item-caption {\r\n  font-size: 18px;\r\n  color: #515151;\r\n  font-weight: 300;\r\n}\r\n\r\n.profile .profile__user-info .profile__list-info .profile__list-item .profile__item-value {\r\n  width: 90px;\r\n  height: 35px;\r\n  display: flex;\r\n  align-items: center;\r\n  background-color: var(--white-gray);\r\n  border-radius: 10px;\r\n  padding-left: 10px;\r\n}\r\n\r\n.profile .profile__personal-info {\r\n  width: 170px;\r\n  height: 170px;\r\n  flex-wrap: wrap;\r\n}\r\n\r\n.profile .profile__user-info .profile__info-item  {\r\n  width: 50%;\r\n}\r\n\r\n.profile .profile__user-info .profile__info-item .profile__item-link {\r\n  display: flex;\r\n  flex-direction: column;\r\n  align-items: center;\r\n  cursor: pointer;\r\n  transition: var(--animate-transition);\r\n}\r\n\r\n.profile .profile__user-info .profile__info-item .profile__item-link .icon-item:hover {\r\n  transform: scale(1.1);\r\n  transition: var(--animate-transition);\r\n}\r\n\r\n.profile .profile__personal-info .profile__info-item .profile__item-link .item-text {\r\n  font-size: 13px;\r\n  color: #181818;\r\n  font-weight: 300;\r\n}\r\n\r\n.profile .profile__personal-info .profile__info-item .profile__item-link .item-count {\r\n  font-size: 20px;\r\n  color: var(--purple);\r\n  font-weight: normal;\r\n}\r\n\r\n/* Верстка блока постов пользователя */\r\n\r\n.profile .posts .posts__add-post {\r\n  width: 825px;\r\n  height: -webkit-fit-content;\r\n  height: -moz-fit-content;\r\n  height: fit-content;\r\n  box-shadow: var(--shadow);\r\n  border-radius: 15px;\r\n  margin-top: 25px;\r\n}\r\n\r\n.profile .posts .posts__add-post-avatar {\r\n  margin: 5px 10px 0 35px;\r\n}\r\n\r\n.profile .posts .posts__add-input {\r\n  width: 65%;\r\n  height: 65px;\r\n  resize: none;\r\n  outline: var(--white-gray);\r\n  border: none;\r\n  padding-top: 22px;\r\n}\r\n\r\n.profile .posts__add-post .posts__post-actions {\r\n  width: 115px;\r\n  height: 20px;\r\n  margin-top: 20px;\r\n}\r\n\r\n.profile .posts__add-post .posts__post-actions .icon-attach {\r\n  cursor: pointer;\r\n  transition: var(--animate-transition);\r\n}\r\n\r\n.profile .posts__add-post .posts__post-actions .icon-attach:hover {\r\n  transform: scale(1.1);\r\n  transition: var(--animate-transition);\r\n}\r\n\r\n.profile .posts__add-post .posts__add-btn-link {\r\n  width: 20px;\r\n  height: 20px;\r\n}\r\n\r\n.profile .posts__add-post .posts__add-btn {\r\n  margin: 20px 0 0 35px;\r\n  width: 20px;\r\n  height: 20px;\r\n  cursor: pointer;\r\n  transition: var(--animate-transition);\r\n}\r\n\r\n.profile .posts__add-post .posts__add-btn:hover {\r\n  transform: scale(1.1);\r\n  transition: var(--animate-transition);\r\n}\r\n\r\n.profile .posts .post {\r\n  width: 825px;\r\n  display: flex;\r\n  border-radius: 15px;\r\n  box-shadow: var(--shadow);\r\n  padding: 25px 25px 0 25px;\r\n  margin: 25px 0;\r\n}\r\n\r\n.profile .post .post__container {\r\n  width: 100%;\r\n  margin-left: 15px;\r\n}\r\n\r\n.profile .post .post__container .post__header {\r\n  width: 100%;\r\n}\r\n\r\n.profile .post .post__container .post__header .post__username {\r\n  width: -webkit-fit-content;\r\n  width: -moz-fit-content;\r\n  width: fit-content;\r\n}\r\n\r\n.profile .post .post__container .post__header .post__username .username {\r\n  font-weight: 500;\r\n  font-size: 18px;\r\n}\r\n\r\n.profile .post .post__container .post__header .post__username .date {\r\n  font-weight: 300;\r\n  font-size: 12px;\r\n  margin-left: 10px;\r\n  padding-top: 5px;\r\n}\r\n\r\n.profile .post .post__actions {\r\n  width: 85px;\r\n}\r\n\r\n.profile .post .post__actions .icon-delete,\r\n.profile .post .post__actions .icon-edit {\r\n  cursor: pointer;\r\n  transition: var(--animate-transition);\r\n} \r\n\r\n.profile .post .post__actions .icon-delete:hover {\r\n  transform: rotate(360deg);\r\n  transition: var(--animate-transition);\r\n}\r\n\r\n.profile .post .post__actions .icon-edit:hover {\r\n  transform: scale(1.1);\r\n  transition: var(--animate-transition);\r\n}\r\n\r\n.profile .post .post__body {\r\n  font-weight: 300;\r\n  font-size: 15px;\r\n  margin-top: 15px;\r\n}\r\n\r\n.profile .post .post__footer {\r\n  width: 100%;\r\n  border-top: 1px solid var(--light-gray);\r\n  margin-top: 10px;\r\n  padding: 10px 0;\r\n}\r\n\r\n.profile .post .post__footer .btn-like {\r\n  background-color: white;\r\n  border: none;\r\n}\r\n\r\n.profile .post .post__footer .post__like .link .icon-like, \r\n.profile .post .post__footer .post__repost .link .icon-repost,\r\n.profile .post .post__footer .post__comment .link .icon-comment {\r\n  margin-right: 5px;\r\n}\r\n\r\n.profile .post .post__footer .post__like .link .text, \r\n.profile .post .post__footer .post__repost .link .text,\r\n.profile .post .post__footer .post__comment .link .text {\r\n  font-weight: 300;\r\n  font-size: 16px;\r\n}\r\n\r\n/* Верстка страницы сообщений */\r\n\r\n.message {\r\n  width: 920px;\r\n  display: flex;\r\n  background-color: var(--white);\r\n}\r\n\r\n.message .message__user-list {\r\n  width: 300px;\r\n  height: 100vh;\r\n  box-shadow: var(--shadow);\r\n}\r\n\r\n.message .message__user-list .message__user-body {\r\n  width: 100%;\r\n  padding: 7px 10px;\r\n  border-top: 1px dashed var(--light-gray);\r\n  transition: var(--animate-transition);\r\n}\r\n\r\n.message .message__user-list .message__user-body:last-child {\r\n  border-bottom: 1px dashed var(--light-gray);\r\n}\r\n\r\n.message .message__user-list .message__user-body:hover {\r\n  background-color: #fafafa;\r\n  transition: var(--animate-transition);\r\n}\r\n\r\n.message .message__user-list .message__user-body .message__user-container {\r\n  display: flex;\r\n  align-items: center;\r\n}\r\n\r\n.message .message__user-list .message__user-body .message__user-container .message__user-ava {\r\n  margin-right: 10px;\r\n}\r\n\r\n.message .message__user-list .message__user-body .message__user-container .message__user-info {\r\n  display: flex;\r\n  justify-content: space-between;\r\n}\r\n\r\n.message .message__user-list .message__user-body .message__user-container .message__user-info .message__name-container {\r\n  display: flex;\r\n  flex-direction: column;\r\n}\r\n\r\n.message .message__user-list .message__user-body .message__user-container .message__user-name {\r\n  font-weight: 300;\r\n  font-size: 13px;\r\n  color: var(--gray);\r\n}\r\n\r\n.message .message__user-list .message__user-body .message__user-container .message__last-message {\r\n  font-style: normal;\r\n  font-weight: normal;\r\n  font-size: 15px;\r\n  color: var(--black);\r\n}\r\n\r\n.message .message__user-list .message__user-body .message__user-container .message__user-ava {\r\n  margin-right: 10px;\r\n}\r\n\r\n.message .message__user-list .message__user-body .message__user-container .message__send-time {\r\n  font-weight: 300;\r\n  font-size: 12px;\r\n  color: var(--gray);\r\n  margin-left: 5px;\r\n}\r\n\r\n.message .message__chat-container {\r\n  width: 620px;\r\n  position: relative;\r\n}\r\n\r\n.message .message__chat-header {\r\n  border-bottom: 1px dashed var(--light-gray);\r\n  padding: 10px 0;\r\n}\r\n\r\n.message .message__chat-header .message__header-container {\r\n  width: 585px;\r\n}\r\n\r\n.message .message__chat-header .message__header-info .message__header-user {\r\n  width: 420px;\r\n}\r\n\r\n.message .message__chat-header .message__header-info .message__header-actions {\r\n  width: 75px;\r\n}\r\n\r\n.message .message__chat-header .message__header-info .message__header-actions .icon-search {\r\n  width: 20px;\r\n  height: 20px;\r\n}\r\n\r\n.message .message__chat-header .message__header-ava {\r\n  position: relative;\r\n  width: 50px;\r\n  height: 50px;\r\n  margin-right: 25px;\r\n}\r\n\r\n.message .message__chat-header .message__header-ava .online-status {\r\n  width: 13px;\r\n  height: 13px;  \r\n  border: 1px solid var(--white);\r\n  border-radius: 50%;\r\n  background-color: var(--offline-status);\r\n  position: absolute;\r\n  right: 0;\r\n  top: 70%;\r\n}\r\n\r\n.message .message__chat-header .message__header-info .message__header-user .username {\r\n  font-style: normal;\r\n  font-weight: 300;\r\n  font-size: 24px;\r\n}\r\n\r\n.message .message__chat-box {\r\n  height: 100%;\r\n  padding: 0 25px;\r\n  overflow-y: auto;\r\n}\r\n\r\n.message .message__chat-container .message__chat-header .message__header-info .message__header-user .message__header-online {\r\n  font-style: normal;\r\n  font-weight: 300;\r\n  font-size: 12px;\r\n  color: var(--dark-gray);\r\n}\r\n\r\n.message .message__chat-container .message__msg {\r\n  margin: 15px 0;\r\n}\r\n\r\n.message .message__chat-container .message__msg .msg-text {\r\n  word-wrap: break-word;\r\n  padding: 8px 16px;\r\n  box-shadow: 0 0 32px rgb(0, 0, 0/8%) 0 16px 16px -16px rgb(0, 0, 0/10%);\r\n}\r\n\r\n.message .message__chat-container .message__msg-outgoing {\r\n  display: flex;\r\n}\r\n\r\n.message .message__msg-outgoing .details {\r\n  max-width: calc(100% - 130px);\r\n}\r\n\r\n.message .message__msg-outgoing .details .msg-text {\r\n  background: #e6e6e6;\r\n  color: black;\r\n  border-radius: 18px 18px 0 18px;\r\n}\r\n\r\n.message .message__msg-outgoing .msg-time,\r\n.message .message__msg-incoming .msg-time {\r\n  display: flex;\r\n  justify-content: flex-end;\r\n  flex-direction: column;\r\n  font-weight: 300;\r\n  font-size: 12px;\r\n  color: #444;\r\n}\r\n\r\n.message .message__msg-outgoing .msg-time {\r\n  margin: 0 10px 0 auto;\r\n}\r\n\r\n.message .message__chat-container .message__msg-incoming {\r\n  display: flex;\r\n  align-items: flex-end;\r\n}\r\n\r\n.message .message__msg-incoming .details {\r\n  margin-left: 10px;\r\n  max-width: calc(100% - 130px);\r\n}\r\n\r\n.message .message__msg-incoming .msg-time {\r\n  margin: 0 auto 0 10px;\r\n}\r\n\r\n.message .message__msg-incoming .details .msg-text {\r\n  background: #fff;\r\n  border-radius: 18px 18px 18px 0;\r\n  box-shadow: 0px 0px 4px rgba(138, 138, 138, 0.25);\r\n}\r\n\r\n.message .message__form-send-msg {\r\n  width: 100%;\r\n  height: 40px;\r\n  background-color: white;\r\n  padding-bottom: 15px;\r\n}\r\n\r\n.message .message__form-container {\r\n  width: 585px;\r\n  height: 40px;\r\n  background-color: var(--white);\r\n  box-shadow: var(--shadow);\r\n  border-radius: 15px;\r\n  padding-left: 40px;\r\n}\r\n\r\n.message .message__form-send-msg .message__form-container .message__input-field {\r\n  width: 80%;\r\n  height: inherit;\r\n  resize: none;\r\n  border: none; \r\n  outline: none;\r\n  border-radius: 1px;\r\n  padding-top: 11px;\r\n}\r\n\r\n.message .message__form-container .message__form-details {\r\n  width: 110px;\r\n  margin-right: 20px;\r\n}\r\n\r\n.message .message__form-container .message__btn-send {\r\n  width: 65px;\r\n  height: 40px;\r\n  background-color: var(--purple);\r\n  border-radius: 15px;\r\n  border: none;\r\n  cursor: pointer;\r\n}\r\n\r\n/* Верстка страницы друзей */\r\n\r\n.friend {\r\n  width: 920px;\r\n  height: 100vh;\r\n  display: flex;\r\n  background-color: var(--white);\r\n}\r\n\r\n.friend .friend__friend-list {\r\n  width: 620px;\r\n}\r\n\r\n.friend .friend__friend-list .friend__search-container {\r\n  width: 100%;\r\n  margin-bottom: 30px;\r\n}\r\n\r\n.friend .friend__friend-list .friend__user {\r\n  width: 550px;   \r\n  display: flex;\r\n  align-items: center;\r\n  justify-content: space-between;\r\n  margin-bottom: 30px;\r\n}\r\n\r\n.friend .friend__friend-list .friend__users-container {\r\n  width: 100%;\r\n  display: flex;\r\n  flex-direction: column;\r\n  align-items: center;\r\n  overflow-y: hidden;\r\n} \r\n\r\n.friend .friend__friend-list .friend__users-container:hover {\r\n  overflow-y: auto;\r\n}\r\n\r\n.friend .friend__friend-list .friend__user .friend__user-info {\r\n  display: flex;\r\n  align-items: center;\r\n}\r\n\r\n.friend .friend__friend-list .friend__user .friend__user-info .friend__user-ava {\r\n  margin-right: 15px;\r\n}\r\n\r\n.friend .friend__friend-list .friend__user .friend__user-info .friend__user-name {\r\n  display: flex;\r\n  flex-direction: column;\r\n}\r\n\r\n.friend .friend__friend-list .friend__user .friend__user-info .friend__user-name .username {\r\n  font-style: normal;\r\n  font-weight: normal;\r\n  font-size: 20px;\r\n}\r\n\r\n.friend .friend__friend-list .friend__user .friend__user-info .friend__user-name .online-status {\r\n  font-style: normal;\r\n  font-weight: 300;\r\n  font-size: 15px;\r\n  color: var(--gray);\r\n}\r\n\r\n.friend .friend__user .friend__user-actions {\r\n  width: 75px;\r\n  display: flex;\r\n  align-items: center;\r\n  justify-content: space-between;\r\n}\r\n\r\n.friend .friend__right-side {\r\n  width: 300px;\r\n  box-shadow: var(--shadow);\r\n}\r\n\r\n.friend .friend__right-side .friend__header {\r\n  width: 100%;\r\n  text-align: center;\r\n  color: var(--gray);\r\n  font-style: normal;\r\n  font-weight: 500;\r\n  font-size: 24px;\r\n  border-bottom: 1px dashed var(--light-gray);\r\n  padding: 20px 0;\r\n}\r\n\r\n.friend .friend__right-side .link-all-users {\r\n  padding: 25px 0;\r\n}\r\n\r\n.friend .friend__right-side .friend__all-users {\r\n  font-style: normal;\r\n  font-weight: normal;\r\n  font-size: 20px;\r\n}\r\n\r\n.friend .friend__right-side .friend__friend-request {\r\n  width: 250px;\r\n}\r\n\r\n.friend .friend__right-side .friend__friend-request .friend__request-header {\r\n  width: 100%;\r\n}\r\n\r\n.friend .friend__right-side .friend__friend-request .friend__request-header .title {\r\n  font-style: normal;\r\n  font-weight: normal;\r\n  font-size: 20px;\r\n  color: var(--black);\r\n}\r\n\r\n.friend .friend__right-side .friend__friend-request .friend__request-list {\r\n  max-height: 315px;\r\n  border-top: 1px dashed var(--light-gray);\r\n  border-bottom: 1px dashed var(--light-gray);\r\n  margin-top: 15px;\r\n  padding: 0 5px 5px 0;\r\n  overflow-y: auto;\r\n}\r\n\r\n.friend .friend__right-side .friend__friend-request .friend__request-list .friend__user-request {\r\n  width: 100%;\r\n  display: flex;\r\n  align-items: center;\r\n  justify-content: space-between;\r\n  margin-top: 5px;\r\n}\r\n\r\n.friend .friend__right-side  .friend__request-list .friend__user-request .friend__user-info {\r\n  display: flex;\r\n  align-items: center;\r\n}\r\n\r\n.friend .friend__right-side  .friend__request-list .friend__user-request .friend__user-info .link-ava {\r\n  margin-right: 15px;\r\n}\r\n\r\n.friend .friend__right-side  .friend__request-list .friend__user-request .friend__user-info .username {\r\n  font-style: normal;\r\n  font-weight: 500;\r\n  font-size: 18px;\r\n}\r\n\r\n.friend .friend__right-side  .friend__request-list .friend__user-request .friend__request-actions {\r\n  width: 45px;\r\n  display: flex;\r\n  align-items: center;\r\n  justify-content: space-between;\r\n}\r\n\r\n.friend .friend__right-side  .friend__request-list .friend__user-request .friend__request-actions .btn-add-friend {\r\n  border: none;\r\n  background-color: var(--white);\r\n}\r\n\r\n/* Верстка страницы с музыкой */\r\n\r\n.music {\r\n  width: 920px;\r\n  height: 100vh;\r\n  display: flex;\r\n  background-color: var(--white);\r\n}\r\n\r\n.music .music__search-container {\r\n  width: 100%;\r\n}\r\n\r\n.music .music__playlist {\r\n  width: 620px;\r\n}\r\n\r\n.music .music__playlist .music__now-playing {\r\n  width: 550px;\r\n}\r\n\r\n.music .music__playlist .music__now-playing .music__track-header {\r\n  width: 100%;\r\n  margin-bottom: 10px;\r\n}\r\n\r\n.music .music__playlist .music__now-playing .music__track-header .music__actions {\r\n  width: 200px;\r\n}\r\n\r\n.music .music__playlist .music__now-playing .music__track-header .music__actions .text {\r\n  font-style: normal;\r\n  font-weight: 500;\r\n  font-size: 12px;\r\n}\r\n\r\n.music .music__playlist .music__now-playing .music__now-track-info {\r\n  width: 255px;\r\n  margin: 0 10px;\r\n}\r\n\r\n.music .music__playlist .track-artist {\r\n  font-style: normal;\r\n  font-weight: 300;\r\n  font-size: 12px;\r\n  color: var(--dark-gray);\r\n}\r\n\r\n.music .music__playlist .track-name {\r\n  font-style: normal;\r\n  font-weight: 500;\r\n  font-size: 12px;\r\n  color: var(--dark-gray);\r\n}\r\n\r\n.music .music__playlist .music__now-playing .music__now-track-info .track-time {\r\n  font-style: normal;\r\n  font-weight: 300;\r\n  font-size: 13px;\r\n  color: var(--gray);\r\n}\r\n\r\n.music .music__playlist .music__now-playing .music__now-track-info .music__track-input .input-range {\r\n  width: 100%;\r\n}\r\n\r\n.music .music__playlist .music__now-playing .music__now-track {\r\n  width: 550px;\r\n  height: 60px;\r\n  border-radius: 15px;\r\n  box-shadow: var(--shadow);\r\n}\r\n\r\n.music .music__playlist .music__now-playing .music__now-track .music__track-controls {\r\n  width: 55px;\r\n  margin: 0 10px;\r\n}\r\n\r\n.music .music__playlist .track-actions {\r\n  width: 130px;\r\n}\r\n\r\n.music .music__playlist .music__title {\r\n  font-style: normal;\r\n  font-weight: 300;\r\n  font-size: 15px;\r\n  color: var(--gray);\r\n}\r\n\r\n.music .music__playlist .music__track-list .music__track-list-header {\r\n  margin: 20px 0 10px 0;\r\n}\r\n\r\n.music .music__playlist .music__track {\r\n  width: 550px;\r\n  height: 65px;\r\n  border-radius: 15px;\r\n  cursor: pointer;\r\n  transition: var(--animate-transition);\r\n  margin-bottom: 10px;\r\n  padding: 0 20px;\r\n}\r\n\r\n.music .music__playlist .music__track:hover {\r\n  background-color: var(--white-gray);\r\n  transition: var(--animate-transition);\r\n}\r\n\r\n.music .music__playlist .music__track-info .music__track-desc {\r\n  margin-left: 15px;\r\n}\r\n\r\n.music .music__right-side {\r\n  width: 300px;\r\n  box-shadow: var(--shadow);\r\n}\r\n\r\n.music .music__right-side .music__album {\r\n  width: 120px;\r\n  height: 120px;\r\n  border-radius: 15px;\r\n  /* background-image: url('./img/Audio.jpg'); */\r\n  background-size: 100% 100%;\r\n  margin-bottom: 15px;\r\n}\r\n\r\n.music .music__right-side .music__album:hover > .music__album-container {\r\n  display: flex;\r\n  transition: var(--animate-transition);\r\n  opacity: 1;\r\n}\r\n\r\n.music .music__right-side .music__album .music__album-container {\r\n  opacity: 0;\r\n  position: relative;\r\n  width: 100%;\r\n  height: 100%;\r\n  border-radius: 15px;\r\n  background:rgba(0,0,0,0.4);\r\n  padding: 10px;\r\n  cursor: pointer;\r\n  transition: var(--animate-transition);\r\n}\r\n\r\n.music .music__right-side .music__album .music__album-info .album-name {\r\n  font-style: normal;\r\n  font-weight: bold;\r\n  font-size: 15px;\r\n  color: var(--white);\r\n}\r\n\r\n.music .music__right-side .music__album .music__album-info .album-artist {\r\n  font-style: normal;\r\n  font-weight: 300;\r\n  font-size: 12px;\r\n  color: var(--white);\r\n}\r\n\r\n.music .music__right-side .music__album .album-year {\r\n  position: absolute;\r\n  right: 10px;\r\n  bottom: 10px;\r\n  font-style: normal;\r\n  font-weight: 300;\r\n  font-size: 10px;\r\n  color: var(--white);\r\n  -webkit-user-select: none;\r\n     -moz-user-select: none;\r\n      -ms-user-select: none;\r\n          user-select: none;\r\n}\r\n\r\n.music .music__right-side .music__albums {\r\n  width: 255px;\r\n  flex-wrap: wrap;\r\n}\r\n\r\n.gallery {\r\n  width: 920px;\r\n  background-color: var(--white);\r\n  padding: 30px 15px;\r\n}\r\n\r\n.gallery .gallery__header {\r\n  font-weight: 500;\r\n  font-size: 24px;\r\n  color: var(--gray);\r\n  margin-bottom: 15px;\r\n}\r\n\r\n.gallery .gallery__photos {\r\n  margin-top: 15px;\r\n  flex-wrap: wrap;\r\n}\r\n\r\n.gallery .gallery__photos .gallery__photo-body {\r\n  max-width: 33%;\r\n}\r\n\r\n.gallery .gallery__photos .gallery__photo-body  .gallery__photo {\r\n  width: 100%;\r\n}", ""]);
+// Exports
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
+
+
+/***/ }),
+
+/***/ "./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[5].oneOf[1].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[5].oneOf[1].use[2]!./resources/js/components/admin/admin.css":
+/*!***********************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[5].oneOf[1].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[5].oneOf[1].use[2]!./resources/js/components/admin/admin.css ***!
+  \***********************************************************************************************************************************************************************************************************/
+/***/ ((module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0__);
+// Imports
+
+var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
+// Module
+___CSS_LOADER_EXPORT___.push([module.id, ".adminpanel {\r\n    width: 620px;\r\n    background-color: var(--white);\r\n    height: 100vh;\r\n}\r\n\r\n.adminpanel__right-side {\r\n    width: 300px;\r\n    background-color: var(--white);\r\n    box-shadow: var(--shadow);\r\n}\r\n\r\n.adminpanel .adminpanel__category {\r\n    display: flex;\r\n    flex-direction: column;\r\n    width: 200px;\r\n    align-items: center;\r\n    padding: 15px;\r\n    border: 1px solid var(--purple);\r\n    color: var(--purple);\r\n    border-radius: 5px;\r\n    margin-bottom: 15px;\r\n}\r\n\r\n.adminpanel .adminpanel__category img {\r\n    width: 40px;\r\n    height: 40px;\r\n}", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -43057,6 +43556,36 @@ var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js
 
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_css_loader_dist_cjs_js_ruleSet_1_rules_5_oneOf_1_use_1_node_modules_postcss_loader_dist_cjs_js_ruleSet_1_rules_5_oneOf_1_use_2_App_css__WEBPACK_IMPORTED_MODULE_1__["default"].locals || {});
+
+/***/ }),
+
+/***/ "./resources/js/components/admin/admin.css":
+/*!*************************************************!*\
+  !*** ./resources/js/components/admin/admin.css ***!
+  \*************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! !../../../../node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js */ "./node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js");
+/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _node_modules_css_loader_dist_cjs_js_ruleSet_1_rules_5_oneOf_1_use_1_node_modules_postcss_loader_dist_cjs_js_ruleSet_1_rules_5_oneOf_1_use_2_admin_css__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! !!../../../../node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[5].oneOf[1].use[1]!../../../../node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[5].oneOf[1].use[2]!./admin.css */ "./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[5].oneOf[1].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[5].oneOf[1].use[2]!./resources/js/components/admin/admin.css");
+
+            
+
+var options = {};
+
+options.insert = "head";
+options.singleton = false;
+
+var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default()(_node_modules_css_loader_dist_cjs_js_ruleSet_1_rules_5_oneOf_1_use_1_node_modules_postcss_loader_dist_cjs_js_ruleSet_1_rules_5_oneOf_1_use_2_admin_css__WEBPACK_IMPORTED_MODULE_1__["default"], options);
+
+
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_css_loader_dist_cjs_js_ruleSet_1_rules_5_oneOf_1_use_1_node_modules_postcss_loader_dist_cjs_js_ruleSet_1_rules_5_oneOf_1_use_2_admin_css__WEBPACK_IMPORTED_MODULE_1__["default"].locals || {});
 
 /***/ }),
 

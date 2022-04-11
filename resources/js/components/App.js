@@ -48,7 +48,7 @@ class App extends Component {
   componentDidMount() {
     if (Session.check()) {
       const user_id = Session.getId();
-      // this.getCountMessages(user_id);
+      this.getCountMessages(user_id);
       this.getCountFriendRequests(user_id);
     }
   }

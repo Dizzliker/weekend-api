@@ -13,6 +13,7 @@ class Profile extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            profile: {},
             loading: true,
             profile: [],
             messages: [],
@@ -48,8 +49,9 @@ class Profile extends Component {
     getUserInfo = (user_id) => {
         this.user.get(user_id)
             .then(info => {
-               console.log(info.data);
-                this.setState({profile: info.data, loading: false});
+                if (info.data) {
+                    this.setState({profile: info.data, loading: false});
+                }
             })
             .catch(error => {
                 console.error(error);
@@ -82,18 +84,24 @@ class Profile extends Component {
     }
 
     render() {
-        const {user_id, name, surname, avatar, count_friends, count_photos} = this.state.profile;
+        const {user_id, name, surname, avatar, count_friends, count_photos, is_banned} = this.state.profile;
         const {loading, messages, popupAddFriend, popupEditAva} = this.state;
 
         return(
+            <>
+            {is_banned ? 
+            <div className="profile flex_Center_center">
+                <h1>User is banned</h1>
+            </div> :
             <>
             {loading && <Spinner />}
             {popupAddFriend &&
             <Popup onClose = {() => this.setState({popupAddFriend: false})}>
                 {messages[0]}
             </Popup>}
-            {(popupEditAva && this.props.user_id == Session.getId()) && <PopupEditAva onClose={() => this.setState({popupEditAva: false})} 
-            afterImgLoaded={() => {this.setState({reload: true})}}></PopupEditAva>}
+            {(popupEditAva && this.props.user_id == Session.getId()) && 
+            <PopupEditAva onClose={() => this.setState({popupEditAva: false})} 
+                          afterImgLoaded={() => {this.setState({reload: true})}}></PopupEditAva>}
             <div className="profile flex_column ai_flex-start">
             <div className="profile__user-container flex">
                 <div className="profile__user-avatar flex_center_center">
@@ -176,7 +184,9 @@ class Profile extends Component {
                 <PostForm user_id = {this.props.user_id} user = {this.state.profile} />
             </div>
         </div> 
+            </>}
             </>
+            
         );
     }
 }

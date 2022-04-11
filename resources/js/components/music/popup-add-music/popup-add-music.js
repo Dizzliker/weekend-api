@@ -45,7 +45,7 @@ export default class PopupAddMusic extends Component {
         input.preventDefault();
         const availableExt = ['png', 'jpeg', 'jpg', 'svg'];
         const file = this.inputImg.current.files[0];
-        const parts = file.name.split('.');
+        const parts = file.name.split('.'); 
         const ext = parts.length > 1 ? parts.pop() : '';
         if (availableExt.includes(ext.toLowerCase())) {
             this.setState({previewCover: URL.createObjectURL(file)});

@@ -19,6 +19,10 @@ export default class Session {
         sessionStorage.setItem('user', JSON.stringify(user_info));
     }
 
+    static isAdmin = () => {
+        return JSON.parse(sessionStorage.getItem('user')).user.is_admin;
+    }
+
     static check = () => {
         if (this.get()) {
             return true;

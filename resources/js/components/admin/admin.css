@@ -1,0 +1,28 @@
+.adminpanel {
+    width: 620px;
+    background-color: var(--white);
+    height: 100vh;
+}
+
+.adminpanel__right-side {
+    width: 300px;
+    background-color: var(--white);
+    box-shadow: var(--shadow);
+}
+
+.adminpanel .adminpanel__category {
+    display: flex;
+    flex-direction: column;
+    width: 200px;
+    align-items: center;
+    padding: 15px;
+    border: 1px solid var(--purple);
+    color: var(--purple);
+    border-radius: 5px;
+    margin-bottom: 15px;
+}
+
+.adminpanel .adminpanel__category img {
+    width: 40px;
+    height: 40px;
+}

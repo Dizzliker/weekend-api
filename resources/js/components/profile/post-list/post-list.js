@@ -103,21 +103,22 @@ export default class PostList extends Component {
                                 </Link>
                                 <span className="date">{created_at}</span>
                             </div>
+                            {this.props.user_id == Session.getId() && 
                             <div className="post__actions flex_center_space-between">
-                                <div className="kebab">
-                                    <div className="circle"></div>
-                                    <div className="circle"></div>
-                                    <div className="circle"></div>
-                                </div>
-                                <a href="#">
-                                    <img src="../images/edit.svg" className="icon-edit" alt="Edit post" title="Edit post" />
-                                </a>
-                                <form onSubmit={(e) => {this.delete(e, post_id)}} method="post">
-                                    <button className="btn-submit-icon">
-                                        <img src="../images/close.svg" className="icon-delete" alt="Delete post" title="Delete post" />
-                                    </button>
-                                </form>
+                            <div className="kebab">
+                                <div className="circle"></div>
+                                <div className="circle"></div>
+                                <div className="circle"></div>
                             </div>
+                            <a href="#">
+                                <img src="../images/edit.svg" className="icon-edit" alt="Edit post" title="Edit post" />
+                            </a>
+                            <form onSubmit={(e) => {this.delete(e, post_id)}} method="post">
+                                <button className="btn-submit-icon">
+                                    <img src="../images/close.svg" className="icon-delete" alt="Delete post" title="Delete post" />
+                                </button>
+                            </form>
+                        </div>}
                         </div>
                         <div className="post__body">
                             {text}

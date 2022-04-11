@@ -126,7 +126,6 @@ class UserApiController extends Controller
     public function search_friends(Request $request) {
         $fields = $request->validate([
             'user_id' => 'integer|required',
-            'text' => 'required',
         ]);
 
         $friends = DB::select('
@@ -152,7 +151,7 @@ class UserApiController extends Controller
                 or f.friend_id = '.$fields['user_id'].')
                and f.status = 1   
             )) u
-           where (lower(u.username) like lower("%'.$fields['text'].'%"))        
+           where (lower(u.username) like lower("%'.$request->text.'%"))        
         ');
 
         if (!empty($friends)) {
@@ -171,11 +170,28 @@ class UserApiController extends Controller
                    u.name,
                    u.surname,
                    u.avatar,
-                   u.email
+                   u.email,
+                   u.is_banned
               from users u
         ');
 
         return response(['users' => $users]);
+    }
+
+    public function ban($id) {
+        if (auth()->user()->is_admin) {
+            DB::table('users')->where('id', $id)->update(['is_banned' => true]);
+            return(['success' => true]);
+        }
+        return response(['message' => "Access denied"]);
+    }
+
+    public function unban($id) {
+        if (auth()->user()->is_admin) {
+            DB::table('users')->where('id', $id)->update(['is_banned' => false]);
+            return response(['success' => true]);
+        }
+        return response(['message' => "Access denied"]);
     }
 
     public function delete($id) {

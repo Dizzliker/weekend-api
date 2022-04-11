@@ -3,12 +3,9 @@
 namespace App\Http\Controllers\Api;
 
 use App\Models\User;
-use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
 
 class AuthApiController extends Controller
 {
@@ -55,6 +52,13 @@ class AuthApiController extends Controller
             return response([
                 "errors" => [
                     "password" => ["Password is incorrect"]
+                ]
+            ], 401);
+        }
+        if ($user->is_banned) {
+            return response([
+                "errors" => [
+                    "access" => ["User is banned"]
                 ]
             ], 401);
         }

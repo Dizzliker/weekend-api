@@ -70,9 +70,7 @@ export default class Sidebar extends Component {
                 </div>
 
                 <div className="sidebar__user-actions flex_center_space-between">
-                    <a href="#">
-                        <img src="../images/settings.svg" alt="Settings" className="icon icon-settings" />
-                    </a>
+                    <img src="../images/settings.svg" alt="Settings" className="icon icon-settings" />
                     <img src="../images/logout.svg" alt="Logout" onClick={this.logout} className="icon icon-logout" title="logout"/>
                 </div>
             </div>

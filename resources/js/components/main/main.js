@@ -12,6 +12,7 @@ import MessageContainer from '../message-container/message-container';
 import Admin from '../admin';
 import Post from '../admin/post';
 import AdminUser from '../admin/user';
+import Session from '../../services/Session';
 
 export default class Main extends Component {
     render() {
@@ -33,10 +34,13 @@ export default class Main extends Component {
                         <Route path="users" element={<User />}/>
                         <Route path="audio"   element={<Music/>}/>
                         <Route path="photos" element={<Gallery />}/>
-                        {/* Роуты админки */}
-                        <Route path="admin" element={<Admin />}/>
-                        <Route path="admin/posts" element={<Post />}/>
-                        <Route path="admin/users" element={<AdminUser />}/>
+                        {Session.isAdmin() ? 
+                        <>
+                            <Route path="admin" element={<Admin />}/>
+                            <Route path="admin/posts" element={<Post />}/>
+                            <Route path="admin/users" element={<AdminUser />}/> 
+                        </>
+                        : null} 
                     </Routes>
                 </div>
             </div>

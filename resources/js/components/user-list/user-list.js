@@ -14,16 +14,19 @@ export default class UserList extends Component {
 
     componentDidMount() {
         this.user.getAll()
-        .then(users => {
-            this.setState({users: users.data});
-        })
-        .catch(error => {
-            console.warn(error);
-        })
+            .then(res => {
+                if (res.users) {
+                    this.setState({users: res.users});
+                }
+            })
+            .catch(error => {
+                console.warn(error);
+            })
     }
 
     render() {
-        const userList = this.state.users.map(user => {
+        const {users} = this.state;
+        const userList = users.length > 0 ? users.map(user => {
             return (
                 <div className="friend__user" key={user.user_id}>
                     <div className="friend__user-info">
@@ -51,7 +54,7 @@ export default class UserList extends Component {
                     </div>
                 </div>
             );
-        });
+        }) : null;
 
         return (
             <div className="friend__friend-list flex_column ai_center">

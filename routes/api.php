@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\AdminHomeController;
 use App\Http\Controllers\Admin\AdminPostController;
 use App\Http\Controllers\Api\AudioApiController;
 use App\Http\Controllers\Api\AuthApiController;
@@ -60,12 +61,11 @@ Route::group(['middleware' => ['auth:sanctum']], function() {
 
     // Админка
     Route::get('/getAllPosts', [AdminPostController::class, 'get_all']);
+    Route::get('/counts', [AdminHomeController::class, 'index']);
     Route::get('/user/{id}', [UserApiController::class, 'get_user_info']);
+    Route::get('/user/{id}/unban', [UserApiController::class, 'unban']);
+    Route::get('/user/{id}/ban', [UserApiController::class, 'ban']);
     Route::get('/user/{id}/delete', [UserApiController::class, 'delete']);
-});
-
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
 });
 
 Route::post('/register', [AuthApiController::class, 'register'])->name('register');
