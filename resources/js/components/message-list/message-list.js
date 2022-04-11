@@ -50,7 +50,13 @@ export default class MessageList extends Component {
                                     <span className="message__user-name">{user.name} {user.surname}</span>
                                     <span className="message__last-message">{user.text}</span>
                                 </div>
-                                <span className="message__send-time">{user.created_at}</span>
+                                <div className="flex_column ai_flex-end">
+                                    <span className="message__send-time">{user.created_at}</span>
+                                    {user.msg_unread_count ? 
+                                    <span className="message_unread-count">
+                                        +{user.msg_unread_count}
+                                    </span> : null}
+                                </div>
                             </div>
                         </div>
                     </Link>

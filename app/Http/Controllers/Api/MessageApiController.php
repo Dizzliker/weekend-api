@@ -60,6 +60,11 @@ class MessageApiController extends Controller
                u.surname,
                u.avatar,
                m.text,
+               (select count(m.id)
+               	  from messages m 
+                 where m.inc_user_id = 1
+                   and m.out_user_id = u.id
+                   and m.read = false) msg_unread_count,
                date_format(m.created_at, "%d.%m.%Y %H:%i") created_at
           from users u
                join  
@@ -71,7 +76,7 @@ class MessageApiController extends Controller
             (select (case when m.inc_user_id = '.$id.' then m.out_user_id
                           when m.out_user_id = '.$id.' then m.inc_user_id
                     end) user_id,
-                    (case when length(m.text > 110) then concat(substring(m.text, 1, 14), "...")
+                    (case when length(m.text > 20) then concat(substring(m.text, 1, 14), "...")
                           else m.text
                      end) text,
                     m.created_at
