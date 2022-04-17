@@ -55,8 +55,10 @@ class App extends Component {
       this.user.get().then(res => {
         if (res) {
           this.setState({user: res});
-          this.getCountMessages(this.state.user.id);
-          this.getCountFriendRequests(this.state.user.id);
+          setTimeout(() => {
+            this.getCountMessages(this.state.user.id);
+            this.getCountFriendRequests(this.state.user.id);
+          }, 1000);
         }
       }).catch(error => {
         console.warn(error.response);

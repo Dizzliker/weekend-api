@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import Friend from '../friend/friend';
 import Music from '../music';
 import Sidebar from '../sidebar';
@@ -8,6 +8,7 @@ import ProfileContainer from '../profile/profile-container';
 import User from '../user/user';
 import Gallery from '../gallery/gallery';
 import MessageContainer from '../message-container/message-container';
+import Redirect from '../redirect';
 // Админка
 import Admin from '../admin';
 import Post from '../admin/post';
@@ -20,8 +21,8 @@ export default class Main extends Component {
             height: '100vh',  
             backgroundImage:`url(${bg})`,
         };
-        const {user, is_admin, countFriendRequests, countMessages} = this.props;
-        const {id} = this.props.user;
+        const {user, countFriendRequests, countMessages} = this.props;
+        const {id, is_admin} = user;
         return (
             <div className="bg" style={bgStyle}>
                 <div className="main flex">
@@ -29,6 +30,7 @@ export default class Main extends Component {
                              countFriendRequests = {countFriendRequests}
                              countMessages = {countMessages}/>
                     <Routes>
+                        <Route path="/" element={<Redirect cur_user_id={id}/>}/>
                         <Route path="profile/:id" element={<ProfileContainer user={user}/>}/>
                         <Route path="messages/:id" element={<MessageContainer countMessages = {countMessages} cur_user_id={id}/>}/>
                         <Route path="friends"  element={<Friend countFriendRequests = {countFriendRequests}/>}/>
