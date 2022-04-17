@@ -1,4 +1,4 @@
-import Session from "./Session";
+import Cookie from "./Cookie";
 
 export default class Weekend {
     constructor() {
@@ -12,7 +12,8 @@ export default class Weekend {
                 method: "GET",
                 headers: {
                     "Accept": "application/json",
-                    "Authorization": `Bearer ${Session.getToken()}`,
+                    "X-CSRF-TOKEN": this.csrf_token,
+                    "Authorization": `Bearer ${Cookie.getToken()}`,
                 }
             });
         
@@ -26,14 +27,14 @@ export default class Weekend {
         }
     }
 
-    postData = async (url, data, auth = false) => {
+    postData = async (url, data, auth = true) => {
         try {
             const response = fetch(`${this._api}${url}`, {
                 method: "POST",
                 headers: {
                     "Accept": "application/json",
                     "X-CSRF-TOKEN": this.csrf_token,
-                    "Authorization": auth ? `Bearer ${Session.getToken()}` : "",
+                    "Authorization": auth ? `Bearer ${Cookie.getToken()}` : '',
                 },
                 body: data,
             })

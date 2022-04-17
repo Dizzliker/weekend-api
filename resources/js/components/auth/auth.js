@@ -16,8 +16,8 @@ export default class Auth extends Component {
         return (
             <div className="auth" style={bgStyle}>
                 <Routes>
-                    <Route path="/"         element={<LoginForm />} />
-                    <Route path="/register" element={<RegisterForm />}/>
+                    <Route path="/"         element={<LoginForm afterAuth={this.props.afterAuth}/>} />
+                    <Route path="/register" element={<RegisterForm afterAuth={this.props.afterAuth}/>}/>
                 </Routes>
             </div>
         )

@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import {PostService} from '../../../services/Post';
-import Session from '../../../services/Session';
 
 export default class PostList extends Component {
     state = {
@@ -41,7 +40,7 @@ export default class PostList extends Component {
 
     getUserId = () => {
         let formData = new FormData()
-        formData.append('user_id', Session.getId());
+        formData.append('user_id', this.props.cur_user_id);
         return formData;
     }
 
@@ -103,7 +102,7 @@ export default class PostList extends Component {
                                 </Link>
                                 <span className="date">{created_at}</span>
                             </div>
-                            {this.props.user_id == Session.getId() && 
+                            {this.props.user_id == this.props.cur_user_id && 
                             <div className="post__actions flex_center_space-between">
                             <div className="kebab">
                                 <div className="circle"></div>

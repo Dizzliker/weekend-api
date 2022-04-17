@@ -6,6 +6,6 @@ export default class GalleryService extends Weekend {
     }
 
     addPhotos = async (data) => {
-        return await this.postData('/addPhotos', data, true);
+        return await this.postData('/addPhotos', data);
     }
 }

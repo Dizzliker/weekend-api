@@ -2,21 +2,26 @@ import './App.css';
 import Auth from './auth/auth';
 import Main from './main/main';
 import ReactDOM from 'react-dom';
-import { BrowserRouter } from 'react-router-dom';
+import { BrowserRouter, Navigate } from 'react-router-dom';
 import Session from '../services/Session';
 import { Component } from 'react';
 import { FriendService } from '../services/Friend';
 import { ChatService } from '../services/Chat';
+import MainContainer from './main-container';
+import User from '../services/User';
+import Cookie from '../services/Cookie';
 
 class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      user: {},
       countMessages: 0,
       countFriendRequests: 0,
     };
     this.friend = new FriendService();
     this.chat = new ChatService();
+    this.user = new User();
   }
 
   getCountFriendRequests = (id) => {
@@ -46,18 +51,28 @@ class App extends Component {
   }
 
   componentDidMount() {
-    if (Session.check()) {
-      const user_id = Session.getId();
-      this.getCountMessages(user_id);
-      this.getCountFriendRequests(user_id);
+    if (Cookie.hasToken()) {
+      this.user.get()
+          .then(res => {
+            if (res) {
+              console.log(res);
+              this.setState({user: res});
+              this.getCountMessages(res.id);
+              this.getCountFriendRequests(res.id);
+            }
+          })
+          .catch(error => {
+            console.warn(error);
+          });  
     }
   }
 
   render() {
-    return Session.check() ? 
-      <Main countFriendRequests = {this.state.countFriendRequests}
-            countMessages = {this.state.countMessages}/> 
-    : <Auth />
+    return Cookie.hasToken() ?
+      <MainContainer user = {this.state.user}
+                     countFriendRequests = {this.state.countFriendRequests}
+                     countMessages = {this.state.countMessages}/> 
+    : <Auth afterAuth = {(res) => {this.setState({user: res.user})}}/>
   }
 }
 

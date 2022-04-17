@@ -6,7 +6,7 @@ class Profile extends Weekend {
     }
 
     changeAvatar = async (data) => {
-        return await this.postData(`/changeAvatar`, data, true);
+        return await this.postData(`/changeAvatar`, data);
     }
 
     logout = async () => {

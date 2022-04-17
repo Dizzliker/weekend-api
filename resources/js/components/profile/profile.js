@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import {ProfileService} from '../../services/Profile';
-import Session from '../../services/Session';
 import Popup from '../popup/popup';
 import Spinner from '../spinner';
 import PostForm from './post-list/post-form';
@@ -27,7 +26,7 @@ class Profile extends Component {
     
     getFormData() {
         let formData = new FormData();
-        formData.append('user_id', Session.getId());
+        formData.append('user_id', this.props.user.id);
         formData.append('friend_id', this.props.user_id);
         return formData;
     }
@@ -99,7 +98,7 @@ class Profile extends Component {
             <Popup onClose = {() => this.setState({popupAddFriend: false})}>
                 {messages[0]}
             </Popup>}
-            {(popupEditAva && this.props.user_id == Session.getId()) && 
+            {(popupEditAva && this.props.user_id == this.props.user.id) && 
             <PopupEditAva onClose={() => this.setState({popupEditAva: false})} 
                           afterImgLoaded={() => {this.setState({reload: true})}}></PopupEditAva>}
             <div className="profile flex_column ai_flex-start">
@@ -112,7 +111,7 @@ class Profile extends Component {
                         </span>
                     </Link>
                     <div className="profile__avatar">
-                        {(this.props.user_id == Session.getId()) && 
+                        {(this.props.user_id == this.props.user.id) && 
                         <div className="profile__edit-ava flex_center_center" onClick={() => {this.setState({popupEditAva: true})}}>
                            <span>Click to edit avatar</span>
                         </div>}
@@ -181,7 +180,7 @@ class Profile extends Component {
                 </div>
             </div>
             <div className="posts">
-                <PostForm user_id = {this.props.user_id} user = {this.state.profile} />
+                <PostForm cur_user_id = {this.props.user.id} user_id = {this.props.user_id} user = {this.state.profile} />
             </div>
         </div> 
             </>}

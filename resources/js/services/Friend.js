@@ -6,7 +6,7 @@ export default class Friend extends Weekend {
     }
 
     sendRequest = async (data) => {
-        return await this.postData(`/sendFriendRequest`, data, true);
+        return await this.postData(`/sendFriendRequest`, data);
     }
 
     get  = async (id) => {
@@ -30,7 +30,7 @@ export default class Friend extends Weekend {
     }
     
     searchFriends = async (data) => {
-        return await this.postData(`/searchFriends`, data, true);
+        return await this.postData(`/searchFriends`, data);
     }
 }
 

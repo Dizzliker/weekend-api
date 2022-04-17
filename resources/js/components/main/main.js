@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import Friend from '../friend/friend';
 import Music from '../music';
 import Sidebar from '../sidebar';
@@ -12,7 +12,6 @@ import MessageContainer from '../message-container/message-container';
 import Admin from '../admin';
 import Post from '../admin/post';
 import AdminUser from '../admin/user';
-import Session from '../../services/Session';
 
 export default class Main extends Component {
     render() {
@@ -25,22 +24,23 @@ export default class Main extends Component {
         return (
             <div className="bg" style={bgStyle}>
                 <div className="main flex">
-                    <Sidebar countFriendRequests = {this.props.countFriendRequests}
+                    <Sidebar user={this.props.user}
+                             countFriendRequests = {this.props.countFriendRequests}
                              countMessages = {this.props.countMessages}/>
                     <Routes>
-                        <Route path="profile/:id" element={<ProfileContainer />}/>
+                        <Route path="profile/:id" element={<ProfileContainer user={this.props.user}/>}/>
                         <Route path="messages/:id" element={<MessageContainer countMessages = {this.props.countMessages}/>}/>
                         <Route path="friends"  element={<Friend countFriendRequests = {this.props.countFriendRequests}/>}/>
                         <Route path="users" element={<User />}/>
                         <Route path="audio"   element={<Music/>}/>
                         <Route path="photos" element={<Gallery />}/>
-                        {Session.isAdmin() ? 
+                        {this.props.user.is_admin ? 
                         <>
                             <Route path="admin" element={<Admin />}/>
                             <Route path="admin/posts" element={<Post />}/>
                             <Route path="admin/users" element={<AdminUser />}/> 
                         </>
-                        : null} 
+                        : null}
                     </Routes>
                 </div>
             </div>

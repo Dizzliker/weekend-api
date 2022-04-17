@@ -1,12 +1,12 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { useParams } from 'react-router-dom';
 import Profile from './profile';
 
-const ProfileContainer = () => {
+const ProfileContainer = ({user}) => {
     const {id} = useParams();
 
     return (
-        <Profile user_id = {id} />
+        <Profile user={user} user_id = {id} />
     );
 }
 
