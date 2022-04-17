@@ -1,22 +1,22 @@
 import React, { Component } from 'react';
 import Menu from '../menu';
 import { Link } from 'react-router-dom';
-import { ProfileService } from '../../services/Profile';
-import Spinner from '../spinner';
 import Player from './player';
+import Cookie from '../../services/Cookie';
+import {ProfileService} from '../../services/Profile';
 
 export default class Sidebar extends Component {
     constructor(props) {
         super(props);
-        this.state = {};
+        this.profile = new ProfileService();
     }
 
     logout = () => {
         this.profile.logout()
             .then(res => {
                 if (res) {
+                    Cookie.deleteToken();
                     location.href = location.origin + '/';
-                    Session.clear();
                 }
             })
             .catch(error => {

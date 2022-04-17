@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { ChatService } from '../../services/Chat';
 import { Link } from 'react-router-dom';
-import Session from '../../services/Session';
 import Spinner from '../spinner';
 
 export default class MessageChat extends Component {
@@ -10,7 +9,12 @@ export default class MessageChat extends Component {
         this.state = {
             loading: true,
             text: '',
-            companion: {},
+            companion: {
+                user_id: undefined,
+                name: 'No',
+                surname: 'Found',
+                avatar: '/images/Ava.jpg',
+            },
             chat: [],
             chatList: [],
             reload: false,
@@ -23,8 +27,8 @@ export default class MessageChat extends Component {
 
     getChatUsersId = () => {
         let formData = new FormData();
-        formData.append('out_user_id', Session.getId());
-        formData.append('inc_user_id', this.props.user_id);
+        formData.append('out_user_id', this.props.cur_user_id);
+        formData.append('inc_user_id', this.props.url_user_id);
         return formData;
     }
 
@@ -33,7 +37,7 @@ export default class MessageChat extends Component {
     }
 
     updateChat = () => {
-        if (this.props.user_id != 0) {
+        if (this.props.url_user_id != 0 && this.props.cur_user_id) {
             this.chatService.get(this.getChatUsersId())
                 .then(res => {
                     if (res) {
@@ -42,7 +46,9 @@ export default class MessageChat extends Component {
                         this.scrollChatToBottom(); 
                         this.chatService.readMessages(this.getChatUsersId())
                             .then(res => {
-                                this.setState({read: false});
+                                if (res) {
+                                    this.setState({read: false});
+                                }
                             })
                             .catch(error => {
                                console.warn(error);
@@ -60,15 +66,18 @@ export default class MessageChat extends Component {
     }
 
     componentDidUpdate(prevProps) {
-        if ((this.props.user_id != prevProps.user_id) || this.state.reload || prevProps.countMessages != this.props.countMessages) {
+        if ((this.props.url_user_id != prevProps.url_user_id) 
+        || this.state.reload 
+        || prevProps.countMessages != this.props.countMessages
+        || prevProps.cur_user_id != this.props.cur_user_id) {
             this.updateChat();
         }
     }
 
     getFormData = () => {
         let formData = new FormData();
-        formData.append('out_user_id', Session.getId());
-        formData.append('inc_user_id', this.props.user_id);
+        formData.append('out_user_id', this.props.cur_user_id);
+        formData.append('inc_user_id', this.props.url_user_id);
         formData.append('text', this.state.text);
         return formData;
     }
@@ -100,7 +109,7 @@ export default class MessageChat extends Component {
         const {chat, text, loading} = this.state;
         const {user_id, name, surname, avatar} = this.state.companion;
         const messageBox = chat.length > 0 ? chat.map(message => {
-            if (message.out_user_id == this.props.user_id) {
+            if (message.out_user_id == this.props.url_user_id) {
                 return (
                     <div className="message__msg message__msg-incoming" key={message.message_id}>
                         <Link to={`/profile/${user_id}`}>
@@ -126,7 +135,7 @@ export default class MessageChat extends Component {
         
         return (
             <>
-            {(this.props.user_id != 0) ?
+            {(this.props.url_user_id != 0) ?
             <div className="message__chat-container flex_column jc_space-between">
                 {loading && <Spinner />}
                 <div className="message__chat-header flex_center_center">

@@ -39,5 +39,9 @@ export default class Cookie {
         }
       
         document.cookie = updatedCookie;
-      }
+    }
+
+    static deleteToken() {
+      this.setCookie('token', '', {'max-age': -1});
+    }
 }

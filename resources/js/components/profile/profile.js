@@ -185,7 +185,6 @@ class Profile extends Component {
         </div> 
             </>}
             </>
-            
         );
     }
 }

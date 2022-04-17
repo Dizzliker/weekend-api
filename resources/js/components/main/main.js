@@ -20,27 +20,27 @@ export default class Main extends Component {
             height: '100vh',  
             backgroundImage:`url(${bg})`,
         };
-
+        const {user, is_admin, countFriendRequests, countMessages} = this.props;
+        const {id} = this.props.user;
         return (
             <div className="bg" style={bgStyle}>
                 <div className="main flex">
-                    <Sidebar user={this.props.user}
-                             countFriendRequests = {this.props.countFriendRequests}
-                             countMessages = {this.props.countMessages}/>
+                    <Sidebar user={user}
+                             countFriendRequests = {countFriendRequests}
+                             countMessages = {countMessages}/>
                     <Routes>
-                        <Route path="profile/:id" element={<ProfileContainer user={this.props.user}/>}/>
-                        <Route path="messages/:id" element={<MessageContainer countMessages = {this.props.countMessages}/>}/>
-                        <Route path="friends"  element={<Friend countFriendRequests = {this.props.countFriendRequests}/>}/>
+                        <Route path="profile/:id" element={<ProfileContainer user={user}/>}/>
+                        <Route path="messages/:id" element={<MessageContainer countMessages = {countMessages} cur_user_id={id}/>}/>
+                        <Route path="friends"  element={<Friend countFriendRequests = {countFriendRequests}/>}/>
                         <Route path="users" element={<User />}/>
                         <Route path="audio"   element={<Music/>}/>
                         <Route path="photos" element={<Gallery />}/>
-                        {this.props.user.is_admin ? 
+                        {is_admin &&
                         <>
                             <Route path="admin" element={<Admin />}/>
                             <Route path="admin/posts" element={<Post />}/>
                             <Route path="admin/users" element={<AdminUser />}/> 
-                        </>
-                        : null}
+                        </>}
                     </Routes>
                 </div>
             </div>

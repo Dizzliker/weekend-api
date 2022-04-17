@@ -52,19 +52,16 @@ class App extends Component {
 
   componentDidMount() {
     if (Cookie.hasToken()) {
-      this.user.get()
-          .then(res => {
-            if (res) {
-              console.log(res);
-              this.setState({user: res});
-              this.getCountMessages(res.id);
-              this.getCountFriendRequests(res.id);
-            }
-          })
-          .catch(error => {
-            console.warn(error);
-          });  
-    }
+      this.user.get().then(res => {
+        if (res) {
+          this.setState({user: res});
+          this.getCountMessages(this.state.user.id);
+          this.getCountFriendRequests(this.state.user.id);
+        }
+      }).catch(error => {
+        console.warn(error.response);
+      });
+    } 
   }
 
   render() {

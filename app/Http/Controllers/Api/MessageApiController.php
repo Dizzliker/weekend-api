@@ -12,8 +12,8 @@ class MessageApiController extends Controller
 {
     public function send_message(Request $request) {
         $fields = $request->validate([
-            'out_user_id' => 'required|integer',
-            'inc_user_id' => 'required|integer',
+            'out_user_id' => 'required',
+            'inc_user_id' => 'required',
             'text' => 'required',
         ]);
 
@@ -38,8 +38,8 @@ class MessageApiController extends Controller
 
     public function read_messages(Request $request) {
         $fields = $request->validate([
-            'out_user_id' => 'required|integer',
-            'inc_user_id' => 'required|integer',
+            'out_user_id' => 'required',
+            'inc_user_id' => 'required',
         ]);
 
         $affected = DB::table('messages')->where([
@@ -90,8 +90,8 @@ class MessageApiController extends Controller
 
     public function get_chat(Request $request) {
         $fields = $request->validate([
-            'out_user_id' => 'required|integer',
-            'inc_user_id' => 'required|integer',
+            'out_user_id' => 'required',
+            'inc_user_id' => 'required',
         ]);
         
         $user = DB::select('

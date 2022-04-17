@@ -2,7 +2,6 @@ import axios from 'axios';
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import Weekend from '../../../services/Weekend';
-import Session from '../../../services/Session';
 import Cookie from '../../../services/Cookie';
 
 export default class LoginForm extends Component {
@@ -40,7 +39,6 @@ export default class LoginForm extends Component {
         this.form.postData('/login', this.getFormData(), false)
             .then(res => {
                 if (res.user) {
-                    Session.fill(res);
                     Cookie.setToken(res.token);
                     this.props.afterAuth(res);
                     // location.href = `${location.origin}/profile/${Session.getId()}`;

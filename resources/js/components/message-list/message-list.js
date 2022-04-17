@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { ChatService } from '../../services/Chat';
-import Session from '../../services/Session';
 import { Link } from 'react-router-dom';
 
 export default class MessageList extends Component {
@@ -18,19 +17,23 @@ export default class MessageList extends Component {
     }
 
     updateChatList = () => {
-        this.chatService.getChatList(Session.getId())
-            .then(res => {
-                if (res.users) {
-                    this.setState({chatList: res.users});
-                }
-            })
-            .catch(error => {
-                console.warn(error);
-            });
+        if (this.props.cur_user_id) {
+            this.chatService.getChatList(this.props.cur_user_id)
+                .then(res => {
+                    if (res.users) {
+                        this.setState({chatList: res.users});
+                    }
+                })
+                .catch(error => {
+                    console.warn(error);
+                });
+        }
     }
 
-    componentDidUpdate() {
-        if (this.props.reload) {
+    componentDidUpdate(prevProps) {
+        if (this.props.reload 
+        || (prevProps.countMessages != this.props.countMessages) 
+        || (prevProps.cur_user_id != this.props.cur_user_id)) {
             this.props.afterReloadChatList();
             this.updateChatList();
         }
