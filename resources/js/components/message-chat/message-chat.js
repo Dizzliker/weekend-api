@@ -32,6 +32,18 @@ export default class MessageChat extends Component {
         return formData;
     }
 
+    readMessages = () => {
+        this.chatService.readMessages(this.getChatUsersId())
+            .then(res => {
+                if (res) {
+                    this.setState({read: false});
+                }
+            })
+            .catch(error => {
+               console.warn(error);
+            });
+    }
+
     scrollChatToBottom() {
         this.chatBox.current.scrollTop = this.chatBox.current.scrollHeight;
     }
@@ -44,15 +56,7 @@ export default class MessageChat extends Component {
                         this.setState({companion: res.user, chat: res.chat, reload: false, loading: false, read: true});
                         this.props.reloadChatList();
                         this.scrollChatToBottom(); 
-                        this.chatService.readMessages(this.getChatUsersId())
-                            .then(res => {
-                                if (res) {
-                                    this.setState({read: false});
-                                }
-                            })
-                            .catch(error => {
-                               console.warn(error);
-                            });
+                        this.readMessages();
                     }
                 })
                 .catch(error => {

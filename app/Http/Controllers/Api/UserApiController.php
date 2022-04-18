@@ -104,7 +104,7 @@ class UserApiController extends Controller
             'friend_id' => $fields['friend_id'],
             'status' => false,
         ]);
-        return response(['success' => true]);
+        return response(['success' => true, 'messages' => ['Friend request sent successfully']]);
     }
 
     public function add_friend($id) {

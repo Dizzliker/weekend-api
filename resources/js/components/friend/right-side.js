@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import { FriendService } from '../../services/Friend';
-import Session from '../../services/Session';
 
 export default class RightSide extends Component {
     state = {
@@ -11,23 +10,25 @@ export default class RightSide extends Component {
     request = new FriendService();
 
     updateRequests = () => {
-        this.request.getRequests(Session.getId())
-            .then(res => {
-                if (res) {
-                    this.setState({requests: res.requests, countRequests: res.count});
-                }
-            })
-            .catch(error => {
-                console.warn(error);
-            });
+        if (this.props.cur_user_id) {
+            this.request.getRequests(this.props.cur_user_id)
+                .then(res => {
+                    if (res) {
+                        this.setState({requests: res.requests, countRequests: res.count});
+                    }
+                })
+                .catch(error => {
+                    console.warn(error);
+                });
+        }
     }
 
     componentDidMount() {
         this.updateRequests();
     }
 
-    componentDidUpdate() {
-        if (this.state.reload) {
+    componentDidUpdate(prevProps) {
+        if (this.state.reload || prevProps.cur_user_id != this.props.cur_user_id) {
             this.setState({reload: false});
             this.updateRequests();
         }

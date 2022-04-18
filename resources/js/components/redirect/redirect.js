@@ -3,17 +3,20 @@ import { Navigate } from "react-router-dom";
 import Spinner from "../spinner";
 
 export default class Redirect extends Component {
-    state = {
-        loading: true
+    constructor(props) {
+        super(props); 
+        this.state = {
+            loading: true,
+        }
     }
 
     componentDidUpdate(prevProps) {
-        if (prevProps.cur_user_id != this.props.cur_user_id) {
+        if (prevProps.user.id != this.props.user.id) {
             this.setState({loading: false});
         }
     }
 
     render() {
-        return <Navigate to={`/profile/${this.props.cur_user_id}`} />
+        return this.state.loading ? <Spinner /> : <Navigate to={`/profile/${this.props.user.id}`} />
     }
 }
