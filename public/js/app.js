@@ -4767,7 +4767,7 @@ var Main = /*#__PURE__*/function (_Component) {
             children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_15__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_16__.Route, {
               path: "*",
               element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_15__.jsx)(_redirect__WEBPACK_IMPORTED_MODULE_9__["default"], {
-                user: user
+                cur_user_id: id
               })
             }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_15__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_16__.Route, {
               path: "profile/:id",
@@ -7689,9 +7689,18 @@ var Redirect = /*#__PURE__*/function (_Component) {
   }
 
   _createClass(Redirect, [{
+    key: "componentDidMount",
+    value: function componentDidMount() {
+      if (this.props.cur_user_id) {
+        this.setState({
+          loading: false
+        });
+      }
+    }
+  }, {
     key: "componentDidUpdate",
     value: function componentDidUpdate(prevProps) {
-      if (prevProps.user.id != this.props.user.id) {
+      if (prevProps.cur_user_id != this.props.cur_user_id) {
         this.setState({
           loading: false
         });
@@ -7701,7 +7710,7 @@ var Redirect = /*#__PURE__*/function (_Component) {
     key: "render",
     value: function render() {
       return this.state.loading ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_spinner__WEBPACK_IMPORTED_MODULE_1__["default"], {}) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_3__.Navigate, {
-        to: "/profile/".concat(this.props.user.id)
+        to: "/profile/".concat(this.props.cur_user_id)
       });
     }
   }]);
@@ -8972,7 +8981,7 @@ _defineProperty(Cookie, "hasToken", function () {
 
 _defineProperty(Cookie, "setToken", function (token) {
   Cookie.setCookie('token', token, {
-    'samesite': true,
+    'samesite': 'lax',
     'max-age': 100000
   });
 });

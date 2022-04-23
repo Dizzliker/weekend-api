@@ -14,7 +14,7 @@ export default class Cookie {
     }
 
     static setToken = (token) => {
-        this.setCookie('token', token, {'samesite': true, 'max-age': 100000});
+        this.setCookie('token', token, {'samesite': 'lax', 'max-age': 100000});
     }
 
     static setCookie(name, value, options = {}) {

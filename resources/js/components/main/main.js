@@ -77,7 +77,7 @@ export default class Main extends Component {
                              countFriendRequests = {countFriendRequests}
                              countMessages = {countMessages}/>
                     <Routes>
-                        <Route path="*"            element={<Redirect user={user}/>}/>
+                        <Route path="*"            element={<Redirect cur_user_id={id}/>}/>
                         <Route path="profile/:id"  element={<ProfileContainer user={user}/>}/>
                         <Route path="messages/:id" element={<MessageContainer countMessages = {countMessages} cur_user_id={id}/>}/>
                         <Route path="friends"      element={<Friend cur_user_id = {id}

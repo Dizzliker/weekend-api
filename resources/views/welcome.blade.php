@@ -6,7 +6,6 @@
     <meta name="csrf-token" content="{{ csrf_token() }}" />
     <title>Weekend</title>
     <!-- Styles -->
-    <link href="{{ asset('css/app.css') }}" rel="stylesheet">
     <link rel="icon" href="{{asset('images/favicon.ico')}}" type="image/x-icon">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;1,500&display=swap"
         rel="stylesheet">

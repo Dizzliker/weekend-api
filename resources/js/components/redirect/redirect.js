@@ -10,13 +10,19 @@ export default class Redirect extends Component {
         }
     }
 
+    componentDidMount() {
+        if (this.props.cur_user_id) {
+            this.setState({loading: false});
+        }
+    }
+
     componentDidUpdate(prevProps) {
-        if (prevProps.user.id != this.props.user.id) {
+        if (prevProps.cur_user_id != this.props.cur_user_id) {
             this.setState({loading: false});
         }
     }
 
     render() {
-        return this.state.loading ? <Spinner /> : <Navigate to={`/profile/${this.props.user.id}`} />
+        return this.state.loading ? <Spinner /> : <Navigate to={`/profile/${this.props.cur_user_id}`} />
     }
 }
