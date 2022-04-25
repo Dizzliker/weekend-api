@@ -99,7 +99,8 @@ class Profile extends Component {
                 {messages[0]}
             </Popup>}
             {(popupEditAva && this.props.user_id == this.props.user.id) && 
-            <PopupEditAva onClose={() => this.setState({popupEditAva: false})} 
+            <PopupEditAva cur_user_id = {this.props.user.id}
+                          onClose={() => this.setState({popupEditAva: false})} 
                           afterImgLoaded={() => {this.setState({reload: true})}}></PopupEditAva>}
             <div className="profile flex_column ai_flex-start">
             <div className="profile__user-container flex">

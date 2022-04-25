@@ -11,10 +11,9 @@ export default class LoginForm extends Component {
             email: '',
             password: '',
         };
+        this.form = new Weekend();
         this.handleInputChange = this.handleInputChange.bind(this);
     }
-
-    form = new Weekend();
 
     handleInputChange(event) {
         const target = event.target;
@@ -28,7 +27,6 @@ export default class LoginForm extends Component {
 
     getFormData = () => {
         let formData = new FormData();
-        formData.append("_token", this.form.csrf_token);
         formData.append("email", this.state.email);
         formData.append("password", this.state.password);
         return formData;

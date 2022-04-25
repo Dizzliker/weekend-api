@@ -1,7 +1,6 @@
 import React, {Component} from 'react';
 import GalleryService from '../../services/Gallery';
 import { ProfileService } from '../../services/Profile';
-import Session from '../../services/Session';
 import Spinner from '../spinner';
 
 export default class Gallery extends Component {
@@ -19,13 +18,13 @@ export default class Gallery extends Component {
 
     getFormData = (file) => {
         let formData = new FormData();
-        formData.append("user_id", Session.getId());
+        formData.append("user_id", this.props.cur_user_id);
         formData.append("images", file);
         return formData;
     }
 
     updateGallery = () => {
-        this.galleryService.get(Session.getId())
+        this.galleryService.get(this.props.cur_user_id)
             .then(res => {
                 if (res.gallery) {
                     this.setState({gallery: res.gallery, loading: false});

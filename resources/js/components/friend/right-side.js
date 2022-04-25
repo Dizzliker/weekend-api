@@ -34,9 +34,9 @@ export default class RightSide extends Component {
         }
     }
 
-    addFriend = (e) => {
+    addFriend = (e, request_id) => {
         e.preventDefault();
-        this.request.addFriend(e.target.querySelector('.request_id').value)
+        this.request.addFriend(request_id)
             .then(res => {
                 if (res) {
                     this.setState({reload: true});
@@ -62,8 +62,7 @@ export default class RightSide extends Component {
                         </Link>
                     </div>
                     <div className="friend__request-actions">
-                        <form onSubmit={this.addFriend} method="get">
-                            <input type="hidden" className="request_id" value={request.request_id} />
+                        <form onSubmit={(e) => {this.addFriend(e, request.request_id)}} method="get">
                             <button className="btn-add-friend">
                                 <img src="../images/plus.svg" className="icon-plus" alt="Add friend" />
                             </button>
