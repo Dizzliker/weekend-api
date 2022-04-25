@@ -3,9 +3,10 @@ import Auth from './auth/auth';
 import ReactDOM from 'react-dom';
 import { BrowserRouter } from 'react-router-dom';
 import { Component } from 'react';
-import MainContainer from './main-container';
+// import MainContainer from './main-container';
 import User from '../services/User';
 import Cookie from '../services/Cookie';
+import Main from './main/main';
 
 class App extends Component {
   constructor(props) {
@@ -30,7 +31,7 @@ class App extends Component {
 
   render() {
     return Cookie.hasToken() ?
-      <MainContainer user = {this.state.user}
+      <Main user = {this.state.user}
                      countFriendRequests = {this.state.countFriendRequests}
                      countMessages = {this.state.countMessages}/> 
     : <Auth afterAuth = {(res) => {this.setState({user: res.user})}}/>

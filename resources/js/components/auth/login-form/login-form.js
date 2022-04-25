@@ -1,4 +1,3 @@
-import axios from 'axios';
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import Weekend from '../../../services/Weekend';
@@ -29,6 +28,7 @@ export default class LoginForm extends Component {
 
     getFormData = () => {
         let formData = new FormData();
+        formData.append("_token", this.form.csrf_token);
         formData.append("email", this.state.email);
         formData.append("password", this.state.password);
         return formData;

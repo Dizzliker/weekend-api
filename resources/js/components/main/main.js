@@ -9,6 +9,8 @@ import User from '../user/user';
 import Gallery from '../gallery/gallery';
 import MessageContainer from '../message-container/message-container';
 import Redirect from '../redirect';
+import Echo from 'laravel-echo';
+import Cookie from '../../services/Cookie';
 // Админка
 import Admin from '../admin';
 import Post from '../admin/post';
@@ -40,22 +42,70 @@ export default class Main extends Component {
     }
 
     getCountMessages = (id) => {
-      setInterval(() =>{
-        this.chat.getCountMessages(id)
-            .then(res => {
-              if (res) {
-                this.setState({countMessages: res.count});
-              }
+      this.chat.getCountMessages(id)
+          .then(res => {
+            if (res) {
+              this.setState({countMessages: res.count});
+            }
+          })
+          .catch(error => {
+            console.warn(error);
+          });
+    }
+
+    getEcho() {
+      return new Echo({
+          broadcaster: 'pusher',
+          key: process.env.MIX_PUSHER_APP_KEY,
+          cluster: process.env.MIX_PUSHER_APP_CLUSTER,
+          authEndpoint: "/broadcasting/auth",
+          auth: {
+            headers: {
+              Accept: "application/json",
+              Authorization: `Bearer ${Cookie.getToken()}`,
+              csrfToken: document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            },
+          },
+          forceTLS: true,
+      });
+    }
+
+    componentDidMount() {
+      const {id} = this.props.user;
+      if (id) {
+        this.getCountMessages(id);
+        this.getCountFriendRequests(id);
+      }
+
+      window.Pusher = require('pusher-js');
+
+      window.Echo = new Echo({
+          broadcaster: 'pusher',
+          key: process.env.MIX_PUSHER_APP_KEY,
+          cluster: process.env.MIX_PUSHER_APP_CLUSTER,
+          forceTLS: true,
+          wsHost: window.location.hostname,
+          wsPort: 6001,
+      });
+
+      window.Echo.join(`chat`)
+            .here((users) => {
+                console.log(users);
             })
-            .catch(error => {
-              console.warn(error);
-            });
-      }, 3000);
+            .joining((user) => {
+                console.log(user.name);
+            })
+            .leaving((user) => {
+                console.log(user.name);
+            })
+            .error((error) => {
+                console.error(error);
+            });         
     }
 
     componentDidUpdate(prevProps) {
-        const {id} = this.props.user;
-        if (prevProps.user.id != id) {
+      const {id} = this.props.user;
+        if (prevProps.user.id != this.props.user.id) {
             this.getCountMessages(id);
             this.getCountFriendRequests(id);
         }
