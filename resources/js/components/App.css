@@ -1042,6 +1042,7 @@ a {
 }
 
 .message .message__user-list .message__user-body .message__user-container .message__user-ava {
+  position: relative;
   margin-right: 10px;
 }
 
@@ -1112,6 +1113,21 @@ a {
   width: 50px;
   height: 50px;
   margin-right: 25px;
+}
+
+.online-status {
+  width: 12px;
+  height: 12px;
+  border: 1px solid var(--white);
+  border-radius: 50%;
+  background-color: var(--online-status);
+  position: absolute;
+  right: 2px;
+  bottom: 2px;
+}
+
+.online-status.offline {
+  background-color: var(--offline-status);
 }
 
 .message .message__chat-header .message__header-ava .online-status {

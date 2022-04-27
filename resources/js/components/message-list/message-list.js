@@ -13,6 +13,17 @@ export default class MessageList extends Component {
     }
 
     componentDidMount() {
+        window.Echo.join('plchat')
+              .here((users) => {
+                   console.log('online',users);
+              })
+              .joining((user) => {
+                  console.log('joining',user.name);
+              })
+              .leaving((user) => {
+                  console.log('leaving',user.name);
+              });
+
         this.updateChatList();
     }
 
@@ -47,6 +58,7 @@ export default class MessageList extends Component {
                         <div className="message__user-container">
                             <div className="message__user-ava">
                                 <img src={user.avatar} className="ava-50" alt="User avatar" />
+                                <div className={`online-status`}></div>
                             </div>
                             <div className="message__user-info">
                                 <div className="message__name-container">

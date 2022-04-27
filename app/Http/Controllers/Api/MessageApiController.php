@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Events\MessageSend;
 use App\Events\PrivateMessageSent;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\MessageResource;
 use App\Http\Resources\UserResource;
 use App\Models\Message;
 use Illuminate\Http\Request;
@@ -25,9 +26,10 @@ class MessageApiController extends Controller
             'text' => $fields['text'],
             'read' => false,
         ]);
+
         PrivateMessageSent::dispatch($message);
 
-        return $message;
+        return new MessageResource($message);
     }
 
     public function get_count_messages($id) {
@@ -102,7 +104,7 @@ class MessageApiController extends Controller
         ');
 
         $chat = DB::select('
-            select m.id message_id,
+            select m.id,
                    m.inc_user_id,
                    m.out_user_id,
                    m.text,
@@ -115,7 +117,7 @@ class MessageApiController extends Controller
 
         return response([
             'user' => new UserResource($user[0]),
-            'chat' => $chat,
+            'chat' => MessageResource::collection($chat),
         ]);
     }
 }
