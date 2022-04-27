@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
+use App\Models\Friend;
+use App\Models\Message;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -11,6 +13,16 @@ use Illuminate\Support\Facades\DB;
 
 class UserApiController extends Controller
 {
+    public function user(Request $request) {
+        $user = $request->user();
+
+        return response([
+            'user' => $user,
+            'count_unread_messages' => Message::get_count_unread_messages($user->id),
+            'count_friend_requests' => Friend::get_friend_requests($user->id),
+        ]);
+    }
+
     public function friends($id) {
         $friends = DB::select('
             select u.id,

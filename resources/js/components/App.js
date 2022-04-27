@@ -33,7 +33,11 @@ class App extends Component {
     if (Cookie.hasToken()) {
       this.user.get().then(res => {
         if (res) {
-          this.setState({user: res});
+          this.setState({
+            user: res.user, 
+            countFriendRequests: res.count_friend_requests, 
+            countMessages: res.count_unread_messages
+          });
         }
       }).catch(error => {
         console.warn(error);

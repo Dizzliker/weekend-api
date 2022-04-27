@@ -13,8 +13,6 @@ import Redirect from '../redirect';
 import Admin from '../admin';
 import Post from '../admin/post';
 import AdminUser from '../admin/user';
-import { FriendService } from '../../services/Friend';
-import { ChatService } from '../../services/Chat';
 
 export default class Main extends Component {
     constructor(props) {
@@ -23,32 +21,6 @@ export default class Main extends Component {
             countMessages: 0,
             countFriendRequests: 0,
         }
-        this.friend = new FriendService();
-        this.chat = new ChatService();
-    }
-
-    getCountFriendRequests = (id) => {
-      this.friend.getCountRequests(id)
-          .then(res => {
-            if (res.count) {
-              this.setState({countFriendRequests: res.count});
-            }
-          })
-          .catch(error => {
-            console.warn(error);
-          });
-    }
-
-    getCountMessages = (id) => {
-      this.chat.getCountMessages(id)
-          .then(res => {
-            if (res) {
-              this.setState({countMessages: res.count});
-            }
-          })
-          .catch(error => {
-            console.warn(error);
-          });
     }
 
     listenMessageChannel = (id) => {
@@ -65,8 +37,6 @@ export default class Main extends Component {
       const {id} = this.props.user;
       if (id) {
         this.listenMessageChannel(id);
-        this.getCountMessages(id);
-        this.getCountFriendRequests(id);
       }         
     }
 
@@ -74,15 +44,12 @@ export default class Main extends Component {
       const {id} = this.props.user;
         if (prevProps.user.id != this.props.user.id) {
             this.listenMessageChannel(id);
-            this.getCountMessages(id);
-            this.getCountFriendRequests(id);
         }
     }
 
     render() {
-        const {user} = this.props;
+        const {user, countFriendRequests, countMessages} = this.props;
         const {id, is_admin} = user;
-        const {countFriendRequests, countMessages} = this.state;
         const bgStyle = {
             width: '100%', 
             height: '100vh',  

@@ -31,14 +31,7 @@ class MessageApiController extends Controller
     }
 
     public function get_count_messages($id) {
-        $count = DB::select('
-            select count(*) count
-              from messages m 
-             where m.read = 0
-               and m.inc_user_id = '.$id.' 
-        ');
-
-        return response(['count' => $count[0]->count]);
+        return response(['count' => Message::get_count_unread_messages($id)]);
     }
 
     public function read_messages(Request $request) {

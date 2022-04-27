@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class Message extends Model
 {
@@ -20,4 +21,15 @@ class Message extends Model
         'created_at' => 'datetime:d.m.Y H:i',
         'updated_at' => 'datetime:d.m.Y H:i',
     ];
+
+    public static function get_count_unread_messages($user_id) {
+        $count = DB::select('
+            select count(*) count
+              from messages m 
+             where m.read = 0
+               and m.inc_user_id = '.$user_id.' 
+        ');
+
+        return $count[0]->count;
+    }
 }
