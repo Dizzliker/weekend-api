@@ -51,31 +51,29 @@ export default class Main extends Component {
           });
     }
 
+    listenMessageChannel = (id) => {
+      window.Echo.private('privatechat.'+id) 
+                 .listen('PrivateMessageSent', (e) => {
+                     console.log(e);
+                 })
+                 .listenForWhisper('typing', (e) => {
+                     console.log(e);
+                 });
+    }
+
     componentDidMount() {
       const {id} = this.props.user;
       if (id) {
+        this.listenMessageChannel(id);
         this.getCountMessages(id);
         this.getCountFriendRequests(id);
-      }
-
-      window.Echo.join(`chat`)
-            .here((users) => {
-                console.log(users);
-            })
-            .joining((user) => {
-                console.log(user.name);
-            })
-            .leaving((user) => {
-                console.log(user.name);
-            })
-            .error((error) => {
-                console.error(error);
-            });         
+      }         
     }
 
     componentDidUpdate(prevProps) {
       const {id} = this.props.user;
         if (prevProps.user.id != this.props.user.id) {
+            this.listenMessageChannel(id);
             this.getCountMessages(id);
             this.getCountFriendRequests(id);
         }

@@ -66,6 +66,18 @@ export default class MessageChat extends Component {
     }
 
     componentDidMount() {
+        window.Echo.join('plchat')
+              .here((users) => {
+                   console.log('online',users);
+                   this.onlineFriends=users;
+              })
+              .joining((user) => {
+                  console.log('joining',user.name);
+              })
+              .leaving((user) => {
+                  console.log('leaving',user.name);
+              });
+
         this.updateChat();
     }
 

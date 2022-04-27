@@ -25,6 +25,8 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::group(['middleware' => ['auth:sanctum']], function() {
+    // Пользователь
+    Route::get('/user', [UserApiController::class, 'user']);
     // Друзья
     Route::get('/friends/{id}', [UserApiController::class, 'friends']);
     Route::post('/sendFriendRequest', [UserApiController::class, 'send_friend_request']);

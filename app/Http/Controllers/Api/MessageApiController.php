@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Events\MessageSend;
+use App\Events\PrivateMessageSent;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
 use App\Models\Message;
@@ -16,13 +18,16 @@ class MessageApiController extends Controller
             'inc_user_id' => 'required',
             'text' => 'required',
         ]);
-
-        return Message::create([
+    
+        $message =  Message::create([
             'out_user_id' => $fields['out_user_id'],
             'inc_user_id' => $fields['inc_user_id'],
             'text' => $fields['text'],
             'read' => false,
         ]);
+        PrivateMessageSent::dispatch($message);
+
+        return $message;
     }
 
     public function get_count_messages($id) {

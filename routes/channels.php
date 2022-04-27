@@ -20,3 +20,17 @@ Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
 Broadcast::channel('chat', function($user) {
     return $user;
 });
+
+Broadcast::channel('lchat', function ($user) {
+    return auth()->check();
+});
+
+Broadcast::channel('privatechat.{receiverid}', function ($user,$receiverid) {
+    return auth()->check();
+});
+
+Broadcast::channel('plchat', function ($user) {
+    if(auth()->check()){
+        return $user;
+    }
+});
