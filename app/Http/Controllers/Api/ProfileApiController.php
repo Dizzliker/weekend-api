@@ -29,7 +29,7 @@ class ProfileApiController extends Controller
               limit 1       
         ');
 
-        return new ProfileResource($profile[0]);
+        return response(['user' => new ProfileResource($profile[0])]);
     }
 
     public function change_avatar(Request $request) {

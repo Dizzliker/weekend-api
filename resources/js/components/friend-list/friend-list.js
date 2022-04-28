@@ -20,8 +20,8 @@ export default class FriendList extends Component {
         if (this.props.cur_user_id) {
             this.friend.get(this.props.cur_user_id)
                 .then(res => {
-                    if (res.data) {
-                        this.setState({friends: res.data, loading: false});
+                    if (res.friends) {
+                        this.setState({friends: res.friends, loading: false});
                     }
                 })
                 .catch(error => {

@@ -48,8 +48,8 @@ class Profile extends Component {
     getUserInfo = (user_id) => {
         this.user.get(user_id)
             .then(res => {
-                if (res) {
-                    this.setState({profile: res, loading: false});
+                if (res.user) {
+                    this.setState({profile: res.user, loading: false});
                 }
             })
             .catch(error => {

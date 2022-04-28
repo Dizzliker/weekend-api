@@ -1833,9 +1833,9 @@ var FriendList = /*#__PURE__*/function (_Component) {
     _defineProperty(_assertThisInitialized(_this), "updateFriendList", function () {
       if (_this.props.cur_user_id) {
         _this.friend.get(_this.props.cur_user_id).then(function (res) {
-          if (res.data) {
+          if (res.friends) {
             _this.setState({
-              friends: res.data,
+              friends: res.friends,
               loading: false
             });
           }
@@ -5272,9 +5272,9 @@ var Profile = /*#__PURE__*/function (_Component) {
 
     _defineProperty(_assertThisInitialized(_this), "getUserInfo", function (user_id) {
       _this.user.get(user_id).then(function (res) {
-        if (res) {
+        if (res.user) {
           _this.setState({
-            profile: res,
+            profile: res.user,
             loading: false
           });
         }

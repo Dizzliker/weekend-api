@@ -43,7 +43,7 @@ class UserApiController extends Controller
             ) 
         ');
 
-        return UserResource::collection($friends);
+        return response(['friends' => UserResource::collection($friends)]);
     }
 
     public function count_friends($id) {
