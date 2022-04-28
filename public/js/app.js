@@ -2541,6 +2541,18 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
 function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
 
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
@@ -2596,15 +2608,20 @@ var Main = /*#__PURE__*/function (_Component) {
 
     _defineProperty(_assertThisInitialized(_this), "listenMessageChannel", function (id) {
       window.Echo["private"]('privatechat.' + id).listen('PrivateMessageSent', function (e) {
-        console.log(e);
+        if (e.message) {
+          _this.setState({
+            countNewMessages: _this.state.countNewMessages + 1,
+            newMessagesData: [].concat(_toConsumableArray(_this.state.newMessagesData), [e.message])
+          });
+        }
       }).listenForWhisper('typing', function (e) {
         console.log(e);
       });
     });
 
     _this.state = {
-      countMessages: 0,
-      countFriendRequests: 0
+      countNewMessages: 0,
+      newMessagesData: []
     };
     return _this;
   }
@@ -2632,8 +2649,9 @@ var Main = /*#__PURE__*/function (_Component) {
     value: function render() {
       var _this$props = this.props,
           user = _this$props.user,
-          countFriendRequests = _this$props.countFriendRequests,
-          countMessages = _this$props.countMessages;
+          countFriendRequests = _this$props.countFriendRequests;
+      var newMessagesData = this.state.newMessagesData;
+      var countMessages = +this.props.countMessages + this.state.countNewMessages;
       var id = user.id,
           is_admin = user.is_admin;
       var bgStyle = {
@@ -2665,6 +2683,7 @@ var Main = /*#__PURE__*/function (_Component) {
               path: "messages/:id",
               element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_13__.jsx)(_message_container_message_container__WEBPACK_IMPORTED_MODULE_8__["default"], {
                 countMessages: countMessages,
+                newMessagesData: newMessagesData,
                 cur_user_id: id
               })
             }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_13__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_14__.Route, {
@@ -3335,6 +3354,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var MessageContainer = function MessageContainer(_ref) {
   var cur_user_id = _ref.cur_user_id,
+      newMessagesData = _ref.newMessagesData,
       countMessages = _ref.countMessages;
 
   var _useParams = (0,react_router_dom__WEBPACK_IMPORTED_MODULE_3__.useParams)(),
@@ -3343,7 +3363,8 @@ var MessageContainer = function MessageContainer(_ref) {
   return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_message_message__WEBPACK_IMPORTED_MODULE_1__["default"], {
     cur_user_id: cur_user_id,
     url_user_id: id,
-    countMessages: countMessages
+    countMessages: countMessages,
+    newMessagesData: newMessagesData
   });
 };
 
@@ -3467,7 +3488,7 @@ var MessageList = /*#__PURE__*/function (_Component) {
                   className: "ava-50",
                   alt: "User avatar"
                 }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
-                  className: "online-status"
+                  className: "online-status offline"
                 })]
               }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
                 className: "message__user-info",
@@ -3593,21 +3614,27 @@ var Message = /*#__PURE__*/function (_Component) {
     value: function render() {
       var _this2 = this;
 
+      var _this$props = this.props,
+          cur_user_id = _this$props.cur_user_id,
+          url_user_id = _this$props.url_user_id,
+          newMessagesData = _this$props.newMessagesData,
+          countMessages = _this$props.countMessages;
       return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
         className: "message",
         children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_message_list_message_list__WEBPACK_IMPORTED_MODULE_2__["default"], {
           reload: this.state.reload,
-          cur_user_id: this.props.cur_user_id,
-          countMessages: this.props.countMessages,
+          cur_user_id: cur_user_id,
+          countMessages: countMessages,
+          newMessagesData: newMessagesData,
           afterReloadChatList: function afterReloadChatList() {
             _this2.setState({
               reload: false
             });
           }
         }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_message_chat__WEBPACK_IMPORTED_MODULE_1__["default"], {
-          url_user_id: this.props.url_user_id,
-          cur_user_id: this.props.cur_user_id,
-          countMessages: this.props.countMessages,
+          url_user_id: url_user_id,
+          cur_user_id: cur_user_id,
+          countMessages: countMessages,
           reloadChatList: function reloadChatList() {
             _this2.setState({
               reload: true
@@ -5244,29 +5271,15 @@ var Profile = /*#__PURE__*/function (_Component) {
     });
 
     _defineProperty(_assertThisInitialized(_this), "getUserInfo", function (user_id) {
-      _this.user.get(user_id).then(function (info) {
-        if (info.data) {
+      _this.user.get(user_id).then(function (res) {
+        if (res) {
           _this.setState({
-            profile: info.data,
+            profile: res,
             loading: false
           });
         }
       })["catch"](function (error) {
         console.error(error);
-      });
-    });
-
-    _defineProperty(_assertThisInitialized(_this), "getCountFriends", function (user_id) {
-      _this.friend.getCountFriends(user_id).then(function (res) {
-        if (res.count) {
-          _this.setState({
-            personalInfo: {
-              countFriends: res.count
-            }
-          });
-        }
-      })["catch"](function (error) {
-        console.warn(error);
       });
     });
 
@@ -5291,7 +5304,10 @@ var Profile = /*#__PURE__*/function (_Component) {
     key: "componentDidMount",
     value: function componentDidMount() {
       var user_id = this.props.user_id;
-      this.getUserInfo(user_id);
+
+      if (user_id) {
+        this.getUserInfo(user_id);
+      }
     }
   }, {
     key: "componentDidUpdate",

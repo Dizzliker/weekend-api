@@ -58,7 +58,7 @@ export default class MessageList extends Component {
                         <div className="message__user-container">
                             <div className="message__user-ava">
                                 <img src={user.avatar} className="ava-50" alt="User avatar" />
-                                <div className={`online-status`}></div>
+                                <div className={`online-status offline`}></div>
                             </div>
                             <div className="message__user-info">
                                 <div className="message__name-container">

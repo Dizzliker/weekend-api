@@ -47,9 +47,9 @@ class Profile extends Component {
 
     getUserInfo = (user_id) => {
         this.user.get(user_id)
-            .then(info => {
-                if (info.data) {
-                    this.setState({profile: info.data, loading: false});
+            .then(res => {
+                if (res) {
+                    this.setState({profile: res, loading: false});
                 }
             })
             .catch(error => {
@@ -57,21 +57,11 @@ class Profile extends Component {
             });
     }
 
-    getCountFriends = (user_id) => {
-        this.friend.getCountFriends(user_id)
-            .then(res => {
-                if (res.count) {
-                    this.setState({personalInfo: {countFriends: res.count}});
-                }
-            })
-            .catch(error => {
-                console.warn(error);
-            })
-    }
-
     componentDidMount() {
         const {user_id} = this.props;
-        this.getUserInfo(user_id);
+        if (user_id) {
+            this.getUserInfo(user_id);
+        }
     }
 
     componentDidUpdate(prevProps) {

@@ -26,7 +26,7 @@ export default class Sidebar extends Component {
 
     render() {
         const {id, name, surname, avatar} = this.props.user;
-
+        
         return (
         <>
         <div className="sidebar flex_column ai_center">
@@ -58,7 +58,6 @@ export default class Sidebar extends Component {
 
             <Menu countFriendRequests = {this.props.countFriendRequests}
                   countMessages = {this.props.countMessages}/>
-
             <Player />
         </div>
         </>

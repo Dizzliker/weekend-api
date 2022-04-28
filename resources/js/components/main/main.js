@@ -18,15 +18,20 @@ export default class Main extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            countMessages: 0,
-            countFriendRequests: 0,
+            countNewMessages: 0,
+            newMessagesData: [],
         }
     }
 
     listenMessageChannel = (id) => {
       window.Echo.private('privatechat.'+id) 
                  .listen('PrivateMessageSent', (e) => {
-                     console.log(e);
+                     if (e.message) {
+                        this.setState({
+                            countNewMessages: this.state.countNewMessages + 1,
+                            newMessagesData: [...this.state.newMessagesData, e.message],
+                        });
+                    }
                  })
                  .listenForWhisper('typing', (e) => {
                      console.log(e);
@@ -48,7 +53,9 @@ export default class Main extends Component {
     }
 
     render() {
-        const {user, countFriendRequests, countMessages} = this.props;
+        const {user, countFriendRequests} = this.props;
+        const {newMessagesData} = this.state;
+        const countMessages = +this.props.countMessages + this.state.countNewMessages;
         const {id, is_admin} = user;
         const bgStyle = {
             width: '100%', 
@@ -64,7 +71,9 @@ export default class Main extends Component {
                     <Routes>
                         <Route path="*"            element={<Redirect cur_user_id={id}/>}/>
                         <Route path="profile/:id"  element={<ProfileContainer user={user}/>}/>
-                        <Route path="messages/:id" element={<MessageContainer countMessages = {countMessages} cur_user_id={id}/>}/>
+                        <Route path="messages/:id" element={<MessageContainer countMessages = {countMessages} 
+                                                                              newMessagesData = {newMessagesData}
+                                                                              cur_user_id={id}/>}/>
                         <Route path="friends"      element={<Friend cur_user_id = {id}
                                                                     countFriendRequests = {countFriendRequests}/>}/>
                         <Route path="users"        element={<User />}/>
