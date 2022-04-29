@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Models\User;
+use App\Models\Friend;
+use App\Models\Message;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -78,6 +80,8 @@ class AuthApiController extends Controller
 
         $response = [
             'user' => $user,
+            'count_unread_messages' => Message::getCountUnreadMessages($user->id),
+            'count_friend_requests' => Friend::getCountFriendRequests($user->id),
             'token' => $token,
         ];
 

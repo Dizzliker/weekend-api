@@ -18,16 +18,16 @@ class UserApiController extends Controller
 
         return response([
             'user' => $user,
-            'count_unread_messages' => Message::get_count_unread_messages($user->id),
-            'count_friend_requests' => Friend::get_friend_requests($user->id),
+            'count_unread_messages' => Message::getCountUnreadMessages($user->id),
+            'count_friend_requests' => Friend::getCountFriendRequests($user->id),
         ]);
     }
 
-    public function get_user_info($id) {
+    public function getUserInfo($id) {
         return response(['user' => User::find($id)]);
     }
 
-    public function get_all() {
+    public function getAll() {
         $users = DB::select('
             select u.id user_id,
                    u.name,

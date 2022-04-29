@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\DB;
 
 class MessageApiController extends Controller
 {
-    public function send_message(Request $request) {
+    public function sendMessage(Request $request) {
         $fields = $request->validate([
             'out_user_id' => 'required',
             'inc_user_id' => 'required',
@@ -32,11 +32,11 @@ class MessageApiController extends Controller
         return new MessageResource($message);
     }
 
-    public function get_count_messages($id) {
-        return response(['count' => Message::get_count_unread_messages($id)]);
+    public function getCountMessages($id) {
+        return response(['count' => Message::getCountUnreadMessages($id)]);
     }
 
-    public function read_messages(Request $request) {
+    public function readMessages(Request $request) {
         $fields = $request->validate([
             'out_user_id' => 'required',
             'inc_user_id' => 'required',
@@ -53,7 +53,7 @@ class MessageApiController extends Controller
         }
     }
 
-    public function get_chat_list($id) {
+    public function getChatList($id) {
         $users = DB::select('
         select u.id,
                u.name,
@@ -87,7 +87,7 @@ class MessageApiController extends Controller
         return response(['users' => $users]);
     }
 
-    public function get_chat(Request $request) {
+    public function getChat(Request $request) {
         $fields = $request->validate([
             'out_user_id' => 'required',
             'inc_user_id' => 'required',

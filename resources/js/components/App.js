@@ -29,15 +29,19 @@ class App extends Component {
     this.user = new User();
   }
 
+  updateUserData(data) {
+    this.setState({
+      user: data.user,
+      countFriendRequests: data.count_friend_requests, 
+      countMessages: data.count_unread_messages
+    });
+  }
+
   componentDidMount() {
     if (Cookie.hasToken()) {
       this.user.get().then(res => {
         if (res) {
-          this.setState({
-            user: res.user, 
-            countFriendRequests: res.count_friend_requests, 
-            countMessages: res.count_unread_messages
-          });
+          this.updateUserData(res);
         }
       }).catch(error => {
         console.warn(error);
@@ -50,7 +54,7 @@ class App extends Component {
       <Main user = {this.state.user}
             countFriendRequests = {this.state.countFriendRequests}
             countMessages = {this.state.countMessages}/> 
-    : <Auth afterAuth = {(res) => {this.setState({user: res.user})}}/>
+    : <Auth afterAuth = {(res) => {this.updateUserData(res)}}/>
   }
 }
 

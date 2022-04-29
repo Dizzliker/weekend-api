@@ -44,7 +44,6 @@ export default class RegisterForm extends Component {
                 if (res.user) {
                     Cookie.setToken(res.token);
                     this.props.afterAuth(res);
-                    // location.href = `${location.origin}/profile/${Session.getId()}`;
                 } else {
                     this.setState({error: res.errors[Object.keys(res.errors)[0]][0]});
                 }

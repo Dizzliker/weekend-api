@@ -95,6 +95,15 @@ var App = /*#__PURE__*/function (_Component) {
   }
 
   _createClass(App, [{
+    key: "updateUserData",
+    value: function updateUserData(data) {
+      this.setState({
+        user: data.user,
+        countFriendRequests: data.count_friend_requests,
+        countMessages: data.count_unread_messages
+      });
+    }
+  }, {
     key: "componentDidMount",
     value: function componentDidMount() {
       var _this2 = this;
@@ -102,11 +111,7 @@ var App = /*#__PURE__*/function (_Component) {
       if (_services_Cookie__WEBPACK_IMPORTED_MODULE_5__["default"].hasToken()) {
         this.user.get().then(function (res) {
           if (res) {
-            _this2.setState({
-              user: res.user,
-              countFriendRequests: res.count_friend_requests,
-              countMessages: res.count_unread_messages
-            });
+            _this2.updateUserData(res);
           }
         })["catch"](function (error) {
           console.warn(error);
@@ -124,9 +129,7 @@ var App = /*#__PURE__*/function (_Component) {
         countMessages: this.state.countMessages
       }) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_8__.jsx)(_auth_auth__WEBPACK_IMPORTED_MODULE_1__["default"], {
         afterAuth: function afterAuth(res) {
-          _this3.setState({
-            user: res.user
-          });
+          _this3.updateUserData(res);
         }
       });
     }
@@ -1508,8 +1511,7 @@ var LoginForm = /*#__PURE__*/function (_Component) {
         if (res.user) {
           _services_Cookie__WEBPACK_IMPORTED_MODULE_2__["default"].setToken(res.token);
 
-          _this.props.afterAuth(res); // location.href = `${location.origin}/profile/${Session.getId()}`;
-
+          _this.props.afterAuth(res);
         } else {
           _this.setState({
             error: res.errors[Object.keys(res.errors)[0]][0]
@@ -1670,8 +1672,7 @@ var RegisterForm = /*#__PURE__*/function (_Component) {
         if (res.user) {
           _services_Cookie__WEBPACK_IMPORTED_MODULE_2__["default"].setToken(res.token);
 
-          _this.props.afterAuth(res); // location.href = `${location.origin}/profile/${Session.getId()}`;
-
+          _this.props.afterAuth(res);
         } else {
           _this.setState({
             error: res.errors[Object.keys(res.errors)[0]][0]
@@ -3100,6 +3101,14 @@ var MessageChat = /*#__PURE__*/function (_Component) {
       return formData;
     });
 
+    _defineProperty(_assertThisInitialized(_this), "onEnterPress", function (e) {
+      if (e.keyCode == 13 && e.shiftKey == false) {
+        e.preventDefault();
+
+        _this.sendMessage(e);
+      }
+    });
+
     _defineProperty(_assertThisInitialized(_this), "sendMessage", function (event) {
       event.preventDefault();
 
@@ -3281,6 +3290,7 @@ var MessageChat = /*#__PURE__*/function (_Component) {
               children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("textarea", {
                 name: "text",
                 className: "message__input-field",
+                onKeyDown: this.onEnterPress,
                 value: text,
                 onChange: this.handleInputChange,
                 placeholder: "Send your message",

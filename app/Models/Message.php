@@ -22,7 +22,7 @@ class Message extends Model
         'updated_at' => 'datetime:d.m.Y H:i',
     ];
 
-    public static function get_count_unread_messages($user_id) {
+    public static function getCountUnreadMessages($user_id) {
         $count = DB::select('
             select count(*) count
               from messages m 

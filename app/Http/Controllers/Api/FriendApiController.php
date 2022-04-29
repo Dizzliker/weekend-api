@@ -6,78 +6,28 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
+use App\Models\Friend;
 use Illuminate\Support\Facades\Auth;
 
 class FriendApiController extends Controller
 {
-    public function friends($id) {
-        $friends = DB::select('
-            select u.id,
-                   u.name,
-                   u.surname,
-                   u.avatar
-              from users u 
-             where u.id in (
-                select (case when f.user_id = '.$id.' 
-                             then f.friend_id
-                             when f.friend_id = '.$id.'
-                             then f.user_id
-                        end) user_id
-                   from friends f
-                  where (f.user_id   = '.$id.'
-                     or f.friend_id = '.$id.')
-                    and f.status = 1
-            ) 
-        ');
-
-        return response(['friends' => UserResource::collection($friends)]);
+    public function getFriends($id) {
+        return response(['friends' => Friend::getFriends($id)]);
     }
 
-    public function count_friends($id) {
-        $count = DB::select('
-            select count(*) count
-              from friends f
-             where (f.user_id = '.$id.' or f.friend_id = '.$id.')
-               and f.status = 1
-        ');
-
-        return response(['count' => $count[0]->count]);
+    public function getCountFriends($id) {
+        return response(['count' => Friend::getCountFriends($id)]);
     }
 
-    public function count_friend_requests($id) {
-        $countRequests = DB::select('
-            select count(*) count
-              from friends f 
-             where f.friend_id = '.$id.'
-               and f.status = 0 
-        ');
-
-       return response(['count' => $countRequests[0]->count]);
+    public function getCountFriendRequests($id) {
+       return response(['count' => Friend::getCountFriendRequests($id)]);
     }
 
-    public function friend_requests($id) {
-        $requests = DB::select('
-            select u.id user_id,
-                   u.name,
-                   u.surname,
-                   u.avatar,
-                   (select f.id
-                      from friends f
-                     where f.user_id = u.id
-                       and f.friend_id = '.$id.') request_id
-              from users u 
-             where u.id in (    
-                select f.user_id
-                  from friends f
-                 where f.friend_id = '.$id.' 
-                   and f.status = 0
-             )
-        ');
-
-        return response(['requests' => $requests]);
+    public function getFriendRequests($id) {
+        return response(['requests' => Friend::getFriendRequests($id)]);
     }
 
-    public function send_friend_request(Request $request) {
+    public function sendFriendRequests(Request $request) {
         if (Auth::id() == $request->get('user_id') && Auth::id() == $request->get('friend_id')) {
             return response(['messages' => ["You can't add yourself as a friend"]]);
         }
@@ -106,7 +56,7 @@ class FriendApiController extends Controller
         return response(['success' => true, 'messages' => ['Friend request sent successfully']]);
     }
 
-    public function add_friend($id) {
+    public function addFriend($id) {
         $request = DB::table('friends')->where('id', $id);
         $response = '';
         if ($friend = $request->get()) {
@@ -122,7 +72,7 @@ class FriendApiController extends Controller
         return response([$response]);
     }
 
-    public function search_friends(Request $request) {
+    public function searchFriends(Request $request) {
         $fields = $request->validate([
             'user_id' => 'integer|required',
         ]);

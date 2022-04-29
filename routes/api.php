@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\AdminHomeController;
 use App\Http\Controllers\Admin\AdminPostController;
 use App\Http\Controllers\Api\AudioApiController;
 use App\Http\Controllers\Api\AuthApiController;
+use App\Http\Controllers\Api\FriendApiController;
 use App\Http\Controllers\Api\GalleryApiController;
 use App\Http\Controllers\Api\MessageApiController;
 use App\Http\Controllers\Api\PostApiController;
@@ -28,13 +29,13 @@ Route::group(['middleware' => ['auth:sanctum']], function() {
     // Пользователь
     Route::get('/user', [UserApiController::class, 'user']);
     // Друзья
-    Route::get('/friends/{id}', [UserApiController::class, 'friends']);
-    Route::post('/sendFriendRequest', [UserApiController::class, 'send_friend_request']);
-    Route::get('/friendRequests/{id}', [UserApiController::class, 'friend_requests']);
-    Route::get('/countFriendRequests/{id}', [UserApiController::class, 'count_friend_requests']);
-    Route::get('/addFriend/{id}', [UserApiController::class, 'add_friend']);
-    Route::post('/searchFriends', [UserApiController::class, 'search_friends']);
-    Route::get('/countFriends/{id}', [UserApiController::class, 'count_friends']);
+    Route::get('/friends/{id}', [FriendApiController::class, 'getFriends']);
+    Route::post('/sendFriendRequest', [FriendApiController::class, 'sendFriendRequests']);
+    Route::get('/friendRequests/{id}', [FriendApiController::class, 'getFriendRequests']);
+    Route::get('/countFriendRequests/{id}', [FriendApiController::class, 'getCountFriendRequests']);
+    Route::get('/addFriend/{id}', [FriendApiController::class, 'addFriend']);
+    Route::post('/searchFriends', [FriendApiController::class, 'searchFriends']);
+    Route::get('/countFriends/{id}', [FriendApiController::class, 'getCountFriends']);
     // Посты
     Route::get('/post/{id}', [PostApiController::class, 'index']);
     Route::post('/post/create', [PostApiController::class, 'store']);
@@ -42,29 +43,29 @@ Route::group(['middleware' => ['auth:sanctum']], function() {
     Route::post('/post/{id}/unlike', [PostApiController::class, 'unlike']);
     Route::get('/post/{id}/delete', [PostApiController::class, 'delete']);
     // Сообщения
-    Route::post('/sendMessage', [MessageApiController::class, 'send_message']);
-    Route::post('/readMessages', [MessageApiController::class, 'read_messages']);
-    Route::get('/getCountMessages/{id}', [MessageApiController::class, 'get_count_messages']);
-    Route::post('/getChat', [MessageApiController::class, 'get_chat']);
-    Route::get('/getChatList/{id}', [MessageApiController::class, 'get_chat_list']);
+    Route::post('/sendMessage', [MessageApiController::class, 'sendMessage']);
+    Route::post('/readMessages', [MessageApiController::class, 'readMessages']);
+    Route::get('/getCountMessages/{id}', [MessageApiController::class, 'getCountMessages']);
+    Route::post('/getChat', [MessageApiController::class, 'getChat']);
+    Route::get('/getChatList/{id}', [MessageApiController::class, 'getChatList']);
     // Музыка
-    Route::get('/getAllAudios', [AudioApiController::class, 'get_all_audios']);
-    Route::post('/addAudio', [AudioApiController::class, 'add_audio']);
+    Route::get('/getAllAudios', [AudioApiController::class, 'getAllAudios']);
+    Route::post('/addAudio', [AudioApiController::class, 'addAudio']);
     // Профиль
     Route::get('/profile/{id}', [ProfileApiController::class, 'profile']);
-    Route::post('/changeAvatar', [ProfileApiController::class, 'change_avatar']);
+    Route::post('/changeAvatar', [ProfileApiController::class, 'changeAvatar']);
     // Фотографии
-    Route::get('/gallery/{id}', [GalleryApiController::class, 'gallery']);
-    Route::post('/addPhotos', [GalleryApiController::class, 'add_photos']);
+    Route::get('/gallery/{id}', [GalleryApiController::class, 'getGallery']);
+    Route::post('/addPhotos', [GalleryApiController::class, 'addPhotos']);
     // Выход
     Route::post('/logout', [AuthApiController::class, 'logout']);
     // Все пользователи
-    Route::get('/users', [UserApiController::class, 'get_all']);
+    Route::get('/users', [UserApiController::class, 'getAll']);
 
     // Админка
     Route::get('/getAllPosts', [AdminPostController::class, 'get_all']);
     Route::get('/counts', [AdminHomeController::class, 'index']);
-    Route::get('/user/{id}', [UserApiController::class, 'get_user_info']);
+    Route::get('/user/{id}', [UserApiController::class, 'getUserInfo']);
     Route::get('/user/{id}/unban', [UserApiController::class, 'unban']);
     Route::get('/user/{id}/ban', [UserApiController::class, 'ban']);
     Route::get('/user/{id}/delete', [UserApiController::class, 'delete']);

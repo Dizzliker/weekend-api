@@ -86,6 +86,13 @@ export default class MessageChat extends Component {
         return formData;
     }
 
+    onEnterPress = (e) => {
+        if(e.keyCode == 13 && e.shiftKey == false) {
+          e.preventDefault();
+          this.sendMessage(e);
+        }
+      }
+
     sendMessage = (event) => {
         event.preventDefault();
         if (this.state.text.trim() != '') {
@@ -174,7 +181,10 @@ export default class MessageChat extends Component {
                 </div>
                 <form onSubmit={this.sendMessage} method="post" className="message__form-send-msg flex_center_center">
                     <div className="message__form-container flex ai_center">
-                        <textarea name="text" className="message__input-field" value={text} onChange={this.handleInputChange} placeholder="Send your message" id=""></textarea>
+                        <textarea name="text" className="message__input-field" 
+                                  onKeyDown={this.onEnterPress}
+                                  value={text} 
+                                  onChange={this.handleInputChange} placeholder="Send your message" id=""></textarea>
                         
                         <div className="message__form-details flex_center_space-between">
                             <a href="#">

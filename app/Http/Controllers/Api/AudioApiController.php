@@ -9,7 +9,7 @@ use App\Http\Controllers\Controller;
 
 class AudioApiController extends Controller
 {
-    public function add_audio(Request $request) {
+    public function addAudio(Request $request) {
         $fields = $request->validate([
             'author' => 'required',
             'name' => 'required',
@@ -31,7 +31,7 @@ class AudioApiController extends Controller
         ]);
     }
 
-    public function get_all_audios() {
+    public function getAllAudios() {
         $audios = DB::select('
             select a.id audio_id,
                    a.name,
