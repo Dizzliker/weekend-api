@@ -237,16 +237,16 @@ input::placeholder {
 /* Общий стиль для кебаб с 3 точками */
 
 .kebab {
-  width: 5px;
-  height: 20px;
+  width: 4px;
+  height: 18px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
 }
 
 .kebab .circle {
-  width: 5px;
-  height: 5px;
+  width: 4px;
+  height: 4px;
   background-color: var(--black);
   border-radius: 50%;
 }
@@ -656,8 +656,14 @@ a {
 
 .profile {
   width: 920px;
+  height: 100vh;
   padding: 30px 0 0 30px;
   background-color: var(--white);
+  overflow: auto;
+}
+
+.profile .profile__user-avatar {
+  position: relative;
 }
 
 .profile .profile__user-avatar .left-circle {

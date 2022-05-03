@@ -7,7 +7,6 @@ export default class PostForm extends Component {
         super(props);
         this.state = {
             text: '',
-            reload: false,
         };
         this.handleInputChange = this.handleInputChange.bind(this);
         this.post = new PostService();
@@ -20,11 +19,18 @@ export default class PostForm extends Component {
         return formData;
     }
 
+    onEnterPress = (e) => {
+        if(e.keyCode == 13 && e.shiftKey == false) {
+          e.preventDefault();
+          this.addPost();
+        }
+    }
+
     addPost = () => {
         this.post.postData('/post/create', this.getFormData())
             .then(res => {
                 if (res) {
-                    this.setState({text: '', reload: true,});
+                    this.setState({text: ''});
                 }
             })
             .catch(error => {
@@ -44,7 +50,7 @@ export default class PostForm extends Component {
 
     render() {
         const {avatar} = this.props.user;
-        const {text, reload} = this.state;
+        const {text} = this.state;
 
         return (
             <>
@@ -55,7 +61,11 @@ export default class PostForm extends Component {
                         <img src={avatar} className="ava-50" alt="User avatar" />
                     </a>
                 </div>
-                <textarea name="text" onChange={this.handleInputChange} value={text} className="posts__add-input" placeholder="What's news?" id="" cols="30" rows="10"></textarea>
+                <textarea name="text" onChange={this.handleInputChange} value={text} 
+                          className="posts__add-input" 
+                          placeholder="What's news?" 
+                          onKeyDown={this.onEnterPress}
+                          id="" cols="30" rows="10"></textarea>
                 <div className="posts__post-actions flex jc_space-between">
                     <a href="#" className="link-attach">
                         <img src="../images/music.svg" className="icon-attach" alt="Attach music" />
@@ -73,8 +83,6 @@ export default class PostForm extends Component {
             </div>}
             <PostList cur_user_id = {this.props.cur_user_id} 
                       user_id = {this.props.user_id} 
-                      afterUpdatePosts = {() => this.setState({reload:false})} 
-                      reload = {reload} 
                       user = {this.props.user} />
             </>
         );

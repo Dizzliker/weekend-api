@@ -23,19 +23,45 @@ export default class PostList extends Component {
             });
     }
 
+    listenUpdatePosts(user_id) {
+        window.Echo.private(`post.${user_id}`)
+                   .listen('PostPublished', (e) => {
+                       if (e.post) {
+                         this.setState({
+                             posts: [e.post, ...this.state.posts],
+                         });
+                       }
+                   });
+        window.Echo.private(`post-like.${user_id}`)
+                   .listen('PostLiked', (post) => {
+                       if (post.who_liked_id != this.props.cur_user_id) {
+                        this.toggleLikeByPostId(post.post_id, post.who_liked_id, post.is_liked);
+                       }
+                   });         
+    }
+
+    stopListenUpdatePosts(user_id) {
+        window.Echo.private(`post.${user_id}`)
+                   .stopListening('PostPublished');
+        window.Echo.private(`post-like.${user_id}`)
+                   .stopListening('PostLiked');           
+    }
+
     componentDidMount() {
-        this.updatePosts();
+        if (this.props.user_id) {
+            this.updatePosts();
+            this.listenUpdatePosts(this.props.user_id);
+        }
     }
 
     componentDidUpdate(prevProps) {
-        if (this.props.reload) {
-            this.updatePosts();
-            this.props.afterUpdatePosts();
+        if (this.props.user_id != prevProps.user_id) {
+            this.listenUpdatePosts(this.props.user_id);
         }
-        if (this.state.reload || this.props.user_id != prevProps.user_id) {
-            this.setState({reload: false});
-            this.updatePosts();
-        }
+    }
+
+    componentWillUnmount() {
+        this.stopListenUpdatePosts(this.props.user_id); 
     }
 
     getUserId = () => {
@@ -44,13 +70,12 @@ export default class PostList extends Component {
         return formData;
     }
 
-    delete = (event, post_id) => {
+    onDeletePost = (event, post_id) => {
         event.preventDefault();
         this.post.delete(post_id)
             .then(res => {
-                console.log(res);
                 if (res.success) {
-                    this.setState({reload: true});
+                    this.deletePostById(post_id);
                 }
             })
             .catch(error => {
@@ -58,12 +83,33 @@ export default class PostList extends Component {
             });
     }
 
-    like = (event, post_id) => {
+    deletePostById = (post_id) => {
+        const posts = this.state.posts.filter((post) => post.post_id != post_id);
+
+        this.setState({posts});
+    }
+
+    toggleLikeByPostId = (post_id, user_id, like) => {
+        this.setState(state => {
+            const posts = state.posts.map((post) => {
+              if (post.post_id == post_id) {
+                  if (user_id == this.props.cur_user_id) {
+                    post.i_like = like;
+                  }
+                  like ? post.likes++ : post.likes--;
+              }
+              return post;
+            });
+            return {posts};
+          });
+    }
+
+    onLikePost = (event, post_id) => {
         event.preventDefault();
         this.post.like(post_id, this.getUserId())
             .then(res => {
                 if (res.success) {
-                    this.setState({reload: true});
+                    this.toggleLikeByPostId(post_id, this.props.cur_user_id, true);
                 }
             })
             .catch(error => {
@@ -71,12 +117,12 @@ export default class PostList extends Component {
             });
     }
 
-    unlike = (event, post_id) => {
+    onUnlikePost = (event, post_id) => {
         event.preventDefault();
         this.post.unlike(post_id, this.getUserId())
             .then(res => {
                 if (res.success) {
-                    this.setState({reload: true});
+                    this.toggleLikeByPostId(post_id, this.props.cur_user_id, false);
                 }
             })
             .catch(error => {
@@ -86,7 +132,7 @@ export default class PostList extends Component {
 
     render() {
         const {posts} = this.state;
-        const postsList = posts.length > 0 ? posts.map(post => {
+        const postsList = posts.length > 0 ? posts.map((post) => {
             const {avatar, name, surname} = this.props.user;
             const {post_id, user_id, text, likes, i_like, reposts, comments, created_at} = post;
             return (
@@ -112,7 +158,7 @@ export default class PostList extends Component {
                             <a href="#">
                                 <img src="../images/edit.svg" className="icon-edit" alt="Edit post" title="Edit post" />
                             </a>
-                            <form onSubmit={(e) => {this.delete(e, post_id)}} method="post">
+                            <form onSubmit={(e) => {this.onDeletePost(e, post_id)}} method="post">
                                 <button className="btn-submit-icon">
                                     <img src="../images/close.svg" className="icon-delete" alt="Delete post" title="Delete post" />
                                 </button>
@@ -125,13 +171,13 @@ export default class PostList extends Component {
                         <div className="post__footer flex jc_space-between">
                             <div className="post__like">
                                 {i_like ? 
-                                <form onSubmit={(e) => {this.unlike(e, post_id)}} method="post">
+                                <form onSubmit={(e) => {this.onUnlikePost(e, post_id)}} method="post">
                                     <button className="btn-like link flex ai_center">
                                         <img src="/images/like(purple).svg" className="icon-like" alt="Like" />
                                         <span className="text">{likes}</span>
                                     </button>
                                 </form> :
-                                <form onSubmit={(e) => {this.like(e, post_id)}} method="post">
+                                <form onSubmit={(e) => {this.onLikePost(e, post_id)}} method="post">
                                     <button className="btn-like link flex ai_center">
                                         <img src="/images/like.svg" className="icon-like" alt="Like" />
                                         <span className="text">{likes}</span>

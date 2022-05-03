@@ -91,7 +91,7 @@ export default class MessageChat extends Component {
           e.preventDefault();
           this.sendMessage(e);
         }
-      }
+    }
 
     sendMessage = (event) => {
         event.preventDefault();

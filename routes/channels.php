@@ -34,3 +34,11 @@ Broadcast::channel('plchat', function ($user) {
         return ['id' => $user->id];
     }
 });
+
+Broadcast::channel('post.{user_id}', function() {
+    return auth()->check();
+});
+
+Broadcast::channel('post-like.{user_id}', function() {
+    return auth()->check();
+});
