@@ -42,3 +42,7 @@ Broadcast::channel('post.{user_id}', function() {
 Broadcast::channel('post-like.{user_id}', function() {
     return auth()->check();
 });
+
+Broadcast::channel('post-delete.{user_id}', function() {
+    return auth()->check();
+});

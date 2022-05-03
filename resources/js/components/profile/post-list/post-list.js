@@ -1,11 +1,14 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import {PostService} from '../../../services/Post';
+import PopupDeletePost from './popup-delete-post/popup-delete-post';
 
 export default class PostList extends Component {
     state = {
         posts: [],
         reload: false,
+        popupDeletePost: false,
+        activePostId: '',
     };
 
     post = new PostService();
@@ -37,14 +40,20 @@ export default class PostList extends Component {
                        if (post.who_liked_id != this.props.cur_user_id) {
                         this.toggleLikeByPostId(post.post_id, post.who_liked_id, post.is_liked);
                        }
-                   });         
+                   });
+        window.Echo.private(`post-delete.${user_id}`)
+                   .listen('PostDeleted', (post) => {
+                        this.deletePostById(post.post_id);
+                   });                
     }
 
     stopListenUpdatePosts(user_id) {
         window.Echo.private(`post.${user_id}`)
                    .stopListening('PostPublished');
         window.Echo.private(`post-like.${user_id}`)
-                   .stopListening('PostLiked');           
+                   .stopListening('PostLiked');  
+        window.Echo.private(`post-delete.${user_id}`)
+                   .stopListening('PostDeleted');                    
     }
 
     componentDidMount() {
@@ -68,19 +77,6 @@ export default class PostList extends Component {
         let formData = new FormData()
         formData.append('user_id', this.props.cur_user_id);
         return formData;
-    }
-
-    onDeletePost = (event, post_id) => {
-        event.preventDefault();
-        this.post.delete(post_id)
-            .then(res => {
-                if (res.success) {
-                    this.deletePostById(post_id);
-                }
-            })
-            .catch(error => {
-                console.warn(error);
-            });
     }
 
     deletePostById = (post_id) => {
@@ -131,7 +127,7 @@ export default class PostList extends Component {
     }
 
     render() {
-        const {posts} = this.state;
+        const {posts, popupDeletePost, activePostId} = this.state;
         const postsList = posts.length > 0 ? posts.map((post) => {
             const {avatar, name, surname} = this.props.user;
             const {post_id, user_id, text, likes, i_like, reposts, comments, created_at} = post;
@@ -158,11 +154,9 @@ export default class PostList extends Component {
                             <a href="#">
                                 <img src="../images/edit.svg" className="icon-edit" alt="Edit post" title="Edit post" />
                             </a>
-                            <form onSubmit={(e) => {this.onDeletePost(e, post_id)}} method="post">
-                                <button className="btn-submit-icon">
-                                    <img src="../images/close.svg" className="icon-delete" alt="Delete post" title="Delete post" />
-                                </button>
-                            </form>
+                            <img src="../images/close.svg" 
+                                 onClick={() => {this.setState({activePostId: post_id, popupDeletePost: true})}} 
+                                 className="icon-delete" alt="Delete post" title="Delete post" /> 
                         </div>}
                         </div>
                         <div className="post__body">
@@ -204,6 +198,8 @@ export default class PostList extends Component {
 
         return (
             <>
+                {popupDeletePost && <PopupDeletePost onClose={() => {this.setState({popupDeletePost: false})}}
+                                                     post_id = {activePostId}/>}
                 {postsList}
             </>
         );

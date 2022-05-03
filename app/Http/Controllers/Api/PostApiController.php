@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Events\PostDeleted;
 use App\Events\PostLiked;
 use App\Events\PostPublished;
 use App\Http\Controllers\Controller;
@@ -70,14 +71,7 @@ class PostApiController extends Controller
             'user_id' => $fields['user_id'],
         ]);
 
-        $author_id = DB::select('
-            select p.user_id
-              from posts p
-             where p.id = '.$id.'
-            limit 1  
-        ')[0]->user_id;
-
-        PostLiked::dispatch($id, $author_id, $fields['user_id'], true);
+        PostLiked::dispatch($id, Post::getAuthorIdByPostId($id), $fields['user_id'], true);
 
         return response(['success' => true]);
     }
@@ -94,14 +88,7 @@ class PostApiController extends Controller
                and post_likes.user_id = '.$fields['user_id'].' 
         ');
 
-        $author_id = DB::select('
-            select p.user_id
-             from posts p
-            where p.id = '.$id.'
-            limit 1  
-        ')[0]->user_id;
-
-        PostLiked::dispatch($id, $author_id, $fields['user_id'], false);
+        PostLiked::dispatch($id, Post::getAuthorIdByPostId($id), $fields['user_id'], false);
 
         return response(['success' => true]);
     }
@@ -109,6 +96,7 @@ class PostApiController extends Controller
     public function delete($id) {
         $post = Post::find($id);
         if ($post) {
+            PostDeleted::dispatch(Post::getAuthorIdByPostId($id), $id);
             $post->delete();
             return response(["success" => true], 201);
         }
