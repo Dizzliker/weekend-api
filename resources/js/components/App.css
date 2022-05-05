@@ -1052,6 +1052,11 @@ a {
   margin-right: 10px;
 }
 
+.message .message__user-list .message__user-body .message__user-container .message__user-ava .status {
+  right: 2px;
+  bottom: 2px;
+}
+
 .message .message__user-list .message__user-body .message__user-container .message__user-info {
   width: 100%;
   display: flex;
@@ -1121,18 +1126,21 @@ a {
   margin-right: 25px;
 }
 
-.online-status {
+.status {
   width: 12px;
   height: 12px;
   border: 1px solid var(--white);
   border-radius: 50%;
-  background-color: var(--online-status);
   position: absolute;
-  right: 2px;
-  bottom: 2px;
+  right: 0;
+  bottom: 0;
 }
 
-.online-status.offline {
+.status.online {
+  background-color: var(--online-status);
+}
+
+.status.offline {
   background-color: var(--offline-status);
 }
 

@@ -134,7 +134,7 @@ export default class PostList extends Component {
             return (
                 <div className="post" key={post_id}>
                     <Link to={`/profile/${user_id}`}>
-                        <img src={avatar} className="ava-70" alt="User avatar" srcset="" />
+                        <img src={avatar} className="ava-70" alt="User avatar" srcSet="" />
                     </Link>
                     <div className="post__container">
                         <div className="post__header flex jc_space-between">
@@ -164,19 +164,16 @@ export default class PostList extends Component {
                         </div>
                         <div className="post__footer flex jc_space-between">
                             <div className="post__like">
-                                {i_like ? 
-                                <form onSubmit={(e) => {this.onUnlikePost(e, post_id)}} method="post">
+                                <form onSubmit={
+                                    i_like ? (e) => {this.onUnlikePost(e, post_id)} 
+                                           : (e) => {this.onLikePost(e, post_id)}} method="post">
                                     <button className="btn-like link flex ai_center">
+                                    {i_like ?
                                         <img src="/images/like(purple).svg" className="icon-like" alt="Like" />
+                                      : <img src="/images/like.svg" className="icon-like" alt="Like" />}
                                         <span className="text">{likes}</span>
                                     </button>
-                                </form> :
-                                <form onSubmit={(e) => {this.onLikePost(e, post_id)}} method="post">
-                                    <button className="btn-like link flex ai_center">
-                                        <img src="/images/like.svg" className="icon-like" alt="Like" />
-                                        <span className="text">{likes}</span>
-                                    </button>
-                                </form>}
+                                </form>
                             </div>
                             <div className="post__repost">
                                 <span className="link flex ai_center">
