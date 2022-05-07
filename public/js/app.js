@@ -31,7 +31,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _services_User__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../services/User */ "./resources/js/services/User.js");
 /* harmony import */ var _services_Cookie__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../services/Cookie */ "./resources/js/services/Cookie.js");
 /* harmony import */ var _main_main__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./main/main */ "./resources/js/components/main/main.js");
-/* harmony import */ var laravel_echo__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! laravel-echo */ "./node_modules/laravel-echo/dist/echo.js");
+/* harmony import */ var _services_Echo__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../services/Echo */ "./resources/js/services/Echo.js");
 /* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
 function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
 
@@ -65,16 +65,7 @@ function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.g
 
 
 
-window.Pusher = __webpack_require__(/*! pusher-js */ "./node_modules/pusher-js/dist/web/pusher.js");
-window.Echo = new laravel_echo__WEBPACK_IMPORTED_MODULE_7__["default"]({
-  broadcaster: 'pusher',
-  key: "123",
-  cluster: "ap2",
-  forceTLS: false,
-  disableStats: true,
-  wsHost: window.location.hostname,
-  wsPort: 6001
-});
+_services_Echo__WEBPACK_IMPORTED_MODULE_7__.EchoService.declareConfig();
 
 var App = /*#__PURE__*/function (_Component) {
   _inherits(App, _Component);
@@ -2607,6 +2598,34 @@ var Main = /*#__PURE__*/function (_Component) {
 
     _this = _super.call(this, props);
 
+    _defineProperty(_assertThisInitialized(_this), "listenOnlineUsers", function () {
+      window.Echo.join('online-users').here(function (users) {
+        var userIds = users.map(function (user) {
+          return user.id;
+        });
+
+        _this.setState({
+          usersOnline: userIds
+        });
+      }).joining(function (user) {
+        var id = user.id;
+
+        _this.setState({
+          usersOnline: [id].concat(_toConsumableArray(_this.state.usersOnline))
+        });
+      }).leaving(function (user) {
+        var id = user.id;
+
+        var userIds = _this.state.usersOnline.filter(function (currentUserId) {
+          return currentUserId != id;
+        });
+
+        _this.setState({
+          usersOnline: userIds
+        });
+      });
+    });
+
     _defineProperty(_assertThisInitialized(_this), "listenMessageChannel", function (id) {
       window.Echo["private"]('privatechat.' + id).listen('PrivateMessageSent', function (e) {
         if (e.message) {
@@ -2622,7 +2641,8 @@ var Main = /*#__PURE__*/function (_Component) {
 
     _this.state = {
       countNewMessages: 0,
-      newMessagesData: []
+      newMessagesData: [],
+      usersOnline: []
     };
     return _this;
   }
@@ -2634,6 +2654,7 @@ var Main = /*#__PURE__*/function (_Component) {
 
       if (id) {
         this.listenMessageChannel(id);
+        this.listenOnlineUsers();
       }
     }
   }, {
@@ -2643,6 +2664,7 @@ var Main = /*#__PURE__*/function (_Component) {
 
       if (prevProps.user.id != this.props.user.id) {
         this.listenMessageChannel(id);
+        this.listenOnlineUsers();
       }
     }
   }, {
@@ -2651,7 +2673,9 @@ var Main = /*#__PURE__*/function (_Component) {
       var _this$props = this.props,
           user = _this$props.user,
           countFriendRequests = _this$props.countFriendRequests;
-      var newMessagesData = this.state.newMessagesData;
+      var _this$state = this.state,
+          newMessagesData = _this$state.newMessagesData,
+          usersOnline = _this$state.usersOnline;
       var countMessages = +this.props.countMessages + this.state.countNewMessages;
       var id = user.id,
           is_admin = user.is_admin;
@@ -2684,6 +2708,7 @@ var Main = /*#__PURE__*/function (_Component) {
               path: "messages/:id",
               element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_13__.jsx)(_message_container_message_container__WEBPACK_IMPORTED_MODULE_8__["default"], {
                 countMessages: countMessages,
+                usersOnline: usersOnline,
                 newMessagesData: newMessagesData,
                 cur_user_id: id
               })
@@ -3234,15 +3259,13 @@ var MessageChat = /*#__PURE__*/function (_Component) {
               className: "message__header-container flex ai_center",
               children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("div", {
                 className: "message__header-ava",
-                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)(react_router_dom__WEBPACK_IMPORTED_MODULE_4__.Link, {
+                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_4__.Link, {
                   to: "/profile/".concat(user_id),
-                  children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("img", {
+                  children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("img", {
                     src: avatar,
                     className: "ava-50",
                     alt: "User avatar"
-                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("div", {
-                    className: "online-status"
-                  })]
+                  })
                 })
               }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
                 className: "message__header-info flex",
@@ -3363,7 +3386,8 @@ __webpack_require__.r(__webpack_exports__);
 
 
 var MessageContainer = function MessageContainer(_ref) {
-  var cur_user_id = _ref.cur_user_id,
+  var usersOnline = _ref.usersOnline,
+      cur_user_id = _ref.cur_user_id,
       newMessagesData = _ref.newMessagesData,
       countMessages = _ref.countMessages;
 
@@ -3373,6 +3397,7 @@ var MessageContainer = function MessageContainer(_ref) {
   return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_message_message__WEBPACK_IMPORTED_MODULE_1__["default"], {
     cur_user_id: cur_user_id,
     url_user_id: id,
+    usersOnline: usersOnline,
     countMessages: countMessages,
     newMessagesData: newMessagesData
   });
@@ -3439,13 +3464,25 @@ var MessageList = /*#__PURE__*/function (_Component) {
 
     _this = _super.call(this, props);
 
+    _defineProperty(_assertThisInitialized(_this), "updateOnlineStatus", function (users) {
+      var chatList = users.map(function (user) {
+        if (_this.props.usersOnline.includes(user.id)) {
+          user.online = true;
+        }
+
+        return user;
+      });
+
+      _this.setState({
+        chatList: chatList
+      });
+    });
+
     _defineProperty(_assertThisInitialized(_this), "updateChatList", function () {
       if (_this.props.cur_user_id) {
         _this.chatService.getChatList(_this.props.cur_user_id).then(function (res) {
           if (res.users) {
-            _this.setState({
-              chatList: res.users
-            });
+            _this.updateOnlineStatus(res.users);
           }
         })["catch"](function (error) {
           console.warn(error);
@@ -3464,19 +3501,12 @@ var MessageList = /*#__PURE__*/function (_Component) {
   _createClass(MessageList, [{
     key: "componentDidMount",
     value: function componentDidMount() {
-      window.Echo.join('plchat').here(function (users) {
-        console.log('online', users);
-      }).joining(function (user) {
-        console.log('joining', user.name);
-      }).leaving(function (user) {
-        console.log('leaving', user.name);
-      });
       this.updateChatList();
     }
   }, {
     key: "componentDidUpdate",
     value: function componentDidUpdate(prevProps) {
-      if (this.props.reload || prevProps.countMessages != this.props.countMessages || prevProps.cur_user_id != this.props.cur_user_id) {
+      if ((this.props.reload || prevProps.countMessages != this.props.countMessages || prevProps.cur_user_id != this.props.cur_user_id || prevProps.usersOnline.length != this.props.usersOnline.length) && this.props.usersOnline.length > 0) {
         this.props.afterReloadChatList();
         this.updateChatList();
       }
@@ -3498,7 +3528,7 @@ var MessageList = /*#__PURE__*/function (_Component) {
                   className: "ava-50",
                   alt: "User avatar"
                 }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
-                  className: "status offline"
+                  className: "status ".concat(user.online ? 'online' : 'offline')
                 })]
               }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
                 className: "message__user-info",
@@ -3628,13 +3658,15 @@ var Message = /*#__PURE__*/function (_Component) {
           cur_user_id = _this$props.cur_user_id,
           url_user_id = _this$props.url_user_id,
           newMessagesData = _this$props.newMessagesData,
-          countMessages = _this$props.countMessages;
+          countMessages = _this$props.countMessages,
+          usersOnline = _this$props.usersOnline;
       return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
         className: "message",
         children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_message_list_message_list__WEBPACK_IMPORTED_MODULE_2__["default"], {
           reload: this.state.reload,
           cur_user_id: cur_user_id,
           countMessages: countMessages,
+          usersOnline: usersOnline,
           newMessagesData: newMessagesData,
           afterReloadChatList: function afterReloadChatList() {
             _this2.setState({
@@ -3644,6 +3676,7 @@ var Message = /*#__PURE__*/function (_Component) {
         }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_message_chat__WEBPACK_IMPORTED_MODULE_1__["default"], {
           url_user_id: url_user_id,
           cur_user_id: cur_user_id,
+          usersOnline: usersOnline,
           countMessages: countMessages,
           reloadChatList: function reloadChatList() {
             _this2.setState({
@@ -7077,6 +7110,75 @@ _defineProperty(Cookie, "setToken", function (token) {
     'samesite': 'lax',
     'max-age': 100000
   });
+});
+
+
+
+/***/ }),
+
+/***/ "./resources/js/services/Echo.js":
+/*!***************************************!*\
+  !*** ./resources/js/services/Echo.js ***!
+  \***************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "EchoService": () => (/* binding */ EchoService)
+/* harmony export */ });
+/* harmony import */ var laravel_echo__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! laravel-echo */ "./node_modules/laravel-echo/dist/echo.js");
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+function _classStaticPrivateFieldSpecGet(receiver, classConstructor, descriptor) { _classCheckPrivateStaticAccess(receiver, classConstructor); _classCheckPrivateStaticFieldDescriptor(descriptor, "get"); return _classApplyDescriptorGet(receiver, descriptor); }
+
+function _classCheckPrivateStaticFieldDescriptor(descriptor, action) { if (descriptor === undefined) { throw new TypeError("attempted to " + action + " private static field before its declaration"); } }
+
+function _classCheckPrivateStaticAccess(receiver, classConstructor) { if (receiver !== classConstructor) { throw new TypeError("Private static access of wrong provenance"); } }
+
+function _classApplyDescriptorGet(receiver, descriptor) { if (descriptor.get) { return descriptor.get.call(receiver); } return descriptor.value; }
+
+
+
+var EchoService = /*#__PURE__*/function () {
+  function EchoService() {
+    _classCallCheck(this, EchoService);
+  }
+
+  _createClass(EchoService, null, [{
+    key: "listenPrivateChannel",
+    value: function listenPrivateChannel(channelName, eventName, action) {
+      window.Echo["private"](channelName).listen(eventName, function () {
+        action();
+      });
+    }
+  }]);
+
+  return EchoService;
+}();
+
+var _config = {
+  writable: true,
+  value: {
+    broadcaster: 'pusher',
+    key: "123",
+    cluster: "ap2",
+    forceTLS: false,
+    disableStats: true,
+    wsHost: window.location.hostname,
+    wsPort: 6001
+  }
+};
+
+_defineProperty(EchoService, "declareConfig", function () {
+  window.Pusher = __webpack_require__(/*! pusher-js */ "./node_modules/pusher-js/dist/web/pusher.js");
+  window.Echo = new laravel_echo__WEBPACK_IMPORTED_MODULE_0__["default"](_classStaticPrivateFieldSpecGet(EchoService, EchoService, _config));
 });
 
 

@@ -21,7 +21,7 @@ class MessageResource extends JsonResource
             'out_user_id' => $this->out_user_id,
             'text' => $this->text,
             'read' => $this->read,
-            'created_at' => $this->created_at,
+            'created_at' => Carbon::parse($this->created_at, 'Asia/Yekaterinburg')->format('H:i'),
         ];
     }
 }

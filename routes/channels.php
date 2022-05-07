@@ -29,7 +29,7 @@ Broadcast::channel('privatechat.{receiverid}', function ($user,$receiverid) {
     return auth()->check();
 });
 
-Broadcast::channel('plchat', function ($user) {
+Broadcast::channel('online-users', function ($user) {
     if(auth()->check()){
         return ['id' => $user->id];
     }

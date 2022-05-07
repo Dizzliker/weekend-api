@@ -13,18 +13,17 @@ export default class MessageList extends Component {
     }
 
     componentDidMount() {
-        window.Echo.join('plchat')
-              .here((users) => {
-                   console.log('online',users);
-              })
-              .joining((user) => {
-                  console.log('joining',user.name);
-              })
-              .leaving((user) => {
-                  console.log('leaving',user.name);
-              });
-
         this.updateChatList();
+    }
+
+    updateOnlineStatus = (users) => {
+        const chatList = users.map(user => {
+            if (this.props.usersOnline.includes(user.id)) {
+                user.online = true;
+            }
+            return user;
+        });
+        this.setState({chatList});
     }
 
     updateChatList = () => {
@@ -32,7 +31,7 @@ export default class MessageList extends Component {
             this.chatService.getChatList(this.props.cur_user_id)
                 .then(res => {
                     if (res.users) {
-                        this.setState({chatList: res.users});
+                        this.updateOnlineStatus(res.users);
                     }
                 })
                 .catch(error => {
@@ -42,9 +41,11 @@ export default class MessageList extends Component {
     }
 
     componentDidUpdate(prevProps) {
-        if (this.props.reload 
+        if ((this.props.reload 
         || (prevProps.countMessages != this.props.countMessages) 
-        || (prevProps.cur_user_id != this.props.cur_user_id)) {
+        || (prevProps.cur_user_id != this.props.cur_user_id)
+        || (prevProps.usersOnline.length != this.props.usersOnline.length))
+        && this.props.usersOnline.length > 0) {
             this.props.afterReloadChatList();
             this.updateChatList();
         }
@@ -58,7 +59,7 @@ export default class MessageList extends Component {
                         <div className="message__user-container">
                             <div className="message__user-ava">
                                 <img src={user.avatar} className="ava-50" alt="User avatar" />
-                                <div className={`status offline`}></div>
+                                <div className={`status ${user.online ? 'online' : 'offline'}`}></div>
                             </div>
                             <div className="message__user-info">
                                 <div className="message__name-container">

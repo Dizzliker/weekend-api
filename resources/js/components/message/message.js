@@ -8,17 +8,19 @@ export default class Message extends Component {
     };
     
     render() {
-        const {cur_user_id, url_user_id, newMessagesData, countMessages} = this.props;
+        const {cur_user_id, url_user_id, newMessagesData, countMessages, usersOnline} = this.props;
 
         return (
         <div className="message">
             <MessageList reload={this.state.reload}
                          cur_user_id = {cur_user_id}
                          countMessages = {countMessages}
+                         usersOnline = {usersOnline}
                          newMessagesData = {newMessagesData}
                          afterReloadChatList={() => {this.setState({reload: false})}}/>
             <MessageChat url_user_id = {url_user_id}
                          cur_user_id = {cur_user_id}
+                         usersOnline = {usersOnline}
                          countMessages = {countMessages}
                          reloadChatList = {() => {this.setState({reload: true})}}/>
         </div>

@@ -20,7 +20,29 @@ export default class Main extends Component {
         this.state = {
             countNewMessages: 0,
             newMessagesData: [],
+            usersOnline: [],
         }
+    }
+
+    listenOnlineUsers = () => {
+        window.Echo.join('online-users')
+              .here(users => {
+                const userIds = users.map(user => {
+                    return user.id;
+                });
+                this.setState({usersOnline: userIds});
+              })
+              .joining(user => {
+                const {id} = user;
+                this.setState({usersOnline: [id, ...this.state.usersOnline]});
+              })
+              .leaving(user => {
+                const {id} = user;
+                const userIds = this.state.usersOnline.filter((currentUserId) => {
+                    return currentUserId != id;
+                });
+                this.setState({usersOnline: userIds});
+              })
     }
 
     listenMessageChannel = (id) => {
@@ -42,6 +64,7 @@ export default class Main extends Component {
       const {id} = this.props.user;
       if (id) {
         this.listenMessageChannel(id);
+        this.listenOnlineUsers();
       }         
     }
 
@@ -49,12 +72,13 @@ export default class Main extends Component {
       const {id} = this.props.user;
         if (prevProps.user.id != this.props.user.id) {
             this.listenMessageChannel(id);
+            this.listenOnlineUsers();
         }
     }
 
     render() {
         const {user, countFriendRequests} = this.props;
-        const {newMessagesData} = this.state;
+        const {newMessagesData, usersOnline} = this.state;
         const countMessages = +this.props.countMessages + this.state.countNewMessages;
         const {id, is_admin} = user;
         const bgStyle = {
@@ -72,6 +96,7 @@ export default class Main extends Component {
                         <Route path="*"            element={<Redirect cur_user_id={id}/>}/>
                         <Route path="profile/:id"  element={<ProfileContainer user={user}/>}/>
                         <Route path="messages/:id" element={<MessageContainer countMessages = {countMessages} 
+                                                                              usersOnline = {usersOnline}
                                                                               newMessagesData = {newMessagesData}
                                                                               cur_user_id={id}/>}/>
                         <Route path="friends"      element={<Friend cur_user_id = {id}

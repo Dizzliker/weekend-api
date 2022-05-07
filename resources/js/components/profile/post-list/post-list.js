@@ -28,19 +28,18 @@ export default class PostList extends Component {
 
     listenUpdatePosts(user_id) {
         window.Echo.private(`post.${user_id}`)
-                   .listen('PostPublished', (e) => {
-                       if (e.post) {
-                         this.setState({
-                             posts: [e.post, ...this.state.posts],
-                         });
-                       }
-                   });
+              .listen('PostPublished', (e) => {
+                  if (e.post) {
+                    this.setState({
+                        posts: [e.post, ...this.state.posts],
+                    });
+                  }
+              });
         window.Echo.private(`post-like.${user_id}`)
                    .listen('PostLiked', (post) => {
-                       if (post.who_liked_id != this.props.cur_user_id) {
-                        this.toggleLikeByPostId(post.post_id, post.who_liked_id, post.is_liked);
-                       }
-                   });
+                        if (post.who_liked_id != this.props.cur_user_id) {
+                            this.toggleLikeByPostId(post.post_id, post.who_liked_id, post.is_liked);
+                        }});
         window.Echo.private(`post-delete.${user_id}`)
                    .listen('PostDeleted', (post) => {
                         this.deletePostById(post.post_id);
@@ -53,7 +52,7 @@ export default class PostList extends Component {
         window.Echo.private(`post-like.${user_id}`)
                    .stopListening('PostLiked');  
         window.Echo.private(`post-delete.${user_id}`)
-                   .stopListening('PostDeleted');                    
+                   .stopListening('PostDeleted');
     }
 
     componentDidMount() {

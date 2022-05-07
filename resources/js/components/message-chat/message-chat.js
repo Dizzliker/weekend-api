@@ -49,7 +49,8 @@ export default class MessageChat extends Component {
     }
 
     updateChat = () => {
-        if (this.props.url_user_id != 0 && this.props.cur_user_id) {
+        if (this.props.url_user_id != 0 
+        && this.props.cur_user_id) {
             this.chatService.get(this.getChatUsersId())
                 .then(res => {
                     if (res) {
@@ -70,10 +71,10 @@ export default class MessageChat extends Component {
     }
 
     componentDidUpdate(prevProps) {
-        if ((this.props.url_user_id != prevProps.url_user_id) 
+        if (((this.props.url_user_id != prevProps.url_user_id) 
         || this.state.reload 
         || prevProps.countMessages != this.props.countMessages
-        || prevProps.cur_user_id != this.props.cur_user_id) {
+        || prevProps.cur_user_id != this.props.cur_user_id)) {
             this.updateChat();
         }
     }
@@ -155,7 +156,7 @@ export default class MessageChat extends Component {
                         <div className="message__header-ava">
                             <Link to={`/profile/${user_id}`}>
                                 <img src={avatar} className="ava-50" alt="User avatar" />
-                                <div className="online-status"></div>
+                                {/* <div className={`status ${online ? 'online' : 'offline'}`}></div> */}
                             </Link>
                         </div>
                         <div className="message__header-info flex">
