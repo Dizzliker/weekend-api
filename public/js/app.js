@@ -3101,14 +3101,9 @@ var MessageChat = /*#__PURE__*/function (_Component) {
             _this.setState({
               companion: res.user,
               chat: res.chat,
-              reload: false,
               loading: false,
               read: true
             });
-
-            _this.props.reloadChatList();
-
-            _this.scrollChatToBottom();
 
             _this.readMessages();
           }
@@ -3158,13 +3153,11 @@ var MessageChat = /*#__PURE__*/function (_Component) {
       text: '',
       companion: {
         user_id: undefined,
-        name: 'No',
+        name: 'Not',
         surname: 'Found',
         avatar: '/images/Ava.jpg'
       },
       chat: [],
-      chatList: [],
-      reload: false,
       read: false
     };
     _this.chatBox = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createRef();
@@ -3174,9 +3167,28 @@ var MessageChat = /*#__PURE__*/function (_Component) {
   }
 
   _createClass(MessageChat, [{
-    key: "scrollChatToBottom",
-    value: function scrollChatToBottom() {
-      this.chatBox.current.scrollTop = this.chatBox.current.scrollHeight;
+    key: "getSnapshotBeforeUpdate",
+    value: function getSnapshotBeforeUpdate(prevProps, prevState) {
+      // Добавляются ли в список новые элементы?
+      // Запоминаем значение прокрутки, чтобы использовать его позже.
+      if (prevState.chat.length < this.state.chat.length) {
+        var list = this.chatBox.current;
+        return list.scrollHeight - list.scrollTop;
+      }
+
+      return null;
+    }
+  }, {
+    key: "updateAfterNewMessage",
+    value: function updateAfterNewMessage() {
+      var newMessagesData = this.props.newMessagesData;
+      var newMessage = newMessagesData[+newMessagesData.length - 1];
+
+      if (newMessage) {
+        this.setState({
+          chat: [].concat(_toConsumableArray(this.state.chat), [newMessage])
+        });
+      }
     }
   }, {
     key: "componentDidMount",
@@ -3185,9 +3197,22 @@ var MessageChat = /*#__PURE__*/function (_Component) {
     }
   }, {
     key: "componentDidUpdate",
-    value: function componentDidUpdate(prevProps) {
-      if (this.props.url_user_id != prevProps.url_user_id || this.state.reload || prevProps.countMessages != this.props.countMessages || prevProps.cur_user_id != this.props.cur_user_id) {
+    value: function componentDidUpdate(prevProps, prevState, snapshot) {
+      if (this.props.url_user_id != prevProps.url_user_id || prevProps.cur_user_id != this.props.cur_user_id) {
         this.updateChat();
+      }
+
+      if (prevProps.newMessagesData.length != this.props.newMessagesData.length) {
+        var lastIndex = +this.props.newMessagesData.length - 1;
+
+        if (this.props.newMessagesData[lastIndex].out_user_id == this.props.url_user_id) {
+          this.updateAfterNewMessage();
+        }
+      }
+
+      if (snapshot !== null) {
+        var list = this.chatBox.current;
+        list.scrollTop = list.scrollHeight - snapshot;
       }
     }
   }, {
@@ -3233,7 +3258,7 @@ var MessageChat = /*#__PURE__*/function (_Component) {
               className: "chat msg-time",
               children: message.created_at
             })]
-          }, message.message_id);
+          }, message.id);
         } else {
           return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
             className: "message__msg message__msg-outgoing",
@@ -3247,7 +3272,7 @@ var MessageChat = /*#__PURE__*/function (_Component) {
                 children: message.text
               })
             })]
-          }, message.message_id);
+          }, message.id);
         }
       }) : null;
       return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.Fragment, {
@@ -3317,6 +3342,7 @@ var MessageChat = /*#__PURE__*/function (_Component) {
                 value: text,
                 onChange: this.handleInputChange,
                 placeholder: "Send your message",
+                autoFocus: true,
                 id: ""
               }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
                 className: "message__form-details flex_center_space-between",
@@ -3491,8 +3517,7 @@ var MessageList = /*#__PURE__*/function (_Component) {
     });
 
     _this.state = {
-      chatList: [],
-      reload: false
+      chatList: []
     };
     _this.chatService = new _services_Chat__WEBPACK_IMPORTED_MODULE_1__.ChatService();
     return _this;
@@ -3504,11 +3529,45 @@ var MessageList = /*#__PURE__*/function (_Component) {
       this.updateChatList();
     }
   }, {
+    key: "getCuttedString",
+    value: function getCuttedString(str, cutToNumber) {
+      if (str.length >= +cutToNumber) {
+        return str.substring(0, +cutToNumber) + '...';
+      }
+
+      return str;
+    }
+  }, {
+    key: "updateLastSentMessage",
+    value: function updateLastSentMessage() {
+      var _this2 = this;
+
+      var chatList = this.state.chatList.map(function (user) {
+        var lastIndex = +_this2.props.newMessagesData.length - 1;
+        var newMessagesData = _this2.props.newMessagesData[lastIndex];
+        var out_user_id = newMessagesData.out_user_id,
+            text = newMessagesData.text;
+
+        if (out_user_id === user.id) {
+          user.text = _this2.getCuttedString(text, 13);
+          user.msg_unread_count++;
+        }
+
+        return user;
+      });
+      this.setState({
+        chatList: chatList
+      });
+    }
+  }, {
     key: "componentDidUpdate",
     value: function componentDidUpdate(prevProps) {
-      if ((this.props.reload || prevProps.countMessages != this.props.countMessages || prevProps.cur_user_id != this.props.cur_user_id || prevProps.usersOnline.length != this.props.usersOnline.length) && this.props.usersOnline.length > 0) {
-        this.props.afterReloadChatList();
+      if ((prevProps.cur_user_id != this.props.cur_user_id || prevProps.usersOnline.length != this.props.usersOnline.length) && this.props.usersOnline.length > 0) {
         this.updateChatList();
+      }
+
+      if (prevProps.newMessagesData.length != this.props.newMessagesData.length) {
+        this.updateLastSentMessage();
       }
     }
   }, {
@@ -3618,8 +3677,6 @@ function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Re
 
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
 
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 
 
 
@@ -3632,28 +3689,14 @@ var Message = /*#__PURE__*/function (_Component) {
   var _super = _createSuper(Message);
 
   function Message() {
-    var _this;
-
     _classCallCheck(this, Message);
 
-    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
-
-    _this = _super.call.apply(_super, [this].concat(args));
-
-    _defineProperty(_assertThisInitialized(_this), "state", {
-      reload: false
-    });
-
-    return _this;
+    return _super.apply(this, arguments);
   }
 
   _createClass(Message, [{
     key: "render",
     value: function render() {
-      var _this2 = this;
-
       var _this$props = this.props,
           cur_user_id = _this$props.cur_user_id,
           url_user_id = _this$props.url_user_id,
@@ -3663,26 +3706,13 @@ var Message = /*#__PURE__*/function (_Component) {
       return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
         className: "message",
         children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_message_list_message_list__WEBPACK_IMPORTED_MODULE_2__["default"], {
-          reload: this.state.reload,
           cur_user_id: cur_user_id,
-          countMessages: countMessages,
           usersOnline: usersOnline,
-          newMessagesData: newMessagesData,
-          afterReloadChatList: function afterReloadChatList() {
-            _this2.setState({
-              reload: false
-            });
-          }
+          newMessagesData: newMessagesData
         }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_message_chat__WEBPACK_IMPORTED_MODULE_1__["default"], {
           url_user_id: url_user_id,
           cur_user_id: cur_user_id,
-          usersOnline: usersOnline,
-          countMessages: countMessages,
-          reloadChatList: function reloadChatList() {
-            _this2.setState({
-              reload: true
-            });
-          }
+          newMessagesData: newMessagesData
         })]
       });
     }

@@ -11,13 +11,11 @@ export default class MessageChat extends Component {
             text: '',
             companion: {
                 user_id: undefined,
-                name: 'No',
+                name: 'Not',
                 surname: 'Found',
                 avatar: '/images/Ava.jpg',
             },
             chat: [],
-            chatList: [],
-            reload: false,
             read: false,
         };
         this.chatBox = React.createRef();
@@ -44,8 +42,22 @@ export default class MessageChat extends Component {
             });
     }
 
-    scrollChatToBottom() {
-        this.chatBox.current.scrollTop = this.chatBox.current.scrollHeight;
+    getSnapshotBeforeUpdate(prevProps, prevState) {
+        // Добавляются ли в список новые элементы?
+        // Запоминаем значение прокрутки, чтобы использовать его позже.
+        if (prevState.chat.length < this.state.chat.length) {
+          const list = this.chatBox.current;
+          return list.scrollHeight - list.scrollTop;
+        }
+        return null;
+      }
+
+    updateAfterNewMessage() {
+        const {newMessagesData} = this.props;
+        const newMessage = newMessagesData[+newMessagesData.length - 1];
+        if (newMessage) {
+            this.setState({chat: [...this.state.chat, newMessage]});
+        }
     }
 
     updateChat = () => {
@@ -54,9 +66,7 @@ export default class MessageChat extends Component {
             this.chatService.get(this.getChatUsersId())
                 .then(res => {
                     if (res) {
-                        this.setState({companion: res.user, chat: res.chat, reload: false, loading: false, read: true});
-                        this.props.reloadChatList();
-                        this.scrollChatToBottom(); 
+                        this.setState({companion: res.user, chat: res.chat, loading: false, read: true});
                         this.readMessages();
                     }
                 })
@@ -70,13 +80,21 @@ export default class MessageChat extends Component {
         this.updateChat();
     }
 
-    componentDidUpdate(prevProps) {
-        if (((this.props.url_user_id != prevProps.url_user_id) 
-        || this.state.reload 
-        || prevProps.countMessages != this.props.countMessages
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        if (((this.props.url_user_id != prevProps.url_user_id)
         || prevProps.cur_user_id != this.props.cur_user_id)) {
             this.updateChat();
         }
+        if (prevProps.newMessagesData.length != this.props.newMessagesData.length) {
+            const lastIndex = +this.props.newMessagesData.length - 1;
+            if (this.props.newMessagesData[lastIndex].out_user_id == this.props.url_user_id) {
+                this.updateAfterNewMessage();
+            }
+        }
+        if (snapshot !== null) {
+            const list = this.chatBox.current;
+            list.scrollTop = list.scrollHeight - snapshot;
+          }
     }
 
     getFormData = () => {
@@ -124,7 +142,7 @@ export default class MessageChat extends Component {
         const messageBox = chat.length > 0 ? chat.map(message => {
             if (message.out_user_id == this.props.url_user_id) {
                 return (
-                    <div className="message__msg message__msg-incoming" key={message.message_id}>
+                    <div className="message__msg message__msg-incoming" key={message.id}>
                         <Link to={`/profile/${user_id}`}>
                             <img src={avatar} className="ava-35" alt="" />
                         </Link>
@@ -136,7 +154,7 @@ export default class MessageChat extends Component {
                 );
             } else {
                 return (
-                    <div className="message__msg message__msg-outgoing" key={message.message_id}>
+                    <div className="message__msg message__msg-outgoing" key={message.id}>
                         <time className="chat msg-time">{message.created_at}</time>
                         <div className="details">
                             <p className="msg-text">{message.text}</p>
@@ -185,7 +203,8 @@ export default class MessageChat extends Component {
                         <textarea name="text" className="message__input-field" 
                                   onKeyDown={this.onEnterPress}
                                   value={text} 
-                                  onChange={this.handleInputChange} placeholder="Send your message" id=""></textarea>
+                                  onChange={this.handleInputChange} placeholder="Send your message"
+                                  autoFocus={true} id=""></textarea>
                         
                         <div className="message__form-details flex_center_space-between">
                             <a href="#">

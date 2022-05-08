@@ -7,13 +7,33 @@ export default class MessageList extends Component {
         super(props);
         this.state = {
             chatList: [],
-            reload: false,
         };
         this.chatService = new ChatService();
     }
 
     componentDidMount() {
         this.updateChatList();
+    }
+
+    getCuttedString(str, cutToNumber) {
+        if (str.length >= +cutToNumber) {
+            return str.substring(0, +cutToNumber)+'...';
+        }
+        return str;
+    }
+
+    updateLastSentMessage() {
+        const chatList = this.state.chatList.map(user => {
+            const lastIndex = +this.props.newMessagesData.length - 1;
+            const newMessagesData = this.props.newMessagesData[lastIndex];
+            const {out_user_id, text} = newMessagesData;
+            if (out_user_id === user.id) {
+                user.text = this.getCuttedString(text, 13);
+                user.msg_unread_count++;
+            }
+            return user;
+        });
+        this.setState({chatList});
     }
 
     updateOnlineStatus = (users) => {
@@ -41,13 +61,13 @@ export default class MessageList extends Component {
     }
 
     componentDidUpdate(prevProps) {
-        if ((this.props.reload 
-        || (prevProps.countMessages != this.props.countMessages) 
-        || (prevProps.cur_user_id != this.props.cur_user_id)
+        if (((prevProps.cur_user_id != this.props.cur_user_id)
         || (prevProps.usersOnline.length != this.props.usersOnline.length))
         && this.props.usersOnline.length > 0) {
-            this.props.afterReloadChatList();
             this.updateChatList();
+        }
+        if (prevProps.newMessagesData.length != this.props.newMessagesData.length) {
+            this.updateLastSentMessage();
         }
     }
 

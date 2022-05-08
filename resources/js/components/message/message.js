@@ -3,26 +3,17 @@ import MessageChat from '../message-chat';
 import MessageList from '../message-list/message-list';
 
 export default class Message extends Component {
-    state = {
-        reload: false,
-    };
-    
     render() {
         const {cur_user_id, url_user_id, newMessagesData, countMessages, usersOnline} = this.props;
-
+        
         return (
         <div className="message">
-            <MessageList reload={this.state.reload}
-                         cur_user_id = {cur_user_id}
-                         countMessages = {countMessages}
+            <MessageList cur_user_id = {cur_user_id}
                          usersOnline = {usersOnline}
-                         newMessagesData = {newMessagesData}
-                         afterReloadChatList={() => {this.setState({reload: false})}}/>
+                         newMessagesData = {newMessagesData} />
             <MessageChat url_user_id = {url_user_id}
                          cur_user_id = {cur_user_id}
-                         usersOnline = {usersOnline}
-                         countMessages = {countMessages}
-                         reloadChatList = {() => {this.setState({reload: true})}}/>
+                         newMessagesData = {newMessagesData} />
         </div>
         );
     }
