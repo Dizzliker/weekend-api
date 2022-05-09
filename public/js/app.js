@@ -3105,6 +3105,8 @@ var MessageChat = /*#__PURE__*/function (_Component) {
               read: true
             });
 
+            _this.updateOnlineStatus();
+
             _this.readMessages();
           }
         })["catch"](function (error) {

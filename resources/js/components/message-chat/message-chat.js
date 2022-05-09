@@ -81,7 +81,8 @@ export default class MessageChat extends Component {
             this.chatService.get(this.getChatUsersId())
                 .then(res => {
                     if (res) {
-                        this.setState({companion: res.user, chat: res.chat, loading: false, read: true});
+                        this.setState({companion: res.user, chat: res.chat, loading: false, read: true});    
+                        this.updateOnlineStatus();
                         this.readMessages();
                     }
                 })
