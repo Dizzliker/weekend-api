@@ -15,6 +15,7 @@ export default class MessageChat extends Component {
                 surname: 'Found',
                 avatar: '/images/Ava.jpg',
             },
+            online: false,
             chat: [],
             read: false,
         };
@@ -53,11 +54,25 @@ export default class MessageChat extends Component {
       }
 
     updateAfterNewMessage() {
-        const {newMessagesData} = this.props;
-        const newMessage = newMessagesData[+newMessagesData.length - 1];
-        if (newMessage) {
-            this.setState({chat: [...this.state.chat, newMessage]});
+        const lastIndex = +this.props.newMessagesData.length - 1;
+        if (this.props.newMessagesData[lastIndex].out_user_id == this.props.url_user_id) {
+            const {newMessagesData} = this.props;
+            const newMessage = newMessagesData[+newMessagesData.length - 1];
+            if (newMessage) {
+                this.setState({chat: [...this.state.chat, newMessage]});
+            }
         }
+    }
+
+    updateOnlineStatus() {
+        const {usersOnline, url_user_id} = this.props;
+        let online = false;
+        if (usersOnline.length > 0 && url_user_id) {
+            if (usersOnline.includes(+url_user_id)) {
+                online = true;
+            }
+        }
+        this.setState({online: online});
     }
 
     updateChat = () => {
@@ -81,15 +96,15 @@ export default class MessageChat extends Component {
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
-        if (((this.props.url_user_id != prevProps.url_user_id)
-        || prevProps.cur_user_id != this.props.cur_user_id)) {
+        if ((this.props.url_user_id != prevProps.url_user_id)
+        || prevProps.cur_user_id != this.props.cur_user_id) {
             this.updateChat();
         }
         if (prevProps.newMessagesData.length != this.props.newMessagesData.length) {
-            const lastIndex = +this.props.newMessagesData.length - 1;
-            if (this.props.newMessagesData[lastIndex].out_user_id == this.props.url_user_id) {
-                this.updateAfterNewMessage();
-            }
+            this.updateAfterNewMessage();
+        }
+        if (prevProps.usersOnline.length != this.props.usersOnline.length) {
+            this.updateOnlineStatus();
         }
         if (snapshot !== null) {
             const list = this.chatBox.current;
@@ -136,7 +151,7 @@ export default class MessageChat extends Component {
     }
 
     render() {
-        const {chat, text, loading} = this.state;
+        const {chat, text, loading, online} = this.state;
         const {user_id, name, surname, avatar} = this.state.companion;
         const messageBox = chat.length > 0 ? chat.map(message => {
             if (message.out_user_id == this.props.url_user_id) {
@@ -173,7 +188,7 @@ export default class MessageChat extends Component {
                         <div className="message__header-ava">
                             <Link to={`/profile/${user_id}`}>
                                 <img src={avatar} className="ava-50" alt="User avatar" />
-                                {/* <div className={`status ${online ? 'online' : 'offline'}`}></div> */}
+                                <div className={`status ${online ? 'online' : 'offline'}`}></div>
                             </Link>
                         </div>
                         <div className="message__header-info flex">
@@ -181,7 +196,9 @@ export default class MessageChat extends Component {
                                 <Link to={`/profile/${user_id}`}>
                                     <span className="username">{name} {surname}</span>
                                 </Link>
-                                <span className="message__header-online">Was online today at 14:37</span>
+                                <span className="message__header-online">
+                                    {online ? 'Online' : 'Offline'}
+                                </span>
                             </div>
                             <div className="message__header-actions flex_center_space-between">
                                 <img src="../images/search.svg" className="icon-search" alt="Search" />

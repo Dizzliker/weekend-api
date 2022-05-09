@@ -3155,6 +3155,7 @@ var MessageChat = /*#__PURE__*/function (_Component) {
         surname: 'Found',
         avatar: '/images/Ava.jpg'
       },
+      online: false,
       chat: [],
       read: false
     };
@@ -3179,14 +3180,36 @@ var MessageChat = /*#__PURE__*/function (_Component) {
   }, {
     key: "updateAfterNewMessage",
     value: function updateAfterNewMessage() {
-      var newMessagesData = this.props.newMessagesData;
-      var newMessage = newMessagesData[+newMessagesData.length - 1];
+      var lastIndex = +this.props.newMessagesData.length - 1;
 
-      if (newMessage) {
-        this.setState({
-          chat: [].concat(_toConsumableArray(this.state.chat), [newMessage])
-        });
+      if (this.props.newMessagesData[lastIndex].out_user_id == this.props.url_user_id) {
+        var newMessagesData = this.props.newMessagesData;
+        var newMessage = newMessagesData[+newMessagesData.length - 1];
+
+        if (newMessage) {
+          this.setState({
+            chat: [].concat(_toConsumableArray(this.state.chat), [newMessage])
+          });
+        }
       }
+    }
+  }, {
+    key: "updateOnlineStatus",
+    value: function updateOnlineStatus() {
+      var _this$props = this.props,
+          usersOnline = _this$props.usersOnline,
+          url_user_id = _this$props.url_user_id;
+      var online = false;
+
+      if (usersOnline.length > 0 && url_user_id) {
+        if (usersOnline.includes(+url_user_id)) {
+          online = true;
+        }
+      }
+
+      this.setState({
+        online: online
+      });
     }
   }, {
     key: "componentDidMount",
@@ -3201,11 +3224,11 @@ var MessageChat = /*#__PURE__*/function (_Component) {
       }
 
       if (prevProps.newMessagesData.length != this.props.newMessagesData.length) {
-        var lastIndex = +this.props.newMessagesData.length - 1;
+        this.updateAfterNewMessage();
+      }
 
-        if (this.props.newMessagesData[lastIndex].out_user_id == this.props.url_user_id) {
-          this.updateAfterNewMessage();
-        }
+      if (prevProps.usersOnline.length != this.props.usersOnline.length) {
+        this.updateOnlineStatus();
       }
 
       if (snapshot !== null) {
@@ -3229,7 +3252,8 @@ var MessageChat = /*#__PURE__*/function (_Component) {
       var _this$state = this.state,
           chat = _this$state.chat,
           text = _this$state.text,
-          loading = _this$state.loading;
+          loading = _this$state.loading,
+          online = _this$state.online;
       var _this$state$companion = this.state.companion,
           user_id = _this$state$companion.user_id,
           name = _this$state$companion.name,
@@ -3282,13 +3306,15 @@ var MessageChat = /*#__PURE__*/function (_Component) {
               className: "message__header-container flex ai_center",
               children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("div", {
                 className: "message__header-ava",
-                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_4__.Link, {
+                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)(react_router_dom__WEBPACK_IMPORTED_MODULE_4__.Link, {
                   to: "/profile/".concat(user_id),
-                  children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("img", {
+                  children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("img", {
                     src: avatar,
                     className: "ava-50",
                     alt: "User avatar"
-                  })
+                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("div", {
+                    className: "status ".concat(online ? 'online' : 'offline')
+                  })]
                 })
               }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
                 className: "message__header-info flex",
@@ -3302,7 +3328,7 @@ var MessageChat = /*#__PURE__*/function (_Component) {
                     })
                   }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("span", {
                     className: "message__header-online",
-                    children: "Was online today at 14:37"
+                    children: online ? 'Online' : 'Offline'
                   })]
                 }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
                   className: "message__header-actions flex_center_space-between",
@@ -3710,6 +3736,7 @@ var Message = /*#__PURE__*/function (_Component) {
         }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_message_chat__WEBPACK_IMPORTED_MODULE_1__["default"], {
           url_user_id: url_user_id,
           cur_user_id: cur_user_id,
+          usersOnline: usersOnline,
           newMessagesData: newMessagesData
         })]
       });

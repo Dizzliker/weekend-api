@@ -13,6 +13,7 @@ export default class Message extends Component {
                          newMessagesData = {newMessagesData} />
             <MessageChat url_user_id = {url_user_id}
                          cur_user_id = {cur_user_id}
+                         usersOnline = {usersOnline}
                          newMessagesData = {newMessagesData} />
         </div>
         );
