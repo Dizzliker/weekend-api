@@ -23,8 +23,8 @@ class PostResource extends JsonResource
             'i_like' => $this->i_like ? $this->i_like : 0,
             'reposts' => $this->reposts ? $this->reposts : 0,
             'comments' => $this->comments ? $this->comments : 0,
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
+            'created_at' => Carbon::parse($this->created_at)->format('d.m.Y H:i'),
+            'updated_at' => Carbon::parse($this->updated_at)->format('d.m.Y H:i'),
         ];
     }
 }

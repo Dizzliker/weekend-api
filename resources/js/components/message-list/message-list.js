@@ -27,7 +27,7 @@ export default class MessageList extends Component {
             const lastIndex = +this.props.newMessagesData.length - 1;
             const newMessagesData = this.props.newMessagesData[lastIndex];
             const {out_user_id, text} = newMessagesData;
-            if (out_user_id === user.id) {
+            if (out_user_id == user.id) {
                 user.text = this.getCuttedString(text, 13);
                 user.msg_unread_count++;
             }

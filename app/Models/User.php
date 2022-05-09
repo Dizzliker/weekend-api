@@ -81,14 +81,14 @@ class User extends Authenticatable
 
         $this->removeAvatar();
         $filename = Str::random(10) . '.' . $avatar->extension();
-        $avatar->storeAs('img/avatar', $filename);
+        $avatar->storeAs('images/avatars', $filename);
         $this->avatar = $filename;
         $this->save();
     }
 
     public function removeAvatar() {
         if ($this->avatar != null) {
-            Storage::delete('img/avatar/'. $this->avatar);
+            Storage::delete('images/avatars/'. $this->avatar);
         }
     }
 

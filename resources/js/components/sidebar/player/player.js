@@ -106,12 +106,13 @@ export default class Player extends Component {
                     </div>
     
                     <div className="sidebar__audio-actions flex_center_space-between">
-                        <img src="../images/arrow-left.svg" alt="" />
+                        <img src="../images/arrow-left.svg" alt="" className='cp'/>
+                        {/* class cp - cursor: pointer */}
                         {paused ? 
-                        <img src="/images/arrow-right.svg" alt="Play" width="20" height="20" onClick={this.togglePlay} /> :
-                        <img src="/images/pause.svg" alt="Pause" onClick={this.togglePlay}/>}
+                        <img src="/images/arrow-right.svg" className='cp' width="20" height="20" onClick={this.togglePlay} alt="Play"/> :
+                        <img src="/images/pause.svg" onClick={this.togglePlay} className='cp' alt="Pause"/>}
                         
-                        <img src="../images/arrow-right.svg" alt="" />
+                        <img src="../images/arrow-right.svg" alt="" className='cp'/>
                     </div>
                 </div>
                 <div className="sidebar__audio-duration flex_column ai_flex-end">

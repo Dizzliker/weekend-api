@@ -27,9 +27,11 @@ class MessageApiController extends Controller
             'read' => false,
         ]);
 
-        PrivateMessageSent::dispatch($message);
+        $messageResource = new MessageResource($message);
 
-        return new MessageResource($message);
+        PrivateMessageSent::dispatch($messageResource);
+
+        return $messageResource;
     }
 
     public function getCountMessages($id) {
@@ -42,15 +44,14 @@ class MessageApiController extends Controller
             'inc_user_id' => 'required',
         ]);
 
-        $affected = DB::table('messages')->where([
+        DB::table('messages')->where([
             ['out_user_id', '=', $fields['inc_user_id']],
             ['inc_user_id', '=', $fields['out_user_id']],
             ['read', '=', 0]
         ])->update(['read' => 1]);
 
-        if ($affected) {
-            return response(['success' => true]);
-        }
+        
+        return response(['success' => true]);
     }
 
     public function getChatList($id) {

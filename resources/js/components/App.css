@@ -259,6 +259,10 @@ input::placeholder {
   background-color: var(--light-gray);
 }
 
+.cp {
+  cursor: pointer;
+}
+
 .cur_pointer {
   cursor: pointer;
 }

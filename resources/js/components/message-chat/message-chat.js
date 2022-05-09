@@ -94,7 +94,7 @@ export default class MessageChat extends Component {
         if (snapshot !== null) {
             const list = this.chatBox.current;
             list.scrollTop = list.scrollHeight - snapshot;
-          }
+        }
     }
 
     getFormData = () => {
@@ -119,7 +119,6 @@ export default class MessageChat extends Component {
             .then(res => {
                 if (res) {
                     this.setState({text: '', chat: [...this.state.chat, res]});
-                    this.scrollChatToBottom();
                 }
             })
             .catch(error => {
