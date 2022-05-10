@@ -3516,25 +3516,35 @@ var MessageList = /*#__PURE__*/function (_Component) {
 
     _this = _super.call(this, props);
 
-    _defineProperty(_assertThisInitialized(_this), "updateOnlineStatus", function (users) {
-      var chatList = users.map(function (user) {
-        if (_this.props.usersOnline.includes(user.id)) {
-          user.online = true;
-        }
+    _defineProperty(_assertThisInitialized(_this), "updateOnlineStatus", function () {
+      if (_this.state.chatList.length > 0) {
+        var chatList = _this.state.chatList.map(function (user) {
+          var onlineStatus = false;
 
-        return user;
-      });
+          if (_this.props.usersOnline.includes(user.id)) {
+            onlineStatus = true;
+          }
 
-      _this.setState({
-        chatList: chatList
-      });
+          user.online = onlineStatus;
+          return user;
+        });
+
+        _this.setState({
+          chatList: chatList
+        });
+      }
     });
 
     _defineProperty(_assertThisInitialized(_this), "updateChatList", function () {
       if (_this.props.cur_user_id) {
         _this.chatService.getChatList(_this.props.cur_user_id).then(function (res) {
           if (res.users) {
-            _this.updateOnlineStatus(res.users);
+            _this.setState({
+              chatList: res.users,
+              firstReload: true
+            });
+
+            _this.updateOnlineStatus();
           }
         })["catch"](function (error) {
           console.warn(error);
@@ -3543,7 +3553,8 @@ var MessageList = /*#__PURE__*/function (_Component) {
     });
 
     _this.state = {
-      chatList: []
+      chatList: [],
+      firstReload: false
     };
     _this.chatService = new _services_Chat__WEBPACK_IMPORTED_MODULE_1__.ChatService();
     return _this;
@@ -3588,8 +3599,12 @@ var MessageList = /*#__PURE__*/function (_Component) {
   }, {
     key: "componentDidUpdate",
     value: function componentDidUpdate(prevProps) {
-      if ((prevProps.cur_user_id != this.props.cur_user_id || prevProps.usersOnline.length != this.props.usersOnline.length) && this.props.usersOnline.length > 0) {
+      if (prevProps.cur_user_id != this.props.cur_user_id) {
         this.updateChatList();
+      }
+
+      if (prevProps.usersOnline.length != this.props.usersOnline.length) {
+        this.updateOnlineStatus();
       }
 
       if (prevProps.newMessagesData.length != this.props.newMessagesData.length) {

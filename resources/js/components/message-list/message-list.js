@@ -7,6 +7,7 @@ export default class MessageList extends Component {
         super(props);
         this.state = {
             chatList: [],
+            firstReload: false,
         };
         this.chatService = new ChatService();
     }
@@ -36,14 +37,18 @@ export default class MessageList extends Component {
         this.setState({chatList});
     }
 
-    updateOnlineStatus = (users) => {
-        const chatList = users.map(user => {
-            if (this.props.usersOnline.includes(user.id)) {
-                user.online = true;
-            }
-            return user;
-        });
-        this.setState({chatList});
+    updateOnlineStatus = () => {
+        if (this.state.chatList.length > 0) {
+            const chatList = this.state.chatList.map(user => {
+                let onlineStatus = false;
+                if (this.props.usersOnline.includes(user.id)) {
+                    onlineStatus = true;
+                }
+                user.online = onlineStatus;
+                return user;
+            });
+            this.setState({chatList});
+        }
     }
 
     updateChatList = () => {
@@ -51,7 +56,8 @@ export default class MessageList extends Component {
             this.chatService.getChatList(this.props.cur_user_id)
                 .then(res => {
                     if (res.users) {
-                        this.updateOnlineStatus(res.users);
+                        this.setState({chatList: res.users, firstReload: true});
+                        this.updateOnlineStatus();
                     }
                 })
                 .catch(error => {
@@ -61,10 +67,11 @@ export default class MessageList extends Component {
     }
 
     componentDidUpdate(prevProps) {
-        if (((prevProps.cur_user_id != this.props.cur_user_id)
-        || (prevProps.usersOnline.length != this.props.usersOnline.length))
-        && this.props.usersOnline.length > 0) {
+        if (prevProps.cur_user_id != this.props.cur_user_id) {
             this.updateChatList();
+        }
+        if (prevProps.usersOnline.length != this.props.usersOnline.length) {
+            this.updateOnlineStatus();
         }
         if (prevProps.newMessagesData.length != this.props.newMessagesData.length) {
             this.updateLastSentMessage();
