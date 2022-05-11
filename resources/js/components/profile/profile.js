@@ -16,6 +16,7 @@ class Profile extends Component {
             loading: true,
             profile: [],
             messages: [],
+            online: false,
             reload: false,
             popupAddFriend: false,
             popupEditAva: false,
@@ -50,11 +51,23 @@ class Profile extends Component {
             .then(res => {
                 if (res.user) {
                     this.setState({profile: res.user, loading: false});
+                    this.updateOnlineStatus();
                 }
             })
             .catch(error => {
                 console.error(error);
             });
+    }
+
+    updateOnlineStatus() {
+        const {usersOnline, user_id} = this.props;
+        if (usersOnline.length > 0 && user_id) {
+            let online = false;
+            if (usersOnline.includes(+user_id)) {
+                online = true;
+            }
+            this.setState({online});
+        }
     }
 
     componentDidMount() {
@@ -70,11 +83,14 @@ class Profile extends Component {
             this.setState({loading: true, popupEditAva: false, reload: false});
             this.getUserInfo(user_id);
         }
+        if (prevProps.usersOnline.length != this.props.usersOnline.length) {
+            this.updateOnlineStatus();
+        }
     }
 
     render() {
         const {user_id, name, surname, avatar, count_friends, count_photos, is_banned} = this.state.profile;
-        const {loading, messages, popupAddFriend, popupEditAva} = this.state;
+        const {loading, messages, popupAddFriend, popupEditAva, online} = this.state;
 
         return(
             <>
@@ -119,8 +135,8 @@ class Profile extends Component {
                     <div className="profile__name-container flex_center_space-between">
                         <h1 className="profile__username">{name} {surname}</h1>
                         <div className="online-status flex_center_space-between">
-                            <div className="online-circle"></div>
-                            <span className="online-text">Online</span>
+                            <div className={`status ${online ? 'online' : 'offline'}`}></div>
+                            <span className="online-text">{online ? 'Online' : 'Offline'}</span>
                         </div>
                     </div>
                     <div className="profile__user-status flex ai_center">

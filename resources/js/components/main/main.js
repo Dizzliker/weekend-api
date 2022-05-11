@@ -94,7 +94,8 @@ export default class Main extends Component {
                              countMessages = {countMessages}/>
                     <Routes>
                         <Route path="*"            element={<Redirect cur_user_id={id}/>}/>
-                        <Route path="profile/:id"  element={<ProfileContainer user={user}/>}/>
+                        <Route path="profile/:id"  element={<ProfileContainer user={user} 
+                                                                              usersOnline = {usersOnline}/>}/>
                         <Route path="messages/:id" element={<MessageContainer countMessages = {countMessages} 
                                                                               usersOnline = {usersOnline}
                                                                               newMessagesData = {newMessagesData}

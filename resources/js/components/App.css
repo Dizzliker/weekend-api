@@ -768,11 +768,19 @@ a {
   width: 45px;
 }
 
-.profile .profile__user-info .profile__name-container .online-status .online-circle {
-  width: 5px;
-  height: 5px;
+.profile .profile__user-info .profile__name-container .online-status .status {
+  position: static;
+  width: 9px;
+  height: 9px;
   border-radius: 50%;
+}
+
+.profile .profile__user-info .profile__name-container .online-status .status.online {
   background-color: var(--online-status);
+}
+
+.profile .profile__user-info .profile__name-container .online-status .status.offline {
+  background-color: var(--offline-status);
 }
 
 .profile .profile__user-info .profile__name-container .online-status .online-text {
