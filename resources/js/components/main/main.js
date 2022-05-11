@@ -67,24 +67,26 @@ export default class Main extends Component {
                 if (request.user_id) {
                     this.setState({countFriendRequests: this.state.countFriendRequests+1});
                 }
-              })
+              });
+    }
+
+    listenAllChannels(userId) {
+        this.listenMessageChannel(userId);
+        this.listenOnlineUsers();
+        this.listenFriendRequests(userId);
     }
 
     componentDidMount() {
       const {id} = this.props.user;
       if (id) {
-        this.listenMessageChannel(id);
-        this.listenOnlineUsers();
-        this.listenFriendRequests(id);
+        this.listenAllChannels(id);
       }         
     }
 
     componentDidUpdate(prevProps) {
       const {id} = this.props.user;
         if (prevProps.user.id != this.props.user.id) {
-            this.listenMessageChannel(id);
-            this.listenOnlineUsers();
-            this.listenFriendRequests(id);
+            this.listenAllChannels(id);
         }
     }
 

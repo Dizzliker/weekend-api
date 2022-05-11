@@ -664,6 +664,7 @@ a {
   padding: 30px 0 0 30px;
   background-color: var(--white);
   overflow: auto;
+  scrollbar-width: thin;
 }
 
 .profile .profile__user-avatar {
@@ -1177,6 +1178,7 @@ a {
   height: 100%;
   padding: 0 25px;
   overflow-y: auto;
+  scrollbar-width: thin;
 }
 
 .message .message__chat-container .message__chat-header .message__header-info .message__header-user .message__header-online {
@@ -1294,6 +1296,7 @@ a {
 }
 
 .friend .friend__friend-list {
+  scrollbar-width: thin;
   width: 620px;
 }
 

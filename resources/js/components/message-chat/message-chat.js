@@ -54,9 +54,9 @@ export default class MessageChat extends Component {
       }
 
     updateAfterNewMessage() {
-        const lastIndex = +this.props.newMessagesData.length - 1;
-        if (this.props.newMessagesData[lastIndex].out_user_id == this.props.url_user_id) {
-            const {newMessagesData} = this.props;
+        const {newMessagesData} = this.props;
+        const lastIndex = +newMessagesData.length - 1;
+        if (newMessagesData[lastIndex].out_user_id == this.props.url_user_id) {
             const newMessage = newMessagesData[+newMessagesData.length - 1];
             if (newMessage) {
                 this.setState({chat: [...this.state.chat, newMessage]});
