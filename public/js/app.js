@@ -2639,8 +2639,19 @@ var Main = /*#__PURE__*/function (_Component) {
       });
     });
 
+    _defineProperty(_assertThisInitialized(_this), "listenFriendRequests", function (id) {
+      window.Echo["private"]('friend-requests.' + id).listen('FriendRequestSent', function (request) {
+        if (request.user_id) {
+          _this.setState({
+            countFriendRequests: _this.state.countFriendRequests + 1
+          });
+        }
+      });
+    });
+
     _this.state = {
       countNewMessages: 0,
+      countFriendRequests: 0,
       newMessagesData: [],
       usersOnline: []
     };
@@ -2655,6 +2666,7 @@ var Main = /*#__PURE__*/function (_Component) {
       if (id) {
         this.listenMessageChannel(id);
         this.listenOnlineUsers();
+        this.listenFriendRequests(id);
       }
     }
   }, {
@@ -2665,18 +2677,19 @@ var Main = /*#__PURE__*/function (_Component) {
       if (prevProps.user.id != this.props.user.id) {
         this.listenMessageChannel(id);
         this.listenOnlineUsers();
+        this.listenFriendRequests(id);
       }
     }
   }, {
     key: "render",
     value: function render() {
-      var _this$props = this.props,
-          user = _this$props.user,
-          countFriendRequests = _this$props.countFriendRequests;
+      var user = this.props.user;
       var _this$state = this.state,
           newMessagesData = _this$state.newMessagesData,
-          usersOnline = _this$state.usersOnline;
-      var countMessages = +this.props.countMessages + this.state.countNewMessages;
+          usersOnline = _this$state.usersOnline,
+          countNewMessages = _this$state.countNewMessages;
+      var countFriendRequests = +this.props.countFriendRequests + this.state.countFriendRequests;
+      var countMessages = +this.props.countMessages + countNewMessages;
       var id = user.id,
           is_admin = user.is_admin;
       var bgStyle = {

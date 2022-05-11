@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Events\FriendRequestSent;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
@@ -35,24 +36,29 @@ class FriendApiController extends Controller
             'user_id' => 'integer|required',
             'friend_id' => 'integer|required',
         ]);
-        $is_friends = DB::select(
+        $isFriends = DB::select(
             'select (case when f.status = 0
-                         then "Friend request already sent"
-                         when f.status = 1
-                         then "Unable to send request, you are already friends"
-                    end) message    
+                          then "Friend request already sent"
+                          when f.status = 1
+                          then "Unable to send request, you are already friends"
+                    end) message
               from friends f
              where (f.user_id = '.$fields['user_id'].' and f.friend_id = '.$fields['friend_id'].')
                 or (f.user_id = '.$fields['friend_id'].' and f.friend_id = '.$fields['user_id'].')'
-        );
-        if ($is_friends) {
-            return response(['messages' => [$is_friends[0]->message]]);
+          );
+
+        if ($isFriends) {
+            return response(['messages' => [$isFriends[0]->message]]);
         }
+
         DB::table('friends')->insert([
             'user_id' => $fields['user_id'],
             'friend_id' => $fields['friend_id'],
             'status' => false,
         ]);
+
+        FriendRequestSent::dispatch($fields['friend_id']);
+
         return response(['success' => true, 'messages' => ['Friend request sent successfully']]);
     }
 

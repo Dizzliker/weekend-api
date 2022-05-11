@@ -19,6 +19,7 @@ export default class Main extends Component {
         super(props);
         this.state = {
             countNewMessages: 0,
+            countFriendRequests: 0,
             newMessagesData: [],
             usersOnline: [],
         }
@@ -47,17 +48,26 @@ export default class Main extends Component {
 
     listenMessageChannel = (id) => {
       window.Echo.private('privatechat.'+id) 
-                 .listen('PrivateMessageSent', (e) => {
-                     if (e.message) {
-                        this.setState({
-                            countNewMessages: this.state.countNewMessages + 1,
-                            newMessagesData: [...this.state.newMessagesData, e.message],
-                        });
-                    }
-                 })
-                 .listenForWhisper('typing', (e) => {
-                     console.log(e);
-                 });
+            .listen('PrivateMessageSent', (e) => {
+                if (e.message) {
+                   this.setState({
+                       countNewMessages: this.state.countNewMessages + 1,
+                       newMessagesData: [...this.state.newMessagesData, e.message],
+                   });
+               }
+            })
+            .listenForWhisper('typing', (e) => {
+                console.log(e);
+            });
+    }
+
+    listenFriendRequests = (id) => {
+        window.Echo.private('friend-requests.'+id)
+              .listen('FriendRequestSent', request => {
+                if (request.user_id) {
+                    this.setState({countFriendRequests: this.state.countFriendRequests+1});
+                }
+              })
     }
 
     componentDidMount() {
@@ -65,6 +75,7 @@ export default class Main extends Component {
       if (id) {
         this.listenMessageChannel(id);
         this.listenOnlineUsers();
+        this.listenFriendRequests(id);
       }         
     }
 
@@ -73,13 +84,15 @@ export default class Main extends Component {
         if (prevProps.user.id != this.props.user.id) {
             this.listenMessageChannel(id);
             this.listenOnlineUsers();
+            this.listenFriendRequests(id);
         }
     }
 
     render() {
-        const {user, countFriendRequests} = this.props;
-        const {newMessagesData, usersOnline} = this.state;
-        const countMessages = +this.props.countMessages + this.state.countNewMessages;
+        const {user} = this.props;
+        const {newMessagesData, usersOnline, countNewMessages} = this.state;
+        const countFriendRequests = +this.props.countFriendRequests + this.state.countFriendRequests;
+        const countMessages = +this.props.countMessages + countNewMessages;
         const {id, is_admin} = user;
         const bgStyle = {
             width: '100%', 
