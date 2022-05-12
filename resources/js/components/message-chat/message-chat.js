@@ -60,6 +60,7 @@ export default class MessageChat extends Component {
             const newMessage = newMessagesData[+newMessagesData.length - 1];
             if (newMessage) {
                 this.setState({chat: [...this.state.chat, newMessage]});
+                this.readMessages();
             }
         }
     }
@@ -76,12 +77,11 @@ export default class MessageChat extends Component {
     }
 
     updateChat = () => {
-        if (this.props.url_user_id != 0 
-        && this.props.cur_user_id) {
+        if (this.props.url_user_id != 0 && this.props.cur_user_id) {
             this.chatService.get(this.getChatUsersId())
                 .then(res => {
                     if (res) {
-                        this.setState({companion: res.user, chat: res.chat, loading: false, read: true});    
+                        this.setState({companion: res.user, chat: res.chat, loading: false});    
                         this.updateOnlineStatus();
                         this.readMessages();
                     }
@@ -132,14 +132,15 @@ export default class MessageChat extends Component {
         event.preventDefault();
         if (this.state.text.trim() != '') {
             this.chatService.sendMessage(this.getFormData())
-            .then(res => {
-                if (res) {
-                    this.setState({text: '', chat: [...this.state.chat, res]});
-                }
-            })
-            .catch(error => {
-                console.warn(error);
-            });
+                .then(res => {
+                    if (res.message) {
+                        this.setState({text: '', chat: [...this.state.chat, res.message]});
+                        this.props.updateAfterOutMessage(res.message);
+                    }
+                })
+                .catch(error => {
+                    console.warn(error);
+                });
         }
     }
 

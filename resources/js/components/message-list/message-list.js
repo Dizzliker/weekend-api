@@ -17,10 +17,24 @@ export default class MessageList extends Component {
     }
 
     getCuttedString(str, cutToNumber) {
-        if (str.length >= +cutToNumber) {
+        if (str.length > +cutToNumber) {
             return str.substring(0, +cutToNumber)+'...';
         }
         return str;
+    }
+
+    updateAfterOutMessage() {
+        const {newOutMessage} = this.props;
+        if (newOutMessage) {
+            const chatList = this.state.chatList.map(user => {
+                const {inc_user_id, text} = newOutMessage;
+                if (inc_user_id == user.id) {
+                    user.text = 'You: '+this.getCuttedString(text, 9);
+                }
+                return user;
+            });
+            this.setState({chatList});
+        }
     }
 
     updateLastSentMessage() {
@@ -29,7 +43,7 @@ export default class MessageList extends Component {
             const newMessagesData = this.props.newMessagesData[lastIndex];
             const {out_user_id, text} = newMessagesData;
             if (out_user_id == user.id) {
-                user.text = this.getCuttedString(text, 13);
+                user.text = this.getCuttedString(text, 14);
                 user.msg_unread_count++;
             }
             return user;
@@ -75,6 +89,9 @@ export default class MessageList extends Component {
         }
         if (prevProps.newMessagesData.length != this.props.newMessagesData.length) {
             this.updateLastSentMessage();
+        }
+        if (prevProps.newOutMessage != this.props.newOutMessage) {
+            this.updateAfterOutMessage();
         }
     }
 

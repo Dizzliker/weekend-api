@@ -1078,6 +1078,7 @@ a {
 
 .message .message__user-list .message__user-body .message__user-container .message__user-info .message__name-container {
   display: flex;
+  justify-content: center;
   flex-direction: column;
 }
 

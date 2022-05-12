@@ -31,7 +31,7 @@ class MessageApiController extends Controller
 
         PrivateMessageSent::dispatch($messageResource);
 
-        return $messageResource;
+        return response(['message' => $messageResource]);
     }
 
     public function getCountMessages($id) {
@@ -76,7 +76,10 @@ class MessageApiController extends Controller
             (select (case when m.inc_user_id = '.$id.' then m.out_user_id
                           when m.out_user_id = '.$id.' then m.inc_user_id
                     end) user_id,
-                    (case when length(m.text > 20) then concat(substring(m.text, 1, 14), "...")
+                    (case when (length(m.text) > 14 and m.out_user_id = '.$id.')
+                            then concat("You: ", substring(m.text, 1, 9), "...")
+                          when (length(m.text) > 14)
+                            then concat(substring(m.text, 1, 13), "...")
                           else m.text
                      end) text,
                     m.created_at
