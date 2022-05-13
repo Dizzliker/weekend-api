@@ -63,8 +63,10 @@ export default class PostList extends Component {
     }
 
     componentDidUpdate(prevProps) {
-        if (this.props.user_id != prevProps.user_id) {
-            this.listenUpdatePosts(this.props.user_id);
+        const {user_id} = this.props;
+        if (prevProps.user_id != user_id) {
+            this.updatePosts();
+            this.listenUpdatePosts(user_id);
         }
     }
 

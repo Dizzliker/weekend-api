@@ -79,13 +79,23 @@ var App = /*#__PURE__*/function (_Component) {
 
     _this = _super.call(this, props);
     _this.state = {
-      user: {}
+      user: {},
+      countFriendRequests: 0,
+      countMessages: 0
     };
     _this.user = new _services_User__WEBPACK_IMPORTED_MODULE_4__["default"]();
     return _this;
   }
 
   _createClass(App, [{
+    key: "minusReadedMessages",
+    value: function minusReadedMessages(countReadedMessages) {
+      var countMessages = this.state.countMessages - countReadedMessages;
+      this.setState({
+        countMessages: countMessages
+      });
+    }
+  }, {
     key: "updateUserData",
     value: function updateUserData(data) {
       this.setState({
@@ -117,7 +127,10 @@ var App = /*#__PURE__*/function (_Component) {
       return _services_Cookie__WEBPACK_IMPORTED_MODULE_5__["default"].hasToken() ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_8__.jsx)(_main_main__WEBPACK_IMPORTED_MODULE_6__["default"], {
         user: this.state.user,
         countFriendRequests: this.state.countFriendRequests,
-        countMessages: this.state.countMessages
+        countMessages: this.state.countMessages,
+        minusReadedMessages: function minusReadedMessages(count) {
+          _this3.minusReadedMessages(count);
+        }
       }) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_8__.jsx)(_auth_auth__WEBPACK_IMPORTED_MODULE_1__["default"], {
         afterAuth: function afterAuth(res) {
           _this3.updateUserData(res);
@@ -2656,7 +2669,8 @@ var Main = /*#__PURE__*/function (_Component) {
       usersOnline: []
     };
     return _this;
-  }
+  } // Канал со всеми онлайн пользователями, хранит id [1,2]
+
 
   _createClass(Main, [{
     key: "listenAllChannels",
@@ -2664,6 +2678,11 @@ var Main = /*#__PURE__*/function (_Component) {
       this.listenMessageChannel(userId);
       this.listenOnlineUsers();
       this.listenFriendRequests(userId);
+    }
+  }, {
+    key: "minusReadMessages",
+    value: function minusReadMessages(countReadMessages) {
+      this.setState({});
     }
   }, {
     key: "componentDidMount",
@@ -2686,7 +2705,9 @@ var Main = /*#__PURE__*/function (_Component) {
   }, {
     key: "render",
     value: function render() {
-      var user = this.props.user;
+      var _this$props = this.props,
+          user = _this$props.user,
+          minusReadedMessages = _this$props.minusReadedMessages;
       var _this$state = this.state,
           newMessagesData = _this$state.newMessagesData,
           usersOnline = _this$state.usersOnline,
@@ -2727,6 +2748,7 @@ var Main = /*#__PURE__*/function (_Component) {
                 countMessages: countMessages,
                 usersOnline: usersOnline,
                 newMessagesData: newMessagesData,
+                minusReadedMessages: minusReadedMessages,
                 cur_user_id: id
               })
             }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_13__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_14__.Route, {
@@ -3112,7 +3134,12 @@ var MessageChat = /*#__PURE__*/function (_Component) {
     });
 
     _defineProperty(_assertThisInitialized(_this), "updateChat", function () {
-      if (_this.props.url_user_id != 0 && _this.props.cur_user_id) {
+      var _this$props = _this.props,
+          url_user_id = _this$props.url_user_id,
+          cur_user_id = _this$props.cur_user_id,
+          readAllMessagesInChatList = _this$props.readAllMessagesInChatList;
+
+      if (url_user_id != 0 && cur_user_id) {
         _this.chatService.get(_this.getChatUsersId()).then(function (res) {
           if (res) {
             _this.setState({
@@ -3121,9 +3148,15 @@ var MessageChat = /*#__PURE__*/function (_Component) {
               loading: false
             });
 
-            _this.updateOnlineStatus();
+            _this.updateOnlineStatus(); // Пометиться сообщения как прочитанные в бд
 
-            _this.readMessages();
+
+            _this.readMessages(); // Обнулить сообщения в чат листе
+
+
+            setTimeout(function () {
+              readAllMessagesInChatList(url_user_id);
+            }, 1000);
           }
         })["catch"](function (error) {
           console.warn(error);
@@ -3191,8 +3224,7 @@ var MessageChat = /*#__PURE__*/function (_Component) {
       // Добавляются ли в список новые элементы?
       // Запоминаем значение прокрутки, чтобы использовать его позже.
       if (prevState.chat.length < this.state.chat.length) {
-        var list = this.chatBox.current;
-        return list.scrollHeight - list.scrollTop;
+        return true;
       }
 
       return null;
@@ -3200,7 +3232,10 @@ var MessageChat = /*#__PURE__*/function (_Component) {
   }, {
     key: "updateAfterNewMessage",
     value: function updateAfterNewMessage() {
-      var newMessagesData = this.props.newMessagesData;
+      var _this$props2 = this.props,
+          newMessagesData = _this$props2.newMessagesData,
+          url_user_id = _this$props2.url_user_id,
+          readAllMessagesInChatList = _this$props2.readAllMessagesInChatList;
       var lastIndex = +newMessagesData.length - 1;
 
       if (newMessagesData[lastIndex].out_user_id == this.props.url_user_id) {
@@ -3209,17 +3244,22 @@ var MessageChat = /*#__PURE__*/function (_Component) {
         if (newMessage) {
           this.setState({
             chat: [].concat(_toConsumableArray(this.state.chat), [newMessage])
-          });
-          this.readMessages();
+          }); // Пометиться сообщения как прочитанные в бд
+
+          this.readMessages(); // Обнулить сообщения в чат листе
+
+          setTimeout(function () {
+            readAllMessagesInChatList(url_user_id);
+          }, 1000);
         }
       }
     }
   }, {
     key: "updateOnlineStatus",
     value: function updateOnlineStatus() {
-      var _this$props = this.props,
-          usersOnline = _this$props.usersOnline,
-          url_user_id = _this$props.url_user_id;
+      var _this$props3 = this.props,
+          usersOnline = _this$props3.usersOnline,
+          url_user_id = _this$props3.url_user_id;
       var online = false;
 
       if (usersOnline.length > 0 && url_user_id) {
@@ -3254,7 +3294,7 @@ var MessageChat = /*#__PURE__*/function (_Component) {
 
       if (snapshot !== null) {
         var list = this.chatBox.current;
-        list.scrollTop = list.scrollHeight - snapshot;
+        list.scrollTop = list.scrollHeight;
       }
     }
   }, {
@@ -3460,7 +3500,8 @@ var MessageContainer = function MessageContainer(_ref) {
   var usersOnline = _ref.usersOnline,
       cur_user_id = _ref.cur_user_id,
       newMessagesData = _ref.newMessagesData,
-      countMessages = _ref.countMessages;
+      countMessages = _ref.countMessages,
+      minusReadedMessages = _ref.minusReadedMessages;
 
   var _useParams = (0,react_router_dom__WEBPACK_IMPORTED_MODULE_3__.useParams)(),
       id = _useParams.id;
@@ -3469,6 +3510,7 @@ var MessageContainer = function MessageContainer(_ref) {
     cur_user_id: cur_user_id,
     url_user_id: id,
     usersOnline: usersOnline,
+    minusReadedMessages: minusReadedMessages,
     countMessages: countMessages,
     newMessagesData: newMessagesData
   });
@@ -3594,9 +3636,31 @@ var MessageList = /*#__PURE__*/function (_Component) {
       return str;
     }
   }, {
+    key: "readAllMessages",
+    value: function readAllMessages(userId) {
+      var _this2 = this;
+
+      if (userId) {
+        var chatList = this.state.chatList.map(function (user) {
+          if (userId == user.id) {
+            // Вычесть прочитанные сообщения из сайдбара
+            _this2.props.minusReadedMessages(user.msg_unread_count);
+
+            user.msg_unread_count = 0;
+          }
+
+          return user;
+        });
+        this.setState({
+          chatList: chatList
+        });
+        this.props.afterReadMessages();
+      }
+    }
+  }, {
     key: "updateAfterOutMessage",
     value: function updateAfterOutMessage() {
-      var _this2 = this;
+      var _this3 = this;
 
       var newOutMessage = this.props.newOutMessage;
 
@@ -3606,7 +3670,7 @@ var MessageList = /*#__PURE__*/function (_Component) {
               text = newOutMessage.text;
 
           if (inc_user_id == user.id) {
-            user.text = 'You: ' + _this2.getCuttedString(text, 9);
+            user.text = 'You: ' + _this3.getCuttedString(text, 9);
           }
 
           return user;
@@ -3619,16 +3683,16 @@ var MessageList = /*#__PURE__*/function (_Component) {
   }, {
     key: "updateLastSentMessage",
     value: function updateLastSentMessage() {
-      var _this3 = this;
+      var _this4 = this;
 
       var chatList = this.state.chatList.map(function (user) {
-        var lastIndex = +_this3.props.newMessagesData.length - 1;
-        var newMessagesData = _this3.props.newMessagesData[lastIndex];
+        var lastIndex = +_this4.props.newMessagesData.length - 1;
+        var newMessagesData = _this4.props.newMessagesData[lastIndex];
         var out_user_id = newMessagesData.out_user_id,
             text = newMessagesData.text;
 
         if (out_user_id == user.id) {
-          user.text = _this3.getCuttedString(text, 14);
+          user.text = _this4.getCuttedString(text, 14);
           user.msg_unread_count++;
         }
 
@@ -3655,6 +3719,10 @@ var MessageList = /*#__PURE__*/function (_Component) {
 
       if (prevProps.newOutMessage != this.props.newOutMessage) {
         this.updateAfterOutMessage();
+      }
+
+      if (this.props.needRead && this.props.readedUserId) {
+        this.readAllMessages(this.props.readedUserId);
       }
     }
   }, {
@@ -3789,7 +3857,9 @@ var Message = /*#__PURE__*/function (_Component) {
     _this = _super.call.apply(_super, [this].concat(args));
 
     _defineProperty(_assertThisInitialized(_this), "state", {
-      message: null
+      message: null,
+      readedUserId: null,
+      needRead: null
     });
 
     return _this;
@@ -3805,14 +3875,27 @@ var Message = /*#__PURE__*/function (_Component) {
           url_user_id = _this$props.url_user_id,
           newMessagesData = _this$props.newMessagesData,
           countMessages = _this$props.countMessages,
-          usersOnline = _this$props.usersOnline;
+          usersOnline = _this$props.usersOnline,
+          minusReadedMessages = _this$props.minusReadedMessages;
+      var _this$state = this.state,
+          readedUserId = _this$state.readedUserId,
+          needRead = _this$state.needRead,
+          message = _this$state.message;
       return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
         className: "message",
         children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_message_list_message_list__WEBPACK_IMPORTED_MODULE_2__["default"], {
           cur_user_id: cur_user_id,
           usersOnline: usersOnline,
           newMessagesData: newMessagesData,
-          newOutMessage: this.state.message
+          newOutMessage: message,
+          readedUserId: readedUserId,
+          needRead: needRead,
+          minusReadedMessages: minusReadedMessages,
+          afterReadMessages: function afterReadMessages() {
+            _this2.setState({
+              needRead: false
+            });
+          }
         }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_message_chat__WEBPACK_IMPORTED_MODULE_1__["default"], {
           url_user_id: url_user_id,
           cur_user_id: cur_user_id,
@@ -3821,6 +3904,12 @@ var Message = /*#__PURE__*/function (_Component) {
           updateAfterOutMessage: function updateAfterOutMessage(message) {
             _this2.setState({
               message: message
+            });
+          },
+          readAllMessagesInChatList: function readAllMessagesInChatList(userId) {
+            _this2.setState({
+              readedUserId: userId,
+              needRead: true
             });
           }
         })]
@@ -5314,8 +5403,11 @@ var PostList = /*#__PURE__*/function (_Component) {
   }, {
     key: "componentDidUpdate",
     value: function componentDidUpdate(prevProps) {
-      if (this.props.user_id != prevProps.user_id) {
-        this.listenUpdatePosts(this.props.user_id);
+      var user_id = this.props.user_id;
+
+      if (prevProps.user_id != user_id) {
+        this.updatePosts();
+        this.listenUpdatePosts(user_id);
       }
     }
   }, {

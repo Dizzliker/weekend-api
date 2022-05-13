@@ -23,6 +23,21 @@ export default class MessageList extends Component {
         return str;
     }
 
+    readAllMessages(userId) {
+        if (userId) {
+            const chatList = this.state.chatList.map(user => {
+                if (userId == user.id) {
+                    // Вычесть прочитанные сообщения из сайдбара
+                    this.props.minusReadedMessages(user.msg_unread_count);
+                    user.msg_unread_count = 0;
+                }
+                return user;
+            });
+            this.setState({chatList});
+            this.props.afterReadMessages();
+        }
+    }
+
     updateAfterOutMessage() {
         const {newOutMessage} = this.props;
         if (newOutMessage) {
@@ -92,6 +107,9 @@ export default class MessageList extends Component {
         }
         if (prevProps.newOutMessage != this.props.newOutMessage) {
             this.updateAfterOutMessage();
+        }
+        if (this.props.needRead && this.props.readedUserId) {
+            this.readAllMessages(this.props.readedUserId);
         }
     }
 

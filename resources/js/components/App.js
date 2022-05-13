@@ -15,8 +15,15 @@ class App extends Component {
     super(props);
     this.state = {
       user: {},
+      countFriendRequests: 0,
+      countMessages: 0,
     };
     this.user = new User();
+  }
+
+  minusReadedMessages(countReadedMessages) {
+    const countMessages = this.state.countMessages - countReadedMessages;
+    this.setState({countMessages});
   }
 
   updateUserData(data) {
@@ -43,7 +50,8 @@ class App extends Component {
     return Cookie.hasToken() ?
       <Main user = {this.state.user}
             countFriendRequests = {this.state.countFriendRequests}
-            countMessages = {this.state.countMessages}/> 
+            countMessages = {this.state.countMessages}
+            minusReadedMessages = {(count) => {this.minusReadedMessages(count)}}/> 
     : <Auth afterAuth = {(res) => {this.updateUserData(res)}}/>
   }
 }

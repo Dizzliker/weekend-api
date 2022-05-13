@@ -25,6 +25,7 @@ export default class Main extends Component {
         }
     }
 
+    // Канал со всеми онлайн пользователями, хранит id [1,2]
     listenOnlineUsers = () => {
         window.Echo.join('online-users')
               .here(users => {
@@ -46,6 +47,7 @@ export default class Main extends Component {
               })
     }
 
+    // Канал новые сообщений
     listenMessageChannel = (id) => {
       window.Echo.private('privatechat.'+id) 
             .listen('PrivateMessageSent', (e) => {
@@ -61,6 +63,7 @@ export default class Main extends Component {
             });
     }
 
+    // Канал заявок в друзья
     listenFriendRequests = (id) => {
         window.Echo.private('friend-requests.'+id)
               .listen('FriendRequestSent', request => {
@@ -74,6 +77,10 @@ export default class Main extends Component {
         this.listenMessageChannel(userId);
         this.listenOnlineUsers();
         this.listenFriendRequests(userId);
+    }
+
+    minusReadMessages(countReadMessages) {
+        this.setState({})
     }
 
     componentDidMount() {
@@ -91,7 +98,7 @@ export default class Main extends Component {
     }
 
     render() {
-        const {user} = this.props;
+        const {user, minusReadedMessages} = this.props;
         const {newMessagesData, usersOnline, countNewMessages} = this.state;
         const countFriendRequests = +this.props.countFriendRequests + this.state.countFriendRequests;
         const countMessages = +this.props.countMessages + countNewMessages;
@@ -114,6 +121,7 @@ export default class Main extends Component {
                         <Route path="messages/:id" element={<MessageContainer countMessages = {countMessages} 
                                                                               usersOnline = {usersOnline}
                                                                               newMessagesData = {newMessagesData}
+                                                                              minusReadedMessages = {minusReadedMessages}
                                                                               cur_user_id={id}/>}/>
                         <Route path="friends"      element={<Friend cur_user_id = {id}
                                                                     countFriendRequests = {countFriendRequests}/>}/>

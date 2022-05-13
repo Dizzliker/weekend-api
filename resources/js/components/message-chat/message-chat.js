@@ -47,20 +47,24 @@ export default class MessageChat extends Component {
         // Добавляются ли в список новые элементы?
         // Запоминаем значение прокрутки, чтобы использовать его позже.
         if (prevState.chat.length < this.state.chat.length) {
-          const list = this.chatBox.current;
-          return list.scrollHeight - list.scrollTop;
+          return true;
         }
         return null;
       }
 
     updateAfterNewMessage() {
-        const {newMessagesData} = this.props;
+        const {newMessagesData, url_user_id, readAllMessagesInChatList} = this.props;
         const lastIndex = +newMessagesData.length - 1;
         if (newMessagesData[lastIndex].out_user_id == this.props.url_user_id) {
             const newMessage = newMessagesData[+newMessagesData.length - 1];
             if (newMessage) {
                 this.setState({chat: [...this.state.chat, newMessage]});
+                // Пометиться сообщения как прочитанные в бд
                 this.readMessages();
+                // Обнулить сообщения в чат листе
+                setTimeout(() => {
+                    readAllMessagesInChatList(url_user_id);
+                }, 1000);
             }
         }
     }
@@ -73,17 +77,23 @@ export default class MessageChat extends Component {
                 online = true;
             }
         }
-        this.setState({online: online});
+        this.setState({online});
     }
 
     updateChat = () => {
-        if (this.props.url_user_id != 0 && this.props.cur_user_id) {
+        const {url_user_id, cur_user_id, readAllMessagesInChatList} = this.props;
+        if (url_user_id != 0 && cur_user_id) {
             this.chatService.get(this.getChatUsersId())
                 .then(res => {
                     if (res) {
                         this.setState({companion: res.user, chat: res.chat, loading: false});    
                         this.updateOnlineStatus();
+                        // Пометиться сообщения как прочитанные в бд
                         this.readMessages();
+                        // Обнулить сообщения в чат листе
+                        setTimeout(() => {
+                            readAllMessagesInChatList(url_user_id);
+                        }, 1000);
                     }
                 })
                 .catch(error => {
@@ -109,7 +119,7 @@ export default class MessageChat extends Component {
         }
         if (snapshot !== null) {
             const list = this.chatBox.current;
-            list.scrollTop = list.scrollHeight - snapshot;
+            list.scrollTop = list.scrollHeight;
         }
     }
 
