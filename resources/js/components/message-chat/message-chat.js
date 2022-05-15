@@ -71,13 +71,16 @@ export default class MessageChat extends Component {
 
     updateOnlineStatus() {
         const {usersOnline, url_user_id} = this.props;
-        let online = false;
+        let status = false;
         if (usersOnline.length > 0 && url_user_id) {
-            if (usersOnline.includes(+url_user_id)) {
-                online = true;
-            }
+            usersOnline.map((user) => {
+                if (user.id == url_user_id) {
+                    status = true;
+                    return;
+                }
+            });
         }
-        this.setState({online});
+        this.setState({online: status});
     }
 
     updateChat = () => {
@@ -86,7 +89,7 @@ export default class MessageChat extends Component {
             this.chatService.get(this.getChatUsersId())
                 .then(res => {
                     if (res) {
-                        this.setState({companion: res.user, chat: res.chat, loading: false});    
+                        this.setState({companion: res.user, chat: res.chat, loading: false});   
                         this.updateOnlineStatus();
                         // Пометиться сообщения как прочитанные в бд
                         this.readMessages();
@@ -136,6 +139,17 @@ export default class MessageChat extends Component {
           e.preventDefault();
           this.sendMessage(e);
         }
+    }
+
+    typing = () => {
+        const {cur_user_id, url_user_id} = this.props;
+        const channel = window.Echo.join(`chat.${url_user_id}`);
+
+        setTimeout( () => {
+            channel.whisper('typing', {
+            id: cur_user_id
+        })
+        }, 300);
     }
 
     sendMessage = (event) => {
@@ -229,6 +243,7 @@ export default class MessageChat extends Component {
                 <form onSubmit={this.sendMessage} method="post" className="message__form-send-msg flex_center_center">
                     <div className="message__form-container flex ai_center">
                         <textarea name="text" className="message__input-field" 
+                                  onKeyUp={this.typing}
                                   onKeyDown={this.onEnterPress}
                                   value={text} 
                                   onChange={this.handleInputChange} placeholder="Send your message"

@@ -8,12 +8,14 @@ export default class MessageList extends Component {
         this.state = {
             chatList: [],
             firstReload: false,
+            typingUsers: [],
         };
         this.chatService = new ChatService();
     }
 
     componentDidMount() {
         this.updateChatList();
+        this.listenUserTyping();
     }
 
     getCuttedString(str, cutToNumber) {
@@ -66,18 +68,57 @@ export default class MessageList extends Component {
         this.setState({chatList});
     }
 
+    updateTypingStatus(userId) {
+        setTimeout(() => {
+            const typingUsers = this.state.typingUsers.filter(currentUserId => {
+                return currentUserId != userId;
+            });
+            this.setState({typingUsers});
+        }, 3000);
+    }
+
+    listenUserTyping() {
+        const {usersOnline, cur_user_id} = this.props;
+        if (usersOnline.length <= 0) return;
+        window.Echo.join(`chat.${cur_user_id}`)
+            .listenForWhisper('typing', (user) => {
+                const {typingUsers} = this.state;
+                if (typingUsers.length > 0) {
+                    if (!typingUsers.includes(user.id)) {
+                        this.setState({typingUsers: [...typingUsers, user.id]});
+                    }
+                } else {
+                    this.setState({typingUsers: [...typingUsers, user.id]});
+                }
+                this.updateTypingStatus(user.id);
+            });
+    }
+
     updateOnlineStatus = () => {
         if (this.state.chatList.length > 0) {
             const chatList = this.state.chatList.map(user => {
                 let onlineStatus = false;
-                if (this.props.usersOnline.includes(user.id)) {
-                    onlineStatus = true;
-                }
+                this.props.usersOnline.map((currentUser) => {
+                    if (currentUser.id == user.id) {
+                        onlineStatus = true;
+                        return;
+                    }
+                });
                 user.online = onlineStatus;
                 return user;
             });
             this.setState({chatList});
         }
+    }
+
+    checkUserTyping(userId) {
+        const {typingUsers} = this.state;
+        if (typingUsers.length > 0) {
+            if (typingUsers.includes(+userId)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     updateChatList = () => {
@@ -101,6 +142,7 @@ export default class MessageList extends Component {
         }
         if (prevProps.usersOnline.length != this.props.usersOnline.length) {
             this.updateOnlineStatus();
+            this.listenUserTyping();
         }
         if (prevProps.newMessagesData.length != this.props.newMessagesData.length) {
             this.updateLastSentMessage();
@@ -126,7 +168,9 @@ export default class MessageList extends Component {
                             <div className="message__user-info">
                                 <div className="message__name-container">
                                     <span className="message__user-name">{user.name} {user.surname}</span>
-                                    <span className="message__last-message">{user.text}</span>
+                                    {this.checkUserTyping(user.id) ?
+                                      <span className="message__last-message">writing...</span>
+                                    : <span className="message__last-message">{user.text}</span>}
                                 </div>
                                 <div className="flex_column ai_flex-end">
                                     <span className="message__send-time">{user.created_at}</span>

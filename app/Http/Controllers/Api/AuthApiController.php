@@ -26,7 +26,7 @@ class AuthApiController extends Controller
             'email' => $fields['email'],
             'password' => Hash::make($fields['password']),
         ]);
-        if (Auth::guard()->attempt($request->only('email', 'password'))) {
+        if (Auth::guard()->attempt($request->only('email', 'password'), true)) {
             if ($request->hasSession()) {
                 $request->session()->put('auth.password_confirmed_at', time());
             }
@@ -70,7 +70,7 @@ class AuthApiController extends Controller
                 ]
             ], 401);
         }
-        if (Auth::guard()->attempt($request->only('email', 'password'))) {
+        if (Auth::guard()->attempt($request->only('email', 'password'), true)) {
             if ($request->hasSession()) {
                 $request->session()->put('auth.password_confirmed_at', time());
             }

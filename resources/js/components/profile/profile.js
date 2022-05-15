@@ -63,9 +63,12 @@ class Profile extends Component {
         const {usersOnline, user_id} = this.props;
         if (usersOnline.length > 0 && user_id) {
             let online = false;
-            if (usersOnline.includes(+user_id)) {
-                online = true;
-            }
+            usersOnline.map(user => {
+                if (user.id == user_id) {
+                    online = true;
+                    return;
+                }
+            })
             this.setState({online});
         }
     }

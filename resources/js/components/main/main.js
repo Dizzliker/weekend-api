@@ -22,26 +22,22 @@ export default class Main extends Component {
             countFriendRequests: 0,
             newMessagesData: [],
             usersOnline: [],
+            typingUsers: [],
         }
     }
 
-    // Канал со всеми онлайн пользователями, хранит id [1,2]
+    // Канал со всеми онлайн пользователями, хранит id [{id: 1},{id: 2}]
     listenOnlineUsers = () => {
         window.Echo.join('online-users')
               .here(users => {
-                const userIds = users.map(user => {
-                    return user.id;
-                });
-                this.setState({usersOnline: userIds});
+                this.setState({usersOnline: users});
               })
               .joining(user => {
-                const {id} = user;
-                this.setState({usersOnline: [id, ...this.state.usersOnline]});
+                this.setState({usersOnline: [user, ...this.state.usersOnline]});
               })
               .leaving(user => {
-                const {id} = user;
-                const userIds = this.state.usersOnline.filter((currentUserId) => {
-                    return currentUserId != id;
+                const userIds = this.state.usersOnline.filter((currentUser) => {
+                    return currentUser.id != user.id;
                 });
                 this.setState({usersOnline: userIds});
               })
@@ -57,9 +53,6 @@ export default class Main extends Component {
                        newMessagesData: [...this.state.newMessagesData, e.message],
                    });
                }
-            })
-            .listenForWhisper('typing', (e) => {
-                console.log(e);
             });
     }
 
@@ -77,10 +70,6 @@ export default class Main extends Component {
         this.listenMessageChannel(userId);
         this.listenOnlineUsers();
         this.listenFriendRequests(userId);
-    }
-
-    minusReadMessages(countReadMessages) {
-        this.setState({})
     }
 
     componentDidMount() {

@@ -2613,24 +2613,16 @@ var Main = /*#__PURE__*/function (_Component) {
 
     _defineProperty(_assertThisInitialized(_this), "listenOnlineUsers", function () {
       window.Echo.join('online-users').here(function (users) {
-        var userIds = users.map(function (user) {
-          return user.id;
-        });
-
         _this.setState({
-          usersOnline: userIds
+          usersOnline: users
         });
       }).joining(function (user) {
-        var id = user.id;
-
         _this.setState({
-          usersOnline: [id].concat(_toConsumableArray(_this.state.usersOnline))
+          usersOnline: [user].concat(_toConsumableArray(_this.state.usersOnline))
         });
       }).leaving(function (user) {
-        var id = user.id;
-
-        var userIds = _this.state.usersOnline.filter(function (currentUserId) {
-          return currentUserId != id;
+        var userIds = _this.state.usersOnline.filter(function (currentUser) {
+          return currentUser.id != user.id;
         });
 
         _this.setState({
@@ -2647,8 +2639,6 @@ var Main = /*#__PURE__*/function (_Component) {
             newMessagesData: [].concat(_toConsumableArray(_this.state.newMessagesData), [e.message])
           });
         }
-      }).listenForWhisper('typing', function (e) {
-        console.log(e);
       });
     });
 
@@ -2666,10 +2656,11 @@ var Main = /*#__PURE__*/function (_Component) {
       countNewMessages: 0,
       countFriendRequests: 0,
       newMessagesData: [],
-      usersOnline: []
+      usersOnline: [],
+      typingUsers: []
     };
     return _this;
-  } // Канал со всеми онлайн пользователями, хранит id [1,2]
+  } // Канал со всеми онлайн пользователями, хранит id [{id: 1},{id: 2}]
 
 
   _createClass(Main, [{
@@ -2678,11 +2669,6 @@ var Main = /*#__PURE__*/function (_Component) {
       this.listenMessageChannel(userId);
       this.listenOnlineUsers();
       this.listenFriendRequests(userId);
-    }
-  }, {
-    key: "minusReadMessages",
-    value: function minusReadMessages(countReadMessages) {
-      this.setState({});
     }
   }, {
     key: "componentDidMount",
@@ -3180,6 +3166,18 @@ var MessageChat = /*#__PURE__*/function (_Component) {
       }
     });
 
+    _defineProperty(_assertThisInitialized(_this), "typing", function () {
+      var _this$props2 = _this.props,
+          cur_user_id = _this$props2.cur_user_id,
+          url_user_id = _this$props2.url_user_id;
+      var channel = window.Echo.join("chat.".concat(url_user_id));
+      setTimeout(function () {
+        channel.whisper('typing', {
+          id: cur_user_id
+        });
+      }, 300);
+    });
+
     _defineProperty(_assertThisInitialized(_this), "sendMessage", function (event) {
       event.preventDefault();
 
@@ -3232,10 +3230,10 @@ var MessageChat = /*#__PURE__*/function (_Component) {
   }, {
     key: "updateAfterNewMessage",
     value: function updateAfterNewMessage() {
-      var _this$props2 = this.props,
-          newMessagesData = _this$props2.newMessagesData,
-          url_user_id = _this$props2.url_user_id,
-          readAllMessagesInChatList = _this$props2.readAllMessagesInChatList;
+      var _this$props3 = this.props,
+          newMessagesData = _this$props3.newMessagesData,
+          url_user_id = _this$props3.url_user_id,
+          readAllMessagesInChatList = _this$props3.readAllMessagesInChatList;
       var lastIndex = +newMessagesData.length - 1;
 
       if (newMessagesData[lastIndex].out_user_id == this.props.url_user_id) {
@@ -3257,19 +3255,22 @@ var MessageChat = /*#__PURE__*/function (_Component) {
   }, {
     key: "updateOnlineStatus",
     value: function updateOnlineStatus() {
-      var _this$props3 = this.props,
-          usersOnline = _this$props3.usersOnline,
-          url_user_id = _this$props3.url_user_id;
-      var online = false;
+      var _this$props4 = this.props,
+          usersOnline = _this$props4.usersOnline,
+          url_user_id = _this$props4.url_user_id;
+      var status = false;
 
       if (usersOnline.length > 0 && url_user_id) {
-        if (usersOnline.includes(+url_user_id)) {
-          online = true;
-        }
+        usersOnline.map(function (user) {
+          if (user.id == url_user_id) {
+            status = true;
+            return;
+          }
+        });
       }
 
       this.setState({
-        online: online
+        online: status
       });
     }
   }, {
@@ -3423,6 +3424,7 @@ var MessageChat = /*#__PURE__*/function (_Component) {
               children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("textarea", {
                 name: "text",
                 className: "message__input-field",
+                onKeyUp: this.typing,
                 onKeyDown: this.onEnterPress,
                 value: text,
                 onChange: this.handleInputChange,
@@ -3537,6 +3539,18 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
 function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
 
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
@@ -3582,9 +3596,12 @@ var MessageList = /*#__PURE__*/function (_Component) {
         var chatList = _this.state.chatList.map(function (user) {
           var onlineStatus = false;
 
-          if (_this.props.usersOnline.includes(user.id)) {
-            onlineStatus = true;
-          }
+          _this.props.usersOnline.map(function (currentUser) {
+            if (currentUser.id == user.id) {
+              onlineStatus = true;
+              return;
+            }
+          });
 
           user.online = onlineStatus;
           return user;
@@ -3615,7 +3632,8 @@ var MessageList = /*#__PURE__*/function (_Component) {
 
     _this.state = {
       chatList: [],
-      firstReload: false
+      firstReload: false,
+      typingUsers: []
     };
     _this.chatService = new _services_Chat__WEBPACK_IMPORTED_MODULE_1__.ChatService();
     return _this;
@@ -3625,6 +3643,7 @@ var MessageList = /*#__PURE__*/function (_Component) {
     key: "componentDidMount",
     value: function componentDidMount() {
       this.updateChatList();
+      this.listenUserTyping();
     }
   }, {
     key: "getCuttedString",
@@ -3703,6 +3722,61 @@ var MessageList = /*#__PURE__*/function (_Component) {
       });
     }
   }, {
+    key: "updateTypingStatus",
+    value: function updateTypingStatus(userId) {
+      var _this5 = this;
+
+      setTimeout(function () {
+        var typingUsers = _this5.state.typingUsers.filter(function (currentUserId) {
+          return currentUserId != userId;
+        });
+
+        _this5.setState({
+          typingUsers: typingUsers
+        });
+      }, 3000);
+    }
+  }, {
+    key: "listenUserTyping",
+    value: function listenUserTyping() {
+      var _this6 = this;
+
+      var _this$props = this.props,
+          usersOnline = _this$props.usersOnline,
+          cur_user_id = _this$props.cur_user_id;
+      if (usersOnline.length <= 0) return;
+      window.Echo.join("chat.".concat(cur_user_id)).listenForWhisper('typing', function (user) {
+        var typingUsers = _this6.state.typingUsers;
+
+        if (typingUsers.length > 0) {
+          if (!typingUsers.includes(user.id)) {
+            _this6.setState({
+              typingUsers: [].concat(_toConsumableArray(typingUsers), [user.id])
+            });
+          }
+        } else {
+          _this6.setState({
+            typingUsers: [].concat(_toConsumableArray(typingUsers), [user.id])
+          });
+        }
+
+        _this6.updateTypingStatus(user.id);
+      });
+    }
+  }, {
+    key: "checkUserTyping",
+    value: function checkUserTyping(userId) {
+      var typingUsers = this.state.typingUsers;
+
+      if (typingUsers.length > 0) {
+        if (typingUsers.includes(+userId)) {
+          return true;
+        }
+      }
+
+      return false;
+    }
+  }, {
     key: "componentDidUpdate",
     value: function componentDidUpdate(prevProps) {
       if (prevProps.cur_user_id != this.props.cur_user_id) {
@@ -3711,6 +3785,7 @@ var MessageList = /*#__PURE__*/function (_Component) {
 
       if (prevProps.usersOnline.length != this.props.usersOnline.length) {
         this.updateOnlineStatus();
+        this.listenUserTyping();
       }
 
       if (prevProps.newMessagesData.length != this.props.newMessagesData.length) {
@@ -3728,6 +3803,8 @@ var MessageList = /*#__PURE__*/function (_Component) {
   }, {
     key: "render",
     value: function render() {
+      var _this7 = this;
+
       var messageList = this.state.chatList.map(function (user) {
         return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
           className: "message__user-body",
@@ -3751,7 +3828,10 @@ var MessageList = /*#__PURE__*/function (_Component) {
                   children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("span", {
                     className: "message__user-name",
                     children: [user.name, " ", user.surname]
-                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("span", {
+                  }), _this7.checkUserTyping(user.id) ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("span", {
+                    className: "message__last-message",
+                    children: "writing..."
+                  }) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("span", {
                     className: "message__last-message",
                     children: user.text
                   })]
@@ -5744,11 +5824,12 @@ var Profile = /*#__PURE__*/function (_Component) {
 
       if (usersOnline.length > 0 && user_id) {
         var online = false;
-
-        if (usersOnline.includes(+user_id)) {
-          online = true;
-        }
-
+        usersOnline.map(function (user) {
+          if (user.id == user_id) {
+            online = true;
+            return;
+          }
+        });
         this.setState({
           online: online
         });

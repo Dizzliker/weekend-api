@@ -13,6 +13,11 @@ use Illuminate\Support\Facades\Broadcast;
 |
 */
 
+// Отслеживать печатает ли пользователь сообщение
+Broadcast::channel('chat.{user_id}', function ($user) {
+    return ['id' => $user->id];
+});
+
 // Заявки в друзья
 Broadcast::channel('friend-requests.{user_id}', function () {
     return auth()->check();
