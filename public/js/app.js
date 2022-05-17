@@ -3667,8 +3667,6 @@ var MessageList = /*#__PURE__*/function (_Component) {
         var chatList = this.state.chatList.map(function (user) {
           if (userId == user.id) {
             // Вычесть прочитанные сообщения из сайдбара
-            console.log(user.msg_unread_count);
-
             _this2.props.minusReadedMessages(user.msg_unread_count);
 
             user.msg_unread_count = 0;
