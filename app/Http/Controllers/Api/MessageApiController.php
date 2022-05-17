@@ -55,36 +55,42 @@ class MessageApiController extends Controller
     }
 
     public function getChatList($id) {
+        DB::statement( DB::raw( 'SET @row_number := 0'));
         $users = DB::select('
-        select u.id,
-               u.name,
-               u.surname,
-               u.avatar,
-               m.text,
-               (select count(m.id)
-               	  from messages m 
-                 where m.out_user_id = u.id
-                   and m.read = false) msg_unread_count,
-               date_format(m.created_at, "%d.%m.%Y %H:%i") created_at
-          from users u
-               join  
-        (select row_number() over(partition by t.user_id order by t.created_at desc) row_count,
-               t.user_id, 
-               t.text,
-               t.created_at
-          from   
-            (select (case when m.inc_user_id = '.$id.' then m.out_user_id
-                          when m.out_user_id = '.$id.' then m.inc_user_id
-                    end) user_id,
-                    (case when (length(m.text) > 14 and m.out_user_id = '.$id.')
-                            then concat("You: ", substring(m.text, 1, 9), "...")
-                          when (length(m.text) > 14)
-                            then concat(substring(m.text, 1, 13), "...")
-                          else m.text
-                     end) text,
-                    m.created_at
-              from messages m
-             where m.inc_user_id = '.$id.' or m.out_user_id = '.$id.') t) m
+            select u.id,
+                   u.name,
+                   u.surname,
+                   u.avatar,
+                   m.text,
+                   (select count(m.id)
+                     from messages m 
+                    where m.out_user_id = u.id
+                      and m.read = false) msg_unread_count,
+                    date_format(m.created_at, "%d.%m.%Y %H:%i") created_at
+               from users u
+                    join (
+                select @row_number:=CASE
+                    WHEN @customer_no = t.user_id 
+            			THEN @row_number + 1
+                    ELSE 1
+                END AS row_count,
+                @customer_no:=t.user_id user_id,
+                           t.text,
+                           t.created_at
+                      from   
+                        (select (case when m.inc_user_id = '.$id.' then m.out_user_id
+                                      when m.out_user_id = '.$id.' then m.inc_user_id
+                                end) user_id,
+                                (case when (length(m.text) > 14 and m.out_user_id = '.$id.')
+                                        then concat("You: ", substring(m.text, 1, 9), "...")
+                                      when (length(m.text) > 14)
+                                        then concat(substring(m.text, 1, 13), "...")
+                                      else m.text
+                                 end) text,
+                                m.created_at
+                          from messages m
+                         where m.inc_user_id = '.$id.' or m.out_user_id = '.$id.') t
+            order by t.user_id, t.created_at desc) m
             on m.user_id = u.id and m.row_count = 1 
         ');
 

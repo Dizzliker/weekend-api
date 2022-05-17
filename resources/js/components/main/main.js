@@ -13,6 +13,7 @@ import Redirect from '../redirect';
 import Admin from '../admin';
 import Post from '../admin/post';
 import AdminUser from '../admin/user';
+import Notification from '../../services/Notification';
 
 export default class Main extends Component {
     constructor(props) {
@@ -52,6 +53,7 @@ export default class Main extends Component {
                        countNewMessages: this.state.countNewMessages + 1,
                        newMessagesData: [...this.state.newMessagesData, e.message],
                    });
+                   Notification.play();
                }
             });
     }

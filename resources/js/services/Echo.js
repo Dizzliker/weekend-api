@@ -15,13 +15,6 @@ class EchoService {
         window.Pusher = require('pusher-js');
         window.Echo = new Echo(this.#config);
     }
-
-    static listenPrivateChannel(channelName, eventName, action) {
-        window.Echo.private(channelName)
-                   .listen(eventName, () => {
-                       action()
-                   });
-    }
 }
 
 export {EchoService}
