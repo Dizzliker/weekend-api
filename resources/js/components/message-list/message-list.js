@@ -30,7 +30,6 @@ export default class MessageList extends Component {
             const chatList = this.state.chatList.map(user => {
                 if (userId == user.id) {
                     // Вычесть прочитанные сообщения из сайдбара
-                    console.log(user.msg_unread_count);
                     this.props.minusReadedMessages(user.msg_unread_count);
                     user.msg_unread_count = 0;
                 }
