@@ -16,15 +16,15 @@ class PostResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'post_id' => $this->post_id,
+            'post_id' => $this->id,
             'user_id' => $this->user_id,
             'text' => $this->text,
-            'likes' => $this->likes,
-            'i_like' => $this->i_like,
-            'reposts' => $this->reposts,
-            'comments' => $this->comments,
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
+            'likes' => $this->likes ? $this->likes : 0,
+            'i_like' => $this->i_like ? $this->i_like : 0,
+            'reposts' => $this->reposts ? $this->reposts : 0,
+            'comments' => $this->comments ? $this->comments : 0,
+            'created_at' => Carbon::parse($this->created_at)->format('d.m.Y H:i'),
+            'updated_at' => Carbon::parse($this->updated_at)->format('d.m.Y H:i'),
         ];
     }
 }

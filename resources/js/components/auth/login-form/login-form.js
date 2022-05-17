@@ -1,8 +1,7 @@
-import axios from 'axios';
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import Form from '../../../services/Form';
-import Session from '../../../services/Session';
+import Weekend from '../../../services/Weekend';
+import Cookie from '../../../services/Cookie';
 
 export default class LoginForm extends Component {
     constructor(props) {
@@ -12,12 +11,9 @@ export default class LoginForm extends Component {
             email: '',
             password: '',
         };
+        this.form = new Weekend();
         this.handleInputChange = this.handleInputChange.bind(this);
     }
-
-    form = new Form(
-        document.querySelector('.login__form'),
-    );
 
     handleInputChange(event) {
         const target = event.target;
@@ -38,18 +34,18 @@ export default class LoginForm extends Component {
 
     login = (e) => {
         e.preventDefault();
-        this.form.postData('/login', this.getFormData())
-        .then(res => {
-            if (res.user) {
-                Session.fill(res);
-                location.href = `${location.origin}/profile/${Session.getId()}`;
-            } else {
-                this.setState({error: res.errors[Object.keys(res.errors)[0]][0]});
-            }
-        })
-        .catch(error => {
-            console.warn(error);
-        });
+        this.form.postData('/login', this.getFormData(), false)
+            .then(res => {
+                if (res.user) {
+                    Cookie.setToken(res.token);
+                    this.props.afterAuth(res);
+                } else {
+                    this.setState({error: res.errors[Object.keys(res.errors)[0]][0]});
+                }
+            })
+            .catch(error => {
+                console.warn(error);
+            });
     }
 
     render() {

@@ -29,10 +29,10 @@ class ProfileApiController extends Controller
               limit 1       
         ');
 
-        return new ProfileResource($profile[0]);
+        return response(['user' => new ProfileResource($profile[0])]);
     }
 
-    public function change_avatar(Request $request) {
+    public function changeAvatar(Request $request) {
         $fields = $request->validate([
             'user_id' => 'required|integer',
             'avatar' => 'required|image|mimes:jpg,jpeg,png,svg|max:10000',

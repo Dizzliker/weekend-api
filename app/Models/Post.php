@@ -2,8 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Post extends Model
 {
@@ -24,5 +25,14 @@ class Post extends Model
 
     public function user() {
         return $this->hasOne(User::class);
+    }
+
+    public static function getAuthorIdByPostId($post_id) {
+        return DB::select('
+            select p.user_id
+              from posts p
+             where p.id = '.$post_id.'
+            limit 1  
+        ')[0]->user_id;
     }
 }

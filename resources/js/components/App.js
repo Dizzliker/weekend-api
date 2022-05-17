@@ -1,63 +1,58 @@
 import './App.css';
 import Auth from './auth/auth';
-import Main from './main/main';
 import ReactDOM from 'react-dom';
 import { BrowserRouter } from 'react-router-dom';
-import Session from '../services/Session';
 import { Component } from 'react';
-import { FriendService } from '../services/Friend';
-import { ChatService } from '../services/Chat';
+import User from '../services/User';
+import Cookie from '../services/Cookie';
+import Main from './main/main';
+import {EchoService} from '../services/Echo';
+
+EchoService.declareConfig();
 
 class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      countMessages: 0,
+      user: {},
       countFriendRequests: 0,
+      countMessages: 0,
     };
-    this.friend = new FriendService();
-    this.chat = new ChatService();
+    this.user = new User();
   }
 
-  getCountFriendRequests = (id) => {
-    this.friend.getCountRequests(id)
-        .then(res => {
-          if (res.count) {
-            this.setState({countFriendRequests: res.count});
-          }
-        })
-        .catch(error => {
-          console.warn(error);
-        });
+  minusReadedMessages(countReadedMessages) {
+    const countMessages = this.state.countMessages - countReadedMessages;
+    this.setState({countMessages});
   }
 
-  getCountMessages = (id) => {
-    setInterval(() =>{
-      this.chat.getCountMessages(id)
-          .then(res => {
-            if (res) {
-              this.setState({countMessages: res.count});
-            }
-          })
-          .catch(error => {
-            console.warn(error);
-          });
-    }, 3000);
+  updateUserData(data) {
+    this.setState({
+      user: data.user,
+      countFriendRequests: data.count_friend_requests, 
+      countMessages: data.count_unread_messages
+    });
   }
 
   componentDidMount() {
-    if (Session.check()) {
-      const user_id = Session.getId();
-      this.getCountMessages(user_id);
-      this.getCountFriendRequests(user_id);
-    }
+    if (Cookie.hasToken()) {
+      this.user.get().then(res => {
+        if (res) {
+          this.updateUserData(res);
+        }
+      }).catch(error => {
+        console.warn(error);
+      });
+    } 
   }
 
   render() {
-    return Session.check() ? 
-      <Main countFriendRequests = {this.state.countFriendRequests}
-            countMessages = {this.state.countMessages}/> 
-    : <Auth />
+    return Cookie.hasToken() ?
+      <Main user = {this.state.user}
+            countFriendRequests = {this.state.countFriendRequests}
+            countMessages = {this.state.countMessages}
+            minusReadedMessages = {(count) => {this.minusReadedMessages(count)}}/> 
+    : <Auth afterAuth = {(res) => {this.updateUserData(res)}}/>
   }
 }
 

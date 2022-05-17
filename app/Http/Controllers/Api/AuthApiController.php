@@ -3,8 +3,11 @@
 namespace App\Http\Controllers\Api;
 
 use App\Models\User;
+use App\Models\Friend;
+use App\Models\Message;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class AuthApiController extends Controller
@@ -23,6 +26,11 @@ class AuthApiController extends Controller
             'email' => $fields['email'],
             'password' => Hash::make($fields['password']),
         ]);
+        if (Auth::guard()->attempt($request->only('email', 'password'), true)) {
+            if ($request->hasSession()) {
+                $request->session()->put('auth.password_confirmed_at', time());
+            }
+        }
 
         $token = $user->createToken('user_token')->plainTextToken;
 
@@ -62,18 +70,25 @@ class AuthApiController extends Controller
                 ]
             ], 401);
         }
+        if (Auth::guard()->attempt($request->only('email', 'password'), true)) {
+            if ($request->hasSession()) {
+                $request->session()->put('auth.password_confirmed_at', time());
+            }
+        }
 
         $token = $user->createToken('user_token')->plainTextToken;
 
         $response = [
             'user' => $user,
+            'count_unread_messages' => Message::getCountUnreadMessages($user->id),
+            'count_friend_requests' => Friend::getCountFriendRequests($user->id),
             'token' => $token,
         ];
 
         return response($response, 201);
     }
 
-    public function logout(Request $request) {
+    public function logout() {
         auth()->user()->tokens()->delete();
 
         return [

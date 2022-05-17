@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Events\PostDeleted;
+use App\Events\PostLiked;
+use App\Events\PostPublished;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\PostResource;
 use App\Models\Post;
@@ -14,7 +17,7 @@ class PostApiController extends Controller
     public function index($id) {
         $posts = DB::select('
             select u.id user_id,
-                   p.id post_id,
+                   p.id,
                    u.name,
                    u.surname,
                    u.avatar,
@@ -51,7 +54,11 @@ class PostApiController extends Controller
             'text' => $fields['text'],
         ]);
 
-        return new PostResource($post);
+        $postResource = new PostResource($post);
+
+        PostPublished::dispatch($postResource);
+
+        return $postResource;
     }
 
     public function like(Request $request, $id) {
@@ -59,10 +66,12 @@ class PostApiController extends Controller
             'user_id' => 'required|integer',
         ]);
 
-        DB::table('post_likes')->insert([
+        DB::table('post_likes')->updateOrInsert([
             'post_id' => $id,
             'user_id' => $fields['user_id'],
         ]);
+
+        PostLiked::dispatch($id, Post::getAuthorIdByPostId($id), $fields['user_id'], true);
 
         return response(['success' => true]);
     }
@@ -79,12 +88,15 @@ class PostApiController extends Controller
                and post_likes.user_id = '.$fields['user_id'].' 
         ');
 
+        PostLiked::dispatch($id, Post::getAuthorIdByPostId($id), $fields['user_id'], false);
+
         return response(['success' => true]);
     }
 
     public function delete($id) {
         $post = Post::find($id);
         if ($post) {
+            PostDeleted::dispatch(Post::getAuthorIdByPostId($id), $id);
             $post->delete();
             return response(["success" => true], 201);
         }

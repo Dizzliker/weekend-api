@@ -237,16 +237,16 @@ input::placeholder {
 /* Общий стиль для кебаб с 3 точками */
 
 .kebab {
-  width: 5px;
-  height: 20px;
+  width: 4px;
+  height: 18px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
 }
 
 .kebab .circle {
-  width: 5px;
-  height: 5px;
+  width: 4px;
+  height: 4px;
   background-color: var(--black);
   border-radius: 50%;
 }
@@ -257,6 +257,10 @@ input::placeholder {
 
 .kebab.gray .circle {
   background-color: var(--light-gray);
+}
+
+.cp {
+  cursor: pointer;
 }
 
 .cur_pointer {
@@ -656,8 +660,15 @@ a {
 
 .profile {
   width: 920px;
+  height: 100vh;
   padding: 30px 0 0 30px;
   background-color: var(--white);
+  overflow: auto;
+  scrollbar-width: thin;
+}
+
+.profile .profile__user-avatar {
+  position: relative;
 }
 
 .profile .profile__user-avatar .left-circle {
@@ -758,11 +769,19 @@ a {
   width: 45px;
 }
 
-.profile .profile__user-info .profile__name-container .online-status .online-circle {
-  width: 5px;
-  height: 5px;
+.profile .profile__user-info .profile__name-container .online-status .status {
+  position: static;
+  width: 9px;
+  height: 9px;
   border-radius: 50%;
+}
+
+.profile .profile__user-info .profile__name-container .online-status .status.online {
   background-color: var(--online-status);
+}
+
+.profile .profile__user-info .profile__name-container .online-status .status.offline {
+  background-color: var(--offline-status);
 }
 
 .profile .profile__user-info .profile__name-container .online-status .online-text {
@@ -1016,6 +1035,17 @@ a {
   transition: var(--animate-transition);
 }
 
+.message .message__user-list .message__user-body .message_unread-count {
+  width: fit-content;
+  position: relative;
+  padding: 3px 5px;
+  font-size: 12px;
+  font-weight: bold;
+  background-color: var(--purple);
+  color: var(--white);
+  border-radius: 7px;
+}
+
 .message .message__user-list .message__user-body:last-child {
   border-bottom: 1px dashed var(--light-gray);
 }
@@ -1031,16 +1061,24 @@ a {
 }
 
 .message .message__user-list .message__user-body .message__user-container .message__user-ava {
+  position: relative;
   margin-right: 10px;
 }
 
+.message .message__user-list .message__user-body .message__user-container .message__user-ava .status {
+  right: 2px;
+  bottom: 2px;
+}
+
 .message .message__user-list .message__user-body .message__user-container .message__user-info {
+  width: 100%;
   display: flex;
   justify-content: space-between;
 }
 
 .message .message__user-list .message__user-body .message__user-container .message__user-info .message__name-container {
   display: flex;
+  justify-content: center;
   flex-direction: column;
 }
 
@@ -1065,7 +1103,7 @@ a {
   font-weight: 300;
   font-size: 12px;
   color: var(--gray);
-  margin-left: 5px;
+  margin: 0 0 5px 5px;
 }
 
 .message .message__chat-container {
@@ -1102,6 +1140,24 @@ a {
   margin-right: 25px;
 }
 
+.status {
+  width: 12px;
+  height: 12px;
+  border: 1px solid var(--white);
+  border-radius: 50%;
+  position: absolute;
+  right: 0;
+  bottom: 0;
+}
+
+.status.online {
+  background-color: var(--online-status);
+}
+
+.status.offline {
+  background-color: var(--offline-status);
+}
+
 .message .message__chat-header .message__header-ava .online-status {
   width: 13px;
   height: 13px;  
@@ -1123,6 +1179,7 @@ a {
   height: 100%;
   padding: 0 25px;
   overflow-y: auto;
+  scrollbar-width: thin;
 }
 
 .message .message__chat-container .message__chat-header .message__header-info .message__header-user .message__header-online {
@@ -1240,6 +1297,7 @@ a {
 }
 
 .friend .friend__friend-list {
+  scrollbar-width: thin;
   width: 620px;
 }
 

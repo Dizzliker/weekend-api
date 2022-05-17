@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import { FriendService } from '../../services/Friend';
-import Session from '../../services/Session';
 
 export default class RightSide extends Component {
     state = {
@@ -11,31 +10,33 @@ export default class RightSide extends Component {
     request = new FriendService();
 
     updateRequests = () => {
-        this.request.getRequests(Session.getId())
-            .then(res => {
-                if (res) {
-                    this.setState({requests: res.requests, countRequests: res.count});
-                }
-            })
-            .catch(error => {
-                console.warn(error);
-            });
+        if (this.props.cur_user_id) {
+            this.request.getRequests(this.props.cur_user_id)
+                .then(res => {
+                    if (res) {
+                        this.setState({requests: res.requests, countRequests: res.count});
+                    }
+                })
+                .catch(error => {
+                    console.warn(error);
+                });
+        }
     }
 
     componentDidMount() {
         this.updateRequests();
     }
 
-    componentDidUpdate() {
-        if (this.state.reload) {
+    componentDidUpdate(prevProps) {
+        if (this.state.reload || prevProps.cur_user_id != this.props.cur_user_id) {
             this.setState({reload: false});
             this.updateRequests();
         }
     }
 
-    addFriend = (e) => {
+    addFriend = (e, request_id) => {
         e.preventDefault();
-        this.request.addFriend(e.target.querySelector('.request_id').value)
+        this.request.addFriend(request_id)
             .then(res => {
                 if (res) {
                     this.setState({reload: true});
@@ -61,8 +62,7 @@ export default class RightSide extends Component {
                         </Link>
                     </div>
                     <div className="friend__request-actions">
-                        <form onSubmit={this.addFriend} method="get">
-                            <input type="hidden" className="request_id" value={request.request_id} />
+                        <form onSubmit={(e) => {this.addFriend(e, request.request_id)}} method="get">
                             <button className="btn-add-friend">
                                 <img src="../images/plus.svg" className="icon-plus" alt="Add friend" />
                             </button>

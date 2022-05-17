@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import {ProfileService} from '../../services/Profile';
-import Session from '../../services/Session';
 import Popup from '../popup/popup';
 import Spinner from '../spinner';
 import PostForm from './post-list/post-form';
@@ -17,6 +16,7 @@ class Profile extends Component {
             loading: true,
             profile: [],
             messages: [],
+            online: false,
             reload: false,
             popupAddFriend: false,
             popupEditAva: false,
@@ -27,7 +27,7 @@ class Profile extends Component {
     
     getFormData() {
         let formData = new FormData();
-        formData.append('user_id', Session.getId());
+        formData.append('user_id', this.props.user.id);
         formData.append('friend_id', this.props.user_id);
         return formData;
     }
@@ -48,9 +48,10 @@ class Profile extends Component {
 
     getUserInfo = (user_id) => {
         this.user.get(user_id)
-            .then(info => {
-                if (info.data) {
-                    this.setState({profile: info.data, loading: false});
+            .then(res => {
+                if (res.user) {
+                    this.setState({profile: res.user, loading: false});
+                    this.updateOnlineStatus();
                 }
             })
             .catch(error => {
@@ -58,21 +59,25 @@ class Profile extends Component {
             });
     }
 
-    getCountFriends = (user_id) => {
-        this.friend.getCountFriends(user_id)
-            .then(res => {
-                if (res.count) {
-                    this.setState({personalInfo: {countFriends: res.count}});
+    updateOnlineStatus() {
+        const {usersOnline, user_id} = this.props;
+        if (usersOnline.length > 0 && user_id) {
+            let online = false;
+            usersOnline.map(user => {
+                if (user.id == user_id) {
+                    online = true;
+                    return;
                 }
             })
-            .catch(error => {
-                console.warn(error);
-            })
+            this.setState({online});
+        }
     }
 
     componentDidMount() {
         const {user_id} = this.props;
-        this.getUserInfo(user_id);
+        if (user_id) {
+            this.getUserInfo(user_id);
+        }
     }
 
     componentDidUpdate(prevProps) {
@@ -81,11 +86,14 @@ class Profile extends Component {
             this.setState({loading: true, popupEditAva: false, reload: false});
             this.getUserInfo(user_id);
         }
+        if (prevProps.usersOnline.length != this.props.usersOnline.length) {
+            this.updateOnlineStatus();
+        }
     }
 
     render() {
         const {user_id, name, surname, avatar, count_friends, count_photos, is_banned} = this.state.profile;
-        const {loading, messages, popupAddFriend, popupEditAva} = this.state;
+        const {loading, messages, popupAddFriend, popupEditAva, online} = this.state;
 
         return(
             <>
@@ -99,8 +107,9 @@ class Profile extends Component {
             <Popup onClose = {() => this.setState({popupAddFriend: false})}>
                 {messages[0]}
             </Popup>}
-            {(popupEditAva && this.props.user_id == Session.getId()) && 
-            <PopupEditAva onClose={() => this.setState({popupEditAva: false})} 
+            {(popupEditAva && this.props.user_id == this.props.user.id) && 
+            <PopupEditAva cur_user_id = {this.props.user.id}
+                          onClose={() => this.setState({popupEditAva: false})} 
                           afterImgLoaded={() => {this.setState({reload: true})}}></PopupEditAva>}
             <div className="profile flex_column ai_flex-start">
             <div className="profile__user-container flex">
@@ -112,7 +121,7 @@ class Profile extends Component {
                         </span>
                     </Link>
                     <div className="profile__avatar">
-                        {(this.props.user_id == Session.getId()) && 
+                        {(this.props.user_id == this.props.user.id) && 
                         <div className="profile__edit-ava flex_center_center" onClick={() => {this.setState({popupEditAva: true})}}>
                            <span>Click to edit avatar</span>
                         </div>}
@@ -129,8 +138,8 @@ class Profile extends Component {
                     <div className="profile__name-container flex_center_space-between">
                         <h1 className="profile__username">{name} {surname}</h1>
                         <div className="online-status flex_center_space-between">
-                            <div className="online-circle"></div>
-                            <span className="online-text">Online</span>
+                            <div className={`status ${online ? 'online' : 'offline'}`}></div>
+                            <span className="online-text">{online ? 'Online' : 'Offline'}</span>
                         </div>
                     </div>
                     <div className="profile__user-status flex ai_center">
@@ -181,12 +190,11 @@ class Profile extends Component {
                 </div>
             </div>
             <div className="posts">
-                <PostForm user_id = {this.props.user_id} user = {this.state.profile} />
+                <PostForm cur_user_id = {this.props.user.id} user_id = {this.props.user_id} user = {this.state.profile} />
             </div>
         </div> 
             </>}
             </>
-            
         );
     }
 }

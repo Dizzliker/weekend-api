@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { ChatService } from '../../services/Chat';
 import { Link } from 'react-router-dom';
-import Session from '../../services/Session';
 import Spinner from '../spinner';
 
 export default class MessageChat extends Component {
@@ -10,10 +9,14 @@ export default class MessageChat extends Component {
         this.state = {
             loading: true,
             text: '',
-            companion: {},
+            companion: {
+                user_id: undefined,
+                name: 'Not',
+                surname: 'Found',
+                avatar: '/images/Ava.jpg',
+            },
+            online: false,
             chat: [],
-            chatList: [],
-            reload: false,
             read: false,
         };
         this.chatBox = React.createRef();
@@ -23,30 +26,77 @@ export default class MessageChat extends Component {
 
     getChatUsersId = () => {
         let formData = new FormData();
-        formData.append('out_user_id', Session.getId());
-        formData.append('inc_user_id', this.props.user_id);
+        formData.append('out_user_id', this.props.cur_user_id);
+        formData.append('inc_user_id', this.props.url_user_id);
         return formData;
     }
 
-    scrollChatToBottom() {
-        this.chatBox.current.scrollTop = this.chatBox.current.scrollHeight;
+    readMessages = () => {
+        this.chatService.readMessages(this.getChatUsersId())
+            .then(res => {
+                if (res) {
+                    this.setState({read: false});
+                }
+            })
+            .catch(error => {
+               console.warn(error);
+            });
+    }
+
+    getSnapshotBeforeUpdate(prevProps, prevState) {
+        // Добавляются ли в список новые элементы?
+        // Запоминаем значение прокрутки, чтобы использовать его позже.
+        if (prevState.chat.length < this.state.chat.length) {
+          return true;
+        }
+        return null;
+      }
+
+    updateAfterNewMessage() {
+        const {newMessagesData, url_user_id, readAllMessagesInChatList} = this.props;
+        const lastIndex = +newMessagesData.length - 1;
+        if (newMessagesData[lastIndex].out_user_id == this.props.url_user_id) {
+            const newMessage = newMessagesData[+newMessagesData.length - 1];
+            if (newMessage) {
+                this.setState({chat: [...this.state.chat, newMessage]});
+                // Пометиться сообщения как прочитанные в бд
+                this.readMessages();
+                // Обнулить сообщения в чат листе
+                setTimeout(() => {
+                    readAllMessagesInChatList(url_user_id);
+                }, 1000);
+            }
+        }
+    }
+
+    updateOnlineStatus() {
+        const {usersOnline, url_user_id} = this.props;
+        let status = false;
+        if (usersOnline.length > 0 && url_user_id) {
+            usersOnline.map((user) => {
+                if (user.id == url_user_id) {
+                    status = true;
+                    return;
+                }
+            });
+        }
+        this.setState({online: status});
     }
 
     updateChat = () => {
-        if (this.props.user_id != 0) {
+        const {url_user_id, cur_user_id, readAllMessagesInChatList} = this.props;
+        if (url_user_id != 0 && cur_user_id) {
             this.chatService.get(this.getChatUsersId())
                 .then(res => {
                     if (res) {
-                        this.setState({companion: res.user, chat: res.chat, reload: false, loading: false, read: true});
-                        this.props.reloadChatList();
-                        this.scrollChatToBottom(); 
-                        this.chatService.readMessages(this.getChatUsersId())
-                            .then(res => {
-                                this.setState({read: false});
-                            })
-                            .catch(error => {
-                               console.warn(error);
-                            });
+                        this.setState({companion: res.user, chat: res.chat, loading: false});   
+                        this.updateOnlineStatus();
+                        // Пометиться сообщения как прочитанные в бд
+                        this.readMessages();
+                        // Обнулить сообщения в чат листе
+                        setTimeout(() => {
+                            readAllMessagesInChatList(url_user_id);
+                        }, 1000);
                     }
                 })
                 .catch(error => {
@@ -59,32 +109,62 @@ export default class MessageChat extends Component {
         this.updateChat();
     }
 
-    componentDidUpdate(prevProps) {
-        if ((this.props.user_id != prevProps.user_id) || this.state.reload || prevProps.countMessages != this.props.countMessages) {
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        if ((this.props.url_user_id != prevProps.url_user_id)
+        || prevProps.cur_user_id != this.props.cur_user_id) {
             this.updateChat();
+        }
+        if (prevProps.newMessagesData.length != this.props.newMessagesData.length) {
+            this.updateAfterNewMessage();
+        }
+        if (prevProps.usersOnline.length != this.props.usersOnline.length) {
+            this.updateOnlineStatus();
+        }
+        if (snapshot !== null) {
+            const list = this.chatBox.current;
+            list.scrollTop = list.scrollHeight;
         }
     }
 
     getFormData = () => {
         let formData = new FormData();
-        formData.append('out_user_id', Session.getId());
-        formData.append('inc_user_id', this.props.user_id);
+        formData.append('out_user_id', this.props.cur_user_id);
+        formData.append('inc_user_id', this.props.url_user_id);
         formData.append('text', this.state.text);
         return formData;
+    }
+
+    onEnterPress = (e) => {
+        if(e.keyCode == 13 && e.shiftKey == false) {
+          e.preventDefault();
+          this.sendMessage(e);
+        }
+    }
+
+    typing = () => {
+        const {cur_user_id, url_user_id} = this.props;
+        const channel = window.Echo.join(`chat.${url_user_id}`);
+
+        setTimeout( () => {
+            channel.whisper('typing', {
+            id: cur_user_id
+        })
+        }, 300);
     }
 
     sendMessage = (event) => {
         event.preventDefault();
         if (this.state.text.trim() != '') {
             this.chatService.sendMessage(this.getFormData())
-            .then(res => {
-                if (res) {
-                    this.setState({text: '', reload: true});
-                }
-            })
-            .catch(error => {
-                console.warn(error);
-            });
+                .then(res => {
+                    if (res.message) {
+                        this.setState({text: '', chat: [...this.state.chat, res.message]});
+                        this.props.updateAfterOutMessage(res.message);
+                    }
+                })
+                .catch(error => {
+                    console.warn(error);
+                });
         }
     }
 
@@ -97,12 +177,12 @@ export default class MessageChat extends Component {
     }
 
     render() {
-        const {chat, text, loading} = this.state;
+        const {chat, text, loading, online} = this.state;
         const {user_id, name, surname, avatar} = this.state.companion;
         const messageBox = chat.length > 0 ? chat.map(message => {
-            if (message.out_user_id == this.props.user_id) {
+            if (message.out_user_id == this.props.url_user_id) {
                 return (
-                    <div className="message__msg message__msg-incoming" key={message.message_id}>
+                    <div className="message__msg message__msg-incoming" key={message.id}>
                         <Link to={`/profile/${user_id}`}>
                             <img src={avatar} className="ava-35" alt="" />
                         </Link>
@@ -114,7 +194,7 @@ export default class MessageChat extends Component {
                 );
             } else {
                 return (
-                    <div className="message__msg message__msg-outgoing" key={message.message_id}>
+                    <div className="message__msg message__msg-outgoing" key={message.id}>
                         <time className="chat msg-time">{message.created_at}</time>
                         <div className="details">
                             <p className="msg-text">{message.text}</p>
@@ -126,7 +206,7 @@ export default class MessageChat extends Component {
         
         return (
             <>
-            {(this.props.user_id != 0) ?
+            {(this.props.url_user_id != 0) ?
             <div className="message__chat-container flex_column jc_space-between">
                 {loading && <Spinner />}
                 <div className="message__chat-header flex_center_center">
@@ -134,7 +214,7 @@ export default class MessageChat extends Component {
                         <div className="message__header-ava">
                             <Link to={`/profile/${user_id}`}>
                                 <img src={avatar} className="ava-50" alt="User avatar" />
-                                <div className="online-status"></div>
+                                <div className={`status ${online ? 'online' : 'offline'}`}></div>
                             </Link>
                         </div>
                         <div className="message__header-info flex">
@@ -142,7 +222,9 @@ export default class MessageChat extends Component {
                                 <Link to={`/profile/${user_id}`}>
                                     <span className="username">{name} {surname}</span>
                                 </Link>
-                                <span className="message__header-online">Was online today at 14:37</span>
+                                <span className="message__header-online">
+                                    {online ? 'Online' : 'Offline'}
+                                </span>
                             </div>
                             <div className="message__header-actions flex_center_space-between">
                                 <img src="../images/search.svg" className="icon-search" alt="Search" />
@@ -160,7 +242,12 @@ export default class MessageChat extends Component {
                 </div>
                 <form onSubmit={this.sendMessage} method="post" className="message__form-send-msg flex_center_center">
                     <div className="message__form-container flex ai_center">
-                        <textarea name="text" className="message__input-field" value={text} onChange={this.handleInputChange} placeholder="Send your message" id=""></textarea>
+                        <textarea name="text" className="message__input-field" 
+                                  onKeyUp={this.typing}
+                                  onKeyDown={this.onEnterPress}
+                                  value={text} 
+                                  onChange={this.handleInputChange} placeholder="Send your message"
+                                  autoFocus={true} id=""></textarea>
                         
                         <div className="message__form-details flex_center_space-between">
                             <a href="#">

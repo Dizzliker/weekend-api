@@ -6,11 +6,11 @@ class Post extends Weekend {
     }
 
     like = async (id, data) => {
-        return await this.postData(`/post/${id}/like`, data, true);
+        return await this.postData(`/post/${id}/like`, data);
     }
 
     unlike = async (id, data) => {
-        return await this.postData(`/post/${id}/unlike`, data, true);
+        return await this.postData(`/post/${id}/unlike`, data);
     }
 
     delete = async (id) => {

@@ -2,7 +2,7 @@ import Weekend from './Weekend';
 
 class Chat extends Weekend {
     get = async (data) => {
-        return await this.postData('/getChat', data, true);
+        return await this.postData('/getChat', data);
     }
 
     getCountMessages = async (id) => {
@@ -14,11 +14,11 @@ class Chat extends Weekend {
     }
 
     sendMessage = async (data) => {
-        return await this.postData('/sendMessage', data, true);
+        return await this.postData('/sendMessage', data);
     }
 
     readMessages = async (data) => {
-        return await this.postData('/readMessages', data, true);
+        return await this.postData('/readMessages', data);
     }
 }
 

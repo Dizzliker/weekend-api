@@ -6,7 +6,7 @@ class Audio extends Weekend {
     }
 
     addAudio = async (data) => {
-        return await this.postData(`/addAudio`, data, true);
+        return await this.postData(`/addAudio`, data);
     }
 
     savePlayList = (playlist) => {

@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Events\MessageSend;
+use App\Events\PrivateMessageSent;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\MessageResource;
 use App\Http\Resources\UserResource;
 use App\Models\Message;
 use Illuminate\Http\Request;
@@ -10,83 +13,94 @@ use Illuminate\Support\Facades\DB;
 
 class MessageApiController extends Controller
 {
-    public function send_message(Request $request) {
+    public function sendMessage(Request $request) {
         $fields = $request->validate([
-            'out_user_id' => 'required|integer',
-            'inc_user_id' => 'required|integer',
+            'out_user_id' => 'required',
+            'inc_user_id' => 'required',
             'text' => 'required',
         ]);
-
-        return Message::create([
+    
+        $message =  Message::create([
             'out_user_id' => $fields['out_user_id'],
             'inc_user_id' => $fields['inc_user_id'],
             'text' => $fields['text'],
             'read' => false,
         ]);
+
+        $messageResource = new MessageResource($message);
+
+        PrivateMessageSent::dispatch($messageResource);
+
+        return response(['message' => $messageResource]);
     }
 
-    public function get_count_messages($id) {
-        $count = DB::select('
-            select count(*) count
-              from messages m 
-             where m.read = 0
-               and m.inc_user_id = '.$id.' 
-        ');
-
-        return response(['count' => $count[0]->count]);
+    public function getCountMessages($id) {
+        return response(['count' => Message::getCountUnreadMessages($id)]);
     }
 
-    public function read_messages(Request $request) {
+    public function readMessages(Request $request) {
         $fields = $request->validate([
-            'out_user_id' => 'required|integer',
-            'inc_user_id' => 'required|integer',
+            'out_user_id' => 'required',
+            'inc_user_id' => 'required',
         ]);
 
-        $affected = DB::table('messages')->where([
+        DB::table('messages')->where([
             ['out_user_id', '=', $fields['inc_user_id']],
             ['inc_user_id', '=', $fields['out_user_id']],
             ['read', '=', 0]
         ])->update(['read' => 1]);
 
-        if ($affected) {
-            return response(['success' => true]);
-        }
+        
+        return response(['success' => true]);
     }
 
-    public function get_chat_list($id) {
+    public function getChatList($id) {
+        DB::statement( DB::raw( 'SET @row_number := 0'));
         $users = DB::select('
-        select u.id,
-               u.name,
-               u.surname,
-               u.avatar,
-               m.text,
-               date_format(m.created_at, "%d.%m.%Y %H:%i") created_at
-          from users u
-               join  
-        (select row_number() over(partition by t.user_id order by t.created_at desc) row_count,
-               t.user_id, 
-               t.text,
-               t.created_at
-          from   
-            (select (case when m.inc_user_id = '.$id.' then m.out_user_id
-                          when m.out_user_id = '.$id.' then m.inc_user_id
-                    end) user_id,
-                    (case when length(m.text > 110) then concat(substring(m.text, 1, 14), "...")
-                          else m.text
-                     end) text,
-                    m.created_at
-              from messages m
-             where m.inc_user_id = '.$id.' or m.out_user_id = '.$id.') t) m
+            select u.id,
+                   u.name,
+                   u.surname,
+                   u.avatar,
+                   m.text,
+                   (select count(m.id)
+                     from messages m 
+                    where m.out_user_id = u.id
+                      and m.read = false) msg_unread_count,
+                    date_format(m.created_at, "%d.%m.%Y %H:%i") created_at
+               from users u
+                    join (
+                select @row_number:=CASE
+                    WHEN @customer_no = t.user_id 
+            			THEN @row_number + 1
+                    ELSE 1
+                END AS row_count,
+                @customer_no:=t.user_id user_id,
+                           t.text,
+                           t.created_at
+                      from   
+                        (select (case when m.inc_user_id = '.$id.' then m.out_user_id
+                                      when m.out_user_id = '.$id.' then m.inc_user_id
+                                end) user_id,
+                                (case when (length(m.text) > 14 and m.out_user_id = '.$id.')
+                                        then concat("You: ", substring(m.text, 1, 9), "...")
+                                      when (length(m.text) > 14)
+                                        then concat(substring(m.text, 1, 13), "...")
+                                      else m.text
+                                 end) text,
+                                m.created_at
+                          from messages m
+                         where m.inc_user_id = '.$id.' or m.out_user_id = '.$id.') t
+            order by t.user_id, t.created_at desc) m
             on m.user_id = u.id and m.row_count = 1 
         ');
 
         return response(['users' => $users]);
     }
 
-    public function get_chat(Request $request) {
+    public function getChat(Request $request) {
         $fields = $request->validate([
-            'out_user_id' => 'required|integer',
-            'inc_user_id' => 'required|integer',
+            'out_user_id' => 'required',
+            'inc_user_id' => 'required',
         ]);
         
         $user = DB::select('
@@ -100,7 +114,7 @@ class MessageApiController extends Controller
         ');
 
         $chat = DB::select('
-            select m.id message_id,
+            select m.id,
                    m.inc_user_id,
                    m.out_user_id,
                    m.text,
@@ -113,7 +127,7 @@ class MessageApiController extends Controller
 
         return response([
             'user' => new UserResource($user[0]),
-            'chat' => $chat,
+            'chat' => MessageResource::collection($chat),
         ]);
     }
 }

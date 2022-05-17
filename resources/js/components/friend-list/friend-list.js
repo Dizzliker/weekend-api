@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import { FriendService } from '../../services/Friend';
-import Session from '../../services/Session';
 import Spinner from '../spinner';
 
 export default class FriendList extends Component {
@@ -18,23 +17,25 @@ export default class FriendList extends Component {
     }
 
     updateFriendList = () => {
-        this.friend.get(Session.getId())
-            .then(res => {
-                if (res.data) {
-                    this.setState({friends: res.data, loading: false});
-                }
-            })
-            .catch(error => {
-                console.warn(error);
-            });
+        if (this.props.cur_user_id) {
+            this.friend.get(this.props.cur_user_id)
+                .then(res => {
+                    if (res.friends) {
+                        this.setState({friends: res.friends, loading: false});
+                    }
+                })
+                .catch(error => {
+                    console.warn(error);
+                });
+        }
     }
     
     componentDidMount() {
         this.updateFriendList();
     }
 
-    componentDidUpdate() {
-        if (this.props.reload) {
+    componentDidUpdate(prevProps) {
+        if (this.props.reload || prevProps.cur_user_id != this.props.cur_user_id) {
             this.setState({loading: true});
             this.props.afterReload();
             this.updateFriendList();
@@ -43,7 +44,7 @@ export default class FriendList extends Component {
 
     getFormData = () => {
         let formData = new FormData();
-        formData.append("user_id", Session.getId());
+        formData.append("user_id", this.props.cur_user_id);
         formData.append("text", this.state.text);
         return formData;
     }

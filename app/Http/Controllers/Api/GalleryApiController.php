@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\DB;
 
 class GalleryApiController extends Controller
 {
-    public function add_photos(Request $request) {
+    public function addPhotos(Request $request) {
         $fields = $request->validate([
             'user_id' => 'integer|required',
             'images' => 'required|image'
@@ -25,7 +25,7 @@ class GalleryApiController extends Controller
         ]);
     }
 
-    public function gallery($id) {
+    public function getGallery($id) {
         $gallery = DB::select('
             select g.id,
                    g.img

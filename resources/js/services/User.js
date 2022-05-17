@@ -1,8 +1,8 @@
 import Weekend from './Weekend';
 
 export default class User extends Weekend {
-    get = async (id) => {
-        return await this.getData(`/user/${id}`);
+    get = async () => {
+        return await this.getData(`/user`);
     }
 
     getAll = async () => {

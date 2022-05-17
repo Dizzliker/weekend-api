@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import Form from '../../../services/Form';
-import Session from '../../../services/Session';
+import Weekend from '../../../services/Weekend';
+import Cookie from '../../../services/Cookie';
 
 export default class RegisterForm extends Component {
     constructor(props) {
@@ -16,9 +16,7 @@ export default class RegisterForm extends Component {
         this.handleInputChange = this.handleInputChange.bind(this);
     }
     
-    form = new Form(
-        document.querySelector('.register-form'),
-    );
+    form = new Weekend();
 
     handleInputChange(event) {
         const target = event.target;
@@ -41,18 +39,18 @@ export default class RegisterForm extends Component {
     
     register = (e) => {
         e.preventDefault();
-        this.form.postData('/register', this.getFormData())
-        .then(res => {
-            if (res.user) {
-                Session.fill(res);
-                location.href = `${location.origin}/profile/${Session.getId()}`;
-            } else {
-                this.setState({error: res.errors[Object.keys(res.errors)[0]][0]});
-            }
-        })
-        .catch(error => {
-            console.warn(error);
-        });
+        this.form.postData('/register', this.getFormData(), false)
+            .then(res => {
+                if (res.user) {
+                    Cookie.setToken(res.token);
+                    this.props.afterAuth(res);
+                } else {
+                    this.setState({error: res.errors[Object.keys(res.errors)[0]][0]});
+                }
+            })
+            .catch(error => {
+                console.warn(error);
+            });
     }
 
     render() {

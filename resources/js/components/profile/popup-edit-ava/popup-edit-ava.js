@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { ProfileService } from '../../../services/Profile';
-import Session from '../../../services/Session';
 import Popup from '../../popup';
 
 export default class PopupEditAva extends Component {
@@ -12,7 +11,7 @@ export default class PopupEditAva extends Component {
 
     getFormData = () => {
         let formData = new FormData();
-        formData.append("user_id", Session.getId());
+        formData.append("user_id", this.props.cur_user_id);
         formData.append("avatar", this.inputImg.current.files[0]);
         return formData;
     }

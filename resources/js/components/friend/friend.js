@@ -14,8 +14,10 @@ export default class Friend extends Component {
         return (
         <div className="friend">
             <FriendList reload = {this.state.reload}
+                        cur_user_id = {this.props.cur_user_id}
                         afterReload = {() => {this.setState({reload: false})}}/>
             <RightSide afterAcceptRequest = {() => {this.setState({reload: true})}} 
+                       cur_user_id = {this.props.cur_user_id}
                        countRequests = {this.props.countFriendRequests}/>
         </div>
         );
