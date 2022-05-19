@@ -62,10 +62,10 @@ class MessageApiController extends Controller
                    u.surname,
                    u.avatar,
                    m.text,
-                   (select count(m.id)
-                     from messages m 
-                    where m.out_user_id = u.id
-                      and m.read = false) msg_unread_count,
+                   (select count(*)
+                      from messages m 
+                     where m.out_user_id = u.id
+                       and m.read = 0) msg_unread_count,
                     date_format(m.created_at, "%d.%m.%Y %H:%i") created_at
                from users u
                     join (

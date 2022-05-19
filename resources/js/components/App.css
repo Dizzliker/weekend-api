@@ -1035,6 +1035,11 @@ a {
   transition: var(--animate-transition);
 }
 
+.message__user-list .message__chat-list {
+  overflow: auto;
+  scrollbar-width: thin;
+}
+
 .message .message__user-list .message__user-body .message_unread-count {
   width: fit-content;
   position: relative;
