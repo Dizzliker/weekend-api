@@ -18,7 +18,7 @@ class ProfileApiController extends Controller
                    is_banned,
                    (select count(f.id)
                          from friends f
-                        where f.user_id = '.$id.' or f.friend_id = '.$id.'
+                        where (f.user_id = '.$id.' or f.friend_id = '.$id.')
                           and f.status = 1
                    ) count_friends,
                    count(g.id) count_photos

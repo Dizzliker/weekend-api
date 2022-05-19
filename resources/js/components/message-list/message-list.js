@@ -126,7 +126,7 @@ export default class MessageList extends Component {
             this.chatService.getChatList(this.props.cur_user_id)
                 .then(res => {
                     if (res.users) {
-                        this.setState({chatList: res.users, firstReload: true});
+                        this.setState({chatList: [...res.users], firstReload: true});
                         this.updateOnlineStatus();
                     }
                 })
@@ -191,8 +191,10 @@ export default class MessageList extends Component {
                 <div className="search-box">
                     <input type="text" className="input-search" placeholder="Search" />
                     <img src="../images/search.svg" className="icon-search" alt="Search" />
-                </div> 
-                {messageList}
+                </div>
+                <div className="message__chat-list flex_column">
+                    {messageList}
+                </div>
             </div>
         );
     }
