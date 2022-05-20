@@ -214,6 +214,10 @@ input::placeholder {
   justify-content: space-between;
 }
 
+.fw_wrap {
+  flex-wrap: wrap;
+}
+
 .ai_center {
   align-items: center;
 }
@@ -752,6 +756,13 @@ a {
 .profile .profile__user-info {
   width: 470px;
   margin-left: 30px;
+}
+
+.popup__show-friends {
+  width: 400px;
+  max-height: 400px;
+  overflow: auto;
+  scrollbar-width: thin;
 }
 
 .profile .profile__user-info .profile__name-container {

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { ProfileService } from '../../../services/Profile';
-import Popup from '../../popup';
+import { ProfileService } from '../../../../services/Profile';
+import Popup from '../../../popup';
 
 export default class PopupEditAva extends Component {
     constructor(props) {
