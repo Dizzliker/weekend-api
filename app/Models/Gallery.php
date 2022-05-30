@@ -66,7 +66,7 @@ class Gallery extends Model
         return DB::select('
             delete
               from gallery_likes gl
-             where gl.user_id = '.$user_id.' and gl.photo_id = '.$photo_id.'
+             where gallery_likes.user_id = '.$user_id.' and gallery_likes.photo_id = '.$photo_id.'
         ');
     }
 

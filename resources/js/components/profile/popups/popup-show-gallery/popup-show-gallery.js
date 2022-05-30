@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import {GalleryService} from "../../../../services/Gallery";
 import Spinner from "../../../spinner";
 import { Link } from "react-router-dom";
+import Popup from "../../../popup";
 import './popup-show-gallery.css';
 
 export default class PopupShowGallery extends Component {
@@ -107,6 +108,7 @@ export default class PopupShowGallery extends Component {
         const {currentPhoto, loading} = this.state;
 
         return (
+            currentPhoto ? 
             <div className="popup_gallery-wrapper popup__wrapper flex_center_center">
                 {loading && <Spinner />}
                 <div className="popup__gallery-container flex ai_center">
@@ -176,7 +178,8 @@ export default class PopupShowGallery extends Component {
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> : 
+            <Popup onClose={this.props.onClose}>The user has no photos</Popup>
         );
     }
 }
