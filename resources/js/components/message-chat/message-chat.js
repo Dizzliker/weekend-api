@@ -155,8 +155,7 @@ export default class MessageChat extends Component {
                 list.scrollTop = list.scrollHeight;
             } else {
                 // Человек подгружает старые сообщения, скролить не нужно
-                
-                list.scrollTop = list.scrollHeight - snapshot; 
+                list.scrollTop = list.scrollHeight - snapshot;
             }
         }
     }
