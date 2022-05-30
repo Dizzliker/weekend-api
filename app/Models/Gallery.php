@@ -42,7 +42,7 @@ class Gallery extends Model
                    exists (
                        select null
                          from gallery_likes gl
-                        where gl.user_id = '.$user_id.'
+                        where gl.user_id = '.Auth::id().'
                           and gl.photo_id = g.id) i_like,
                    0 comments,
                    0 reposts,

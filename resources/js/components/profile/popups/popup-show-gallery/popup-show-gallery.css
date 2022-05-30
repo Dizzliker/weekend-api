@@ -13,7 +13,8 @@
 }
 
 .popup__photo-container .popup__photo {
-    height: 100%;
+    max-width: 650px;
+    max-height: 650px;
 }
 
 .popup__right-side {
