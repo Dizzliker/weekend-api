@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import GalleryService from '../../services/Gallery';
+import {GalleryService} from '../../services/Gallery';
 import { ProfileService } from '../../services/Profile';
 import Spinner from '../spinner';
 
@@ -24,7 +24,8 @@ export default class Gallery extends Component {
     }
 
     updateGallery = () => {
-        this.galleryService.get(this.props.cur_user_id)
+        if (this.props.cur_user_id) {
+            this.galleryService.get(this.props.cur_user_id)
             .then(res => {
                 if (res.gallery) {
                     this.setState({gallery: res.gallery, loading: false});
@@ -33,13 +34,17 @@ export default class Gallery extends Component {
             .catch(error => {
                 console.warn(error);
             });
+        }
     }
 
     componentDidMount() {
         this.updateGallery();
     }
 
-    componentDidUpdate() {
+    componentDidUpdate(prevProps) {
+        if (prevProps.cur_user_id != this.props.cur_user_id) {
+            this.updateGallery();
+        }
         if (this.state.reload) {
             this.setState({reload: false});
             this.updateGallery();

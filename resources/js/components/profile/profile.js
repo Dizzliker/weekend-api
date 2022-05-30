@@ -3,10 +3,11 @@ import {ProfileService} from '../../services/Profile';
 import Popup from '../popup/popup';
 import Spinner from '../spinner';
 import PostForm from './post-list/post-form';
-import {FriendService} from '../../services/Friend';
-import PopupEditAva from './popup-edit-ava/popup-edit-ava';
+import PopupEditAva from './popups/popup-edit-ava/popup-edit-ava';
 import InfoItem from './info-item/info-item';
 import {Link} from 'react-router-dom';
+import PopupShowFriends from './popups/popup-show-friends/popup-show-friends';
+import PopupShowGallery from './popups/popup-show-gallery/popup-show-gallery';
 
 class Profile extends Component {
     constructor(props) {
@@ -20,9 +21,10 @@ class Profile extends Component {
             reload: false,
             popupAddFriend: false,
             popupEditAva: false,
+            popupShowFriends: false,
+            popupShowGallery: false,
         }
         this.user = new ProfileService();
-        this.friend = new FriendService();
     }
     
     getFormData() {
@@ -93,7 +95,7 @@ class Profile extends Component {
 
     render() {
         const {user_id, name, surname, avatar, count_friends, count_photos, is_banned} = this.state.profile;
-        const {loading, messages, popupAddFriend, popupEditAva, online} = this.state;
+        const {loading, messages, popupAddFriend, popupEditAva, popupShowGallery, online, popupShowFriends} = this.state;
 
         return(
             <>
@@ -111,6 +113,13 @@ class Profile extends Component {
             <PopupEditAva cur_user_id = {this.props.user.id}
                           onClose={() => this.setState({popupEditAva: false})} 
                           afterImgLoaded={() => {this.setState({reload: true})}}></PopupEditAva>}
+
+            {popupShowFriends &&
+            <PopupShowFriends url_user_id = {this.props.user_id}
+                              onClose={() => this.setState({popupShowFriends: false})} />}
+            {popupShowGallery &&
+            <PopupShowGallery url_user_id = {this.props.user_id}
+                              onClose={() => {this.setState({popupShowGallery: false})}}/>}                       
             <div className="profile flex_column ai_flex-start">
             <div className="profile__user-container flex">
                 <div className="profile__user-avatar flex_center_center">
@@ -181,9 +190,9 @@ class Profile extends Component {
                             </div>
                         </div>
                         <div className="profile__personal-info flex jc_space-between">
-                            <InfoItem img="/images/friends(purple).svg" text="Friends" count={count_friends}/>
+                            <InfoItem img="/images/friends(purple).svg" onClick={() => {this.setState({popupShowFriends: true})}} text="Friends" count={count_friends}/>
                             <InfoItem img="/images/music(purple).svg"   text="Music"   count={0}/>
-                            <InfoItem img="/images/photo(purple).svg"   text="Photos"  count={count_photos}/>
+                            <InfoItem img="/images/photo(purple).svg"   onClick={() => {this.setState({popupShowGallery: true})}} text="Photos"  count={count_photos}/>
                             <InfoItem img="/images/video(purple).svg"   text="Videos"  count={0}/>
                         </div>
                     </div>

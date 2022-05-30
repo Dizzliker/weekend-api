@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\AuthApiController;
 use App\Http\Controllers\Api\FriendApiController;
 use App\Http\Controllers\Api\GalleryApiController;
 use App\Http\Controllers\Api\MessageApiController;
+use App\Http\Controllers\Api\NewsApiController;
 use App\Http\Controllers\Api\PostApiController;
 use App\Http\Controllers\Api\ProfileApiController;
 use App\Http\Controllers\Api\UserApiController;
@@ -28,6 +29,8 @@ use Illuminate\Support\Facades\Route;
 Route::group(['middleware' => ['auth:sanctum']], function() {
     // Пользователь
     Route::get('/user', [UserApiController::class, 'user']);
+    // Новости
+    Route::get('/news', [NewsApiController::class, 'index']);
     // Друзья
     Route::get('/friends/{id}', [FriendApiController::class, 'getFriends']);
     Route::post('/sendFriendRequest', [FriendApiController::class, 'sendFriendRequests']);
@@ -47,6 +50,7 @@ Route::group(['middleware' => ['auth:sanctum']], function() {
     Route::post('/readMessages', [MessageApiController::class, 'readMessages']);
     Route::get('/getCountMessages/{id}', [MessageApiController::class, 'getCountMessages']);
     Route::post('/getChat', [MessageApiController::class, 'getChat']);
+    Route::post('/getRangedChat', [MessageApiController::class, 'getRangedChat']);
     Route::get('/getChatList/{id}', [MessageApiController::class, 'getChatList']);
     // Музыка
     Route::get('/getAllAudios', [AudioApiController::class, 'getAllAudios']);
@@ -54,8 +58,12 @@ Route::group(['middleware' => ['auth:sanctum']], function() {
     // Профиль
     Route::get('/profile/{id}', [ProfileApiController::class, 'profile']);
     Route::post('/changeAvatar', [ProfileApiController::class, 'changeAvatar']);
+    Route::get('/profile/{id}/gallery', [GalleryApiController::class, 'getProfileGallery']);
     // Фотографии
     Route::get('/gallery/{id}', [GalleryApiController::class, 'getGallery']);
+    Route::post('/gallery/{id}/addComment', [GalleryApiController::class, 'addComment']);
+    Route::get('/gallery/{id}/like', [GalleryApiController::class, 'likePhoto']);
+    Route::get('/gallery/{id}/unlike', [GalleryApiController::class, 'unLikePhoto']);
     Route::post('/addPhotos', [GalleryApiController::class, 'addPhotos']);
     // Выход
     Route::post('/logout', [AuthApiController::class, 'logout']);

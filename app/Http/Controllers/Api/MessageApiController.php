@@ -102,32 +102,42 @@ class MessageApiController extends Controller
         $fields = $request->validate([
             'out_user_id' => 'required',
             'inc_user_id' => 'required',
+            'startRange' => 'required',
         ]);
         
         $user = DB::select('
             select u.id,
                    u.name,
                    u.surname,
-                   u.avatar 
+                   u.avatar,
+                   (select count(*)
+                      from messages m
+                    where (m.out_user_id = '.$fields['out_user_id'].' and m.inc_user_id = '.$fields['inc_user_id'].')
+                       or (m.inc_user_id = '.$fields['out_user_id'].' and m.out_user_id = '.$fields['inc_user_id'].')) count_chat_messages
               from users u
              where u.id = '.$fields['inc_user_id'].'
-             limit 1       
+             limit 1
         ');
 
-        $chat = DB::select('
-            select m.id,
-                   m.inc_user_id,
-                   m.out_user_id,
-                   m.text,
-                   m.read,
-                   date_format(m.created_at, "%H:%i") created_at
-              from messages m 
-             where (m.out_user_id = '.$fields['out_user_id'].' and m.inc_user_id = '.$fields['inc_user_id'].')
-                or (m.inc_user_id = '.$fields['out_user_id'].' and m.out_user_id = '.$fields['inc_user_id'].')
-        ');
+        $chat = Message::getRangedChat($fields['out_user_id'], $fields['inc_user_id'], $fields['startRange']);
 
         return response([
             'user' => new UserResource($user[0]),
+            'count_chat_messages' => $user[0]->count_chat_messages,
+            'chat' => MessageResource::collection($chat),
+        ]);
+    }
+
+    public function getRangedChat(Request $request) {
+        $fields = $request->validate([
+            'out_user_id' => 'required',
+            'inc_user_id' => 'required',
+            'startRange' => 'required',
+        ]);
+
+        $chat = Message::getRangedChat($fields['inc_user_id'], $fields['out_user_id'], $fields['startRange']);
+
+        return response([
             'chat' => MessageResource::collection($chat),
         ]);
     }

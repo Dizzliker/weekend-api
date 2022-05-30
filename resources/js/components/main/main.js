@@ -14,6 +14,7 @@ import Admin from '../admin';
 import Post from '../admin/post';
 import AdminUser from '../admin/user';
 import Notification from '../../services/Notification';
+import News from '../news/news';
 
 export default class Main extends Component {
     constructor(props) {
@@ -109,6 +110,7 @@ export default class Main extends Component {
                         <Route path="*"            element={<Redirect cur_user_id={id}/>}/>
                         <Route path="profile/:id"  element={<ProfileContainer user={user} 
                                                                               usersOnline = {usersOnline}/>}/>
+                        <Route path="news"         element={<News cur_user_id={id} user={user}/>}/>                                                      
                         <Route path="messages/:id" element={<MessageContainer countMessages = {countMessages} 
                                                                               usersOnline = {usersOnline}
                                                                               newMessagesData = {newMessagesData}
