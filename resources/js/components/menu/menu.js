@@ -7,7 +7,7 @@ export default class Menu extends Component {
             <div className="sidebar__menu-container">
                 <nav>
                     <ul className="sidebar__menu flex_column jc_space-between">
-                        <MenuItem img="../images/news.svg"        text="News"        link="*"/>
+                        <MenuItem img="../images/news.svg"        text="News"        link="news"/>
                         <MenuItem img="../images/message.svg"     text="Messages"    link="messages/0" count={this.props.countMessages}/>
                         <MenuItem img="../images/friends.svg"     text="Friends"     link="friends" count = {this.props.countFriendRequests}/>
                         <MenuItem img="../images/communities.svg" text="Communities" link="*"/>

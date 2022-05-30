@@ -5,6 +5,10 @@ class Post extends Weekend {
         return await this.getData(`/post/${id}`);
     }
 
+    getFriendPosts = async () => {
+        return await this.getData(`/news`);
+    }
+
     like = async (id, data) => {
         return await this.postData(`/post/${id}/like`, data);
     }

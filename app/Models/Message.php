@@ -32,4 +32,20 @@ class Message extends Model
 
         return $count[0]->count;
     }
+
+    public static function getRangedChat($out_user_id, $inc_user_id, $startRange) {
+        return DB::select('
+            select m.id,
+                   m.inc_user_id,
+                   m.out_user_id,
+                   m.text,
+                   m.read,
+                   date_format(m.created_at, "%H:%i") created_at
+              from messages m 
+             where (m.out_user_id = '.$out_user_id.' and m.inc_user_id = '.$inc_user_id.')
+                or (m.inc_user_id = '.$out_user_id.' and m.out_user_id = '.$inc_user_id.')
+            order by m.created_at desc    
+            limit '.$startRange.', 100    
+    ');
+    }
 }

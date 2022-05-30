@@ -17,6 +17,9 @@ export default class MessageChat extends Component {
             },
             online: false,
             chat: [],
+            needScroll: true,
+            countChatMessages: 0,
+            startRange: 0,
             read: false,
         };
         this.chatBox = React.createRef();
@@ -24,10 +27,13 @@ export default class MessageChat extends Component {
         this.handleInputChange = this.handleInputChange.bind(this);
     }
 
-    getChatUsersId = () => {
+    getChatUsersId = (startRange = 0) => {
         let formData = new FormData();
         formData.append('out_user_id', this.props.cur_user_id);
         formData.append('inc_user_id', this.props.url_user_id);
+        if (startRange == 0 || startRange) {
+            formData.append('startRange', startRange);
+        }
         return formData;
     }
 
@@ -47,10 +53,13 @@ export default class MessageChat extends Component {
         // Добавляются ли в список новые элементы?
         // Запоминаем значение прокрутки, чтобы использовать его позже.
         if (prevState.chat.length < this.state.chat.length) {
-          return true;
+            if (this.state.needScroll) {
+                return true;
+            }
+            return this.chatBox.current.scrollHeight;
         }
         return null;
-      }
+    }
 
     updateAfterNewMessage() {
         const {newMessagesData, url_user_id, readAllMessagesInChatList} = this.props;
@@ -58,7 +67,7 @@ export default class MessageChat extends Component {
         if (newMessagesData[lastIndex].out_user_id == this.props.url_user_id) {
             const newMessage = newMessagesData[+newMessagesData.length - 1];
             if (newMessage) {
-                this.setState({chat: [...this.state.chat, newMessage]});
+                this.setState({chat: [...this.state.chat, newMessage], needScroll: true, startRange: this.state.startRange+1});
                 // Пометиться сообщения как прочитанные в бд
                 this.readMessages();
                 // Обнулить сообщения в чат листе
@@ -83,13 +92,31 @@ export default class MessageChat extends Component {
         this.setState({online: status});
     }
 
+    clearRange = () => {
+        if (this.state.startRange != 0) {
+            this.setState({startRange: 0});
+        }
+    }
+
     updateChat = () => {
+        this.clearRange();
+
         const {url_user_id, cur_user_id, readAllMessagesInChatList} = this.props;
         if (url_user_id != 0 && cur_user_id) {
             this.chatService.get(this.getChatUsersId())
                 .then(res => {
                     if (res) {
-                        this.setState({companion: res.user, chat: res.chat, loading: false});   
+                        // Т.к. данные приходят с order by desc данные идут от новых к старым
+                        // поэтомы мы разворачиваем массив 
+                        const chat = res.chat.reverse();
+                        this.setState({
+                            companion: res.user, 
+                            chat: chat,
+                            needScroll: true,
+                            countChatMessages: res.count_chat_messages, 
+                            loading: false,
+                            startRange: this.state.startRange+100
+                        });
                         this.updateOnlineStatus();
                         // Пометиться сообщения как прочитанные в бд
                         this.readMessages();
@@ -122,7 +149,14 @@ export default class MessageChat extends Component {
         }
         if (snapshot !== null) {
             const list = this.chatBox.current;
-            list.scrollTop = list.scrollHeight;
+            if (this.state.needScroll) {
+                // Пришло новое сообщение, нужно скролить в самый низ
+                this.setState({needScroll: false});
+                list.scrollTop = list.scrollHeight;
+            } else {
+                // Человек подгружает старые сообщения, скролить не нужно
+                list.scrollTop = list.scrollHeight - snapshot; 
+            }
         }
     }
 
@@ -152,13 +186,34 @@ export default class MessageChat extends Component {
         }, 300);
     }
 
+    updateChatOnScollTop() {
+        this.chatService.getRangeChat(this.getChatUsersId(this.state.startRange))
+            .then(res => {
+                if (res.chat) {
+                    const chat = res.chat.reverse();
+                    this.setState({chat: [...chat, ...this.state.chat], startRange: this.state.startRange+100, loading: false});
+                }
+            })
+            .catch(error => {
+                console.warn(error);
+            })
+    }
+
+    onScrollChatBox = () => {
+        if (this.chatBox.current.scrollTop === 0
+        && this.state.chat.length < this.state.countChatMessages) {
+            this.setState({loading: true});
+            this.updateChatOnScollTop();
+        }
+    }
+
     sendMessage = (event) => {
         event.preventDefault();
         if (this.state.text.trim() != '') {
             this.chatService.sendMessage(this.getFormData())
                 .then(res => {
                     if (res.message) {
-                        this.setState({text: '', chat: [...this.state.chat, res.message]});
+                        this.setState({text: '', chat: [...this.state.chat, res.message], startRange: this.state.startRange+1});
                         this.props.updateAfterOutMessage(res.message);
                     }
                 })
@@ -166,6 +221,10 @@ export default class MessageChat extends Component {
                     console.warn(error);
                 });
         }
+    }
+
+    onPastedImg = (event) => {
+        console.log(event.clipboardData);
     }
 
     handleInputChange(event) {
@@ -237,7 +296,7 @@ export default class MessageChat extends Component {
                         </div>
                     </div>
                 </div>
-                <div className="message__chat-box" ref={this.chatBox}>
+                <div className="message__chat-box" onScroll={this.onScrollChatBox} ref={this.chatBox}>
                     {messageBox}
                 </div>
                 <form onSubmit={this.sendMessage} method="post" className="message__form-send-msg flex_center_center">
@@ -247,7 +306,8 @@ export default class MessageChat extends Component {
                                   onKeyDown={this.onEnterPress}
                                   value={text} 
                                   onChange={this.handleInputChange} placeholder="Send your message"
-                                  autoFocus={true} id=""></textarea>
+                                  autoFocus={true}
+                                  onPaste={this.onPastedImg} id=""></textarea>
                         
                         <div className="message__form-details flex_center_space-between">
                             <a href="#">

@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Gallery;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class GalleryApiController extends Controller
@@ -20,19 +22,41 @@ class GalleryApiController extends Controller
 
         return Gallery::create([
             'user_id' => $fields['user_id'],
-            'img' => 'images/gallery/'.$name,
+            'img' => '/images/gallery/'.$name,
             'description' => null,
         ]);
     }
 
     public function getGallery($id) {
-        $gallery = DB::select('
-            select g.id,
-                   g.img
-              from gallery g
-             where g.user_id = '.$id.' 
-        ');
+        return response(['gallery' => Gallery::getGallery($id)]);
+    }
 
-        return response(['gallery' => $gallery]);
+    public function getProfileGallery($id) {
+        return response(['user' => User::find($id), 'gallery' => Gallery::getProfileGallery($id)]);
+    }
+
+    public function likePhoto($id) {
+        if (!Auth::check()) {return response(['success' => false]);}
+
+        Gallery::likePhoto($id, Auth::id());
+
+        return response(['success' => true]);
+    }
+
+    public function unLikePhoto($id) {
+        if (!Auth::check()) {return response(['success' => false]);}
+
+        Gallery::unLikePhoto($id, Auth::id());
+
+        return response(['success' => true]);
+    }
+
+    public function addComment(Request $request) {
+        if (!Auth::check()) {return response(['success' => false]);}
+        $fields = $request->validate([
+            'photo_id' => 'required',
+            'text' => 'required',
+        ]);
+        return response(['success' => true, 'comment' => Gallery::addComment($fields['photo_id'], $fields['text'])]);
     }
 }

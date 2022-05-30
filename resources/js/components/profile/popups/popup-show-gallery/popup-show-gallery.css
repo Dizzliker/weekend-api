@@ -1,0 +1,121 @@
+.popup__gallery-container {
+    height: 650px;
+}
+
+.popup__wrapper .popup__photo-container {
+    width: 650px;
+    height: 650px;
+    margin-right: 10px;
+}
+
+.popup__main {
+    margin: 0 10px;
+}
+
+.popup__photo-container .popup__photo {
+    height: 100%;
+}
+
+.popup__right-side {
+    width: 310px;
+    height: 650px;
+    background-color: var(--white);
+    border-radius: 15px;
+}
+
+.popup__wrapper .popup__gallery-container .popup__control {
+    width: 45px;
+    height: 45px;
+    background-color: var(--white);
+    border-radius: 15px;
+    box-shadow: var(--shadow);
+    z-index: 10;
+    cursor: pointer;
+    user-select: none;
+}
+
+.popup__header-user .popup__author-container .popup__ava-link {
+    font-size: 18px;
+    margin-right: 15px;
+}
+
+.popup__right-side .popup__created_at {
+    color: var(--gray);
+    font-size: 13px;
+}
+
+.popup__comment-container {
+    margin-bottom: 10px;
+}
+
+.popup__comment-container .popup__comment-text .text {
+    font-size: 14px;
+    color: var(--black);
+}
+
+.popup__right-side .popup__header {
+    border-bottom: 2px dotted var(--gray);
+    padding: 20px 20px 10px 20px;
+}
+
+.popup__right-side .popup__header-user {
+    margin-bottom: 10px;
+}
+
+.popup__header .popup__action .popup__action-icon {
+    margin-right: 5px;
+}
+
+.popup__header .popup__action .popup__action-text {
+    font-weight: 300;
+    font-size: 16px;
+}
+
+.popup__right-side .popup__body {
+    padding: 15px;
+    height: 100%;
+    overflow: auto;
+    scrollbar-width: thin;
+}
+
+.popup__right-side .popup__body .popup__comment-user .popup__ava-link {
+    margin-right: 10px;
+}
+
+.popup__form-add-comment {
+    height: 45px;
+    border-radius: 0 0 15px 15px;
+    box-shadow: var(--shadow);
+    background-color: var(--white);
+}
+
+.popup__form-add-comment .popup__form-input {
+    height: 100%;
+    border-radius: 15px;
+    border: none;
+    outline: none;
+    resize: none;
+    padding: 15px;
+}
+
+.popup__form-add-comment .popup__form-input .icon-send {
+    transition: var(--animate-transition);
+}
+
+.popup__form-add-comment .popup__form-input .icon-send:hover {
+    transition: var(--animate-transition);
+    transform: scale(1.1);
+}
+
+.popup__form-add-comment .popup__form-btn {
+    height: 100%;
+}
+
+.popup__right-actions {
+    height: 100%;
+}
+
+.popup__right-actions .popup__close,
+.popup__right-actions .popup__arrow-right {
+    margin-bottom: auto;
+}
