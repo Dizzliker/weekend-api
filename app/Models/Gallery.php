@@ -65,7 +65,7 @@ class Gallery extends Model
     public static function unLikePhoto($photo_id, $user_id) {
         return DB::select('
             delete
-              from gallery_likes gl
+              from gallery_likes
              where gallery_likes.user_id = '.$user_id.' and gallery_likes.photo_id = '.$photo_id.'
         ');
     }
