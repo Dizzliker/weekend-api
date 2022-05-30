@@ -155,6 +155,7 @@ export default class MessageChat extends Component {
                 list.scrollTop = list.scrollHeight;
             } else {
                 // Человек подгружает старые сообщения, скролить не нужно
+                
                 list.scrollTop = list.scrollHeight - snapshot; 
             }
         }
@@ -213,7 +214,12 @@ export default class MessageChat extends Component {
             this.chatService.sendMessage(this.getFormData())
                 .then(res => {
                     if (res.message) {
-                        this.setState({text: '', chat: [...this.state.chat, res.message], startRange: this.state.startRange+1});
+                        this.setState({
+                            text: '', 
+                            chat: [...this.state.chat, res.message], 
+                            startRange: this.state.startRange+1,
+                            needScroll: true,
+                        });
                         this.props.updateAfterOutMessage(res.message);
                     }
                 })
