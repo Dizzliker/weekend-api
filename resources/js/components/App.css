@@ -256,10 +256,17 @@ input::placeholder {
   justify-content: space-between;
 }
 
+.kebab:hover > .circle {
+  cursor: pointer;
+  transition: var(--animate-transition);
+  background-color: var(--purple);
+}
+
 .kebab .circle {
   width: 4px;
   height: 4px;
   background-color: var(--black);
+  transition: var(--animate-transition);
   border-radius: 50%;
 }
 
@@ -1274,7 +1281,7 @@ a {
 .message .message__form-send-msg {
   width: 100%;
   background-color: white;
-  padding-bottom: 15px;
+  padding-bottom: 10px;
 }
 
 .message .message__form-container {
