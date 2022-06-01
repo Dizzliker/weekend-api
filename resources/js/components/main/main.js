@@ -55,6 +55,7 @@ export default class Main extends Component {
                        newMessagesData: [...this.state.newMessagesData, e.message],
                    });
                    Notification.play();
+                   Notification.setTitle('New messages', true);
                }
             });
     }
@@ -107,7 +108,7 @@ export default class Main extends Component {
                              countFriendRequests = {countFriendRequests}
                              countMessages = {countMessages}/>
                     <Routes>
-                        <Route path="*"            element={<Redirect cur_user_id={id}/>}/>
+                        <Route path="*"            element={<Redirect cur_user_id={id} auth={true}/>}/>
                         <Route path="profile/:id"  element={<ProfileContainer user={user} 
                                                                               usersOnline = {usersOnline}/>}/>
                         <Route path="news"         element={<News cur_user_id={id} user={user}/>}/>                                                      

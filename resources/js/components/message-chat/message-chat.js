@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { ChatService } from '../../services/Chat';
 import { Link } from 'react-router-dom';
 import Spinner from '../spinner';
+import Notification from '../../services/Notification';
 
 export default class MessageChat extends Component {
     constructor(props) {
@@ -42,6 +43,7 @@ export default class MessageChat extends Component {
             .then(res => {
                 if (res) {
                     this.setState({read: false});
+                    Notification.setTitle('Weekend');
                 }
             })
             .catch(error => {

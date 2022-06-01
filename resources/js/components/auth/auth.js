@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Routes, Route, Link } from 'react-router-dom';
 import LoginForm from './login-form';
 import RegisterForm from './register-form/register-form';
+import { Navigate } from "react-router-dom";
 
 import bg from '../../img/bg.jpg';
 
@@ -18,6 +19,7 @@ export default class Auth extends Component {
                 <Routes>
                     <Route path="/"         element={<LoginForm afterAuth={this.props.afterAuth}/>} />
                     <Route path="/register" element={<RegisterForm afterAuth={this.props.afterAuth}/>}/>
+                    <Route path="*"         element={<Navigate to={`/`}/>}/>
                 </Routes>
             </div>
         )
