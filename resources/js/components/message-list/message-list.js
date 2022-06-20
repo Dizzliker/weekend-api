@@ -11,6 +11,7 @@ export default class MessageList extends Component {
             typingUsers: [],
         };
         this.chatService = new ChatService();
+        this.typingTimeouts = [];
     }
 
     componentDidMount() {
@@ -68,7 +69,7 @@ export default class MessageList extends Component {
         this.setState({chatList});
     }
 
-    updateTypingStatus(userId) {
+    updateTypingStatus = (userId) => {
         setTimeout(() => {
             const typingUsers = this.state.typingUsers.filter(currentUserId => {
                 return currentUserId != userId;

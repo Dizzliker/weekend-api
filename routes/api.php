@@ -78,6 +78,5 @@ Route::group(['middleware' => ['auth:sanctum']], function() {
     Route::get('/user/{id}/ban', [UserApiController::class, 'ban']);
     Route::get('/user/{id}/delete', [UserApiController::class, 'delete']);
 });
-
 Route::post('/register', [AuthApiController::class, 'register'])->name('register');
 Route::post('/login', [AuthApiController::class, 'login'])->name('login');

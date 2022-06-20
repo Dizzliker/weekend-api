@@ -55,7 +55,7 @@ export default class Main extends Component {
                        newMessagesData: [...this.state.newMessagesData, e.message],
                    });
                    Notification.play();
-                   Notification.setTitle('New messages', true);
+                   Notification.setRepeatTitle('New messages');
                }
             });
     }
@@ -120,7 +120,7 @@ export default class Main extends Component {
                         <Route path="friends"      element={<Friend cur_user_id = {id}
                                                                     countFriendRequests = {countFriendRequests}/>}/>
                         <Route path="users"        element={<User />}/>
-                        <Route path="audio"        element={<Music/>}/>
+                        <Route path="audio"        element={<Music isAdmin={is_admin}/>}/>
                         <Route path="photos"       element={<Gallery cur_user_id = {id}/>}/>
                         {is_admin &&
                         <>

@@ -15,7 +15,6 @@ export default class News extends Component {
         this.postService.getFriendPosts()
             .then(res => {
                 if (res.posts) {
-                    console.log(res.posts);
                     this.setState({posts: res.posts});
                 }
             })

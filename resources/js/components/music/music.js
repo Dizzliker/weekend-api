@@ -29,12 +29,13 @@ export default class Music extends Component {
                     <div className="music__track-header flex_center_space-between">
                         <span className="music__title">Now playing</span>
                         <div className="music__actions flex_center_space-between">
+                            {this.props.isAdmin ? 
                             <div className="music__add-audio flex_center_space-between">
                                 <img src="../images/plus.svg" alt="" />
                                 <a href="#" className="link">
                                     <span onClick={() => {this.setState({popup: true})}} className="text">Add your music</span>
                                 </a>
-                            </div>
+                            </div> : null}
                             <a href="#" className="link">
                                 <span className="text">Friends music</span>
                             </a>
