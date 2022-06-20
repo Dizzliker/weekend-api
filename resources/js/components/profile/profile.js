@@ -152,7 +152,7 @@ class Profile extends Component {
                         </div>
                     </div>
                     <div className="profile__user-status flex ai_center">
-                        <span className="profile__status-text">Dead inside</span>
+                        <span className="profile__status-text">Default status</span>
                     </div>
                     <div className="profile__more-info flex_center_space-between">
                         <div className="profile__list-info flex_column jc_space-between">

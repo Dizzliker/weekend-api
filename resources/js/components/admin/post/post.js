@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import {PostService} from '../../../services/Post';
 import { Link } from 'react-router-dom';
+import RightSide from '../right-side/right-side';
 
 export default class Post extends Component {
     constructor(props) {
@@ -64,7 +65,6 @@ export default class Post extends Component {
         event.preventDefault();
         this.post.delete(post_id)
             .then(res => {
-                console.log(res);
                 if (res.success) {
                     this.setState({reload: true});
                 }
@@ -144,7 +144,7 @@ export default class Post extends Component {
             );
         }) : <h2>Posts is not found</h2>;
         return(
-            <div className="profile">
+            <div className="profile flex">
                 <div className="posts">
                     <h1>Admin post</h1>
                     {postsList}

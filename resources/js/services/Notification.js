@@ -1,23 +1,38 @@
 export default class Notification {
     static #audio = new Audio('/music/notification.mp3');
     static #title = document.querySelector('title');
-    static #titleInterval = '';
+    static #titleInterval = null;
     
     static play = () => {
         this.#audio.play();
     }
 
-    static setTitle = (title, repeat = false) => {
-        // Повторять, если пришло новое сообщение 
-        if (repeat) {
+    static hasInterval = () => {
+        if (this.#titleInterval !== null) {
+            return true;
+        }
+        return false;
+    }
+
+    static clearTitleInterval = () => {
+        if (this.hasInterval()) {
+            clearInterval(this.#titleInterval);
+            this.#titleInterval = null;
+        }
+    }
+
+    static setRepeatTitle = (title) => {
+       // Повторять, если пришло новое сообщение 
+       if (!this.hasInterval()) {
             this.#titleInterval = setInterval(() => {
                 const newTitle = this.#title.innerText === 'Weekend' ? title : 'Weekend';
                 this.#title.innerText = newTitle;
             }, 1000);
-        } else {
-            // Очищаем мигание title и ставим новый
-            clearInterval(this.#titleInterval);
-            this.#title.innerText = title;
         }
+    }
+
+    static setTitle = (title) => {
+        this.clearTitleInterval();
+        this.#title.innerText = title;
     } 
 }
