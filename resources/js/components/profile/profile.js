@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import {ProfileService} from '../../services/Profile';
+import {FriendService} from '../../services/Friend';
 import Popup from '../popup/popup';
 import Spinner from '../spinner';
 import PostForm from './post-list/post-form';
@@ -25,6 +26,7 @@ class Profile extends Component {
             popupShowGallery: false,
         }
         this.user = new ProfileService();
+        this.friend = new FriendService();
     }
     
     getFormData() {
