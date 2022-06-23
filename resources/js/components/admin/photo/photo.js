@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { GalleryService } from "../../../services/Gallery";
+import { Link } from "react-router-dom";
 
 export default class AdminPhoto extends Component {
     constructor(props) {
@@ -46,8 +47,20 @@ export default class AdminPhoto extends Component {
 
         return (
             <div className="gallery">
-                <h1 className="gallery__header">All photos</h1>
+                <div className="flex jc_space-between">
+                    <h1 className="gallery__header">All photos</h1>
 
+                    <div className="posts__menu">
+                        <ul className="flex jc_space-between" style={{width: 350+'px'}}>
+                            <li><Link to="/admin">Admin home</Link></li>
+                            <li><Link to="/admin/users">All users</Link></li>
+                            <li><Link to="/admin/posts">All posts</Link></li>
+                            <li><Link to="/admin/audio">All audios</Link></li>
+                            <li><Link to="/admin/photos">All photos</Link></li>
+                        </ul>
+                    </div>
+                </div>
+                
                 <div className="gallery__photos flex jc_space-between">
                     {photoList}
                 </div>
