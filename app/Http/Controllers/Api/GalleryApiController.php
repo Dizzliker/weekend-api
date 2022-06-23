@@ -11,6 +11,10 @@ use Illuminate\Support\Facades\DB;
 
 class GalleryApiController extends Controller
 {
+    public function getAll() {
+        return response(['photos' => Gallery::all()]);
+    }
+
     public function addPhotos(Request $request) {
         $fields = $request->validate([
             'user_id' => 'integer|required',
@@ -58,5 +62,10 @@ class GalleryApiController extends Controller
             'text' => 'required',
         ]);
         return response(['success' => true, 'comment' => Gallery::addComment($fields['photo_id'], $fields['text'])]);
+    }
+
+    public function deletePhoto($id) {
+        Gallery::find($id)->delete();
+        return response(['success' => true]);
     }
 }

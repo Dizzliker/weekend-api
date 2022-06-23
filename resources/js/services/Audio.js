@@ -20,6 +20,10 @@ class Audio extends Weekend {
     getPlayListFromLocal = () => {
         return localStorage.getItem('playlist');
     }
+
+    delete = async (id) => {
+        return await this.getData(`/audio/${id}/delete`);
+    }
 }
 
 export {Audio as AudioService};

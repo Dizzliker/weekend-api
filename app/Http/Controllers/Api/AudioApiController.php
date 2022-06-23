@@ -43,4 +43,9 @@ class AudioApiController extends Controller
 
         return response(['audios' => $audios]);
     }
+
+    public function deleteAudio($id) {
+        Audio::find($id)->delete();
+        return response(['success' => true]);
+    }
 }

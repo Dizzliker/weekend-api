@@ -5,6 +5,14 @@ class Gallery extends Weekend {
         return await this.getData(`/gallery/${id}`);
     }
 
+    getAll = async () => {
+        return await this.getData(`/gallery`);
+    }
+
+    delete = async (id) => {
+        return await this.getData(`/gallery/${id}/delete`);
+    }
+
     getProfileGallery = async (id) => {
         return await this.getData(`/profile/${id}/gallery`);
     }
