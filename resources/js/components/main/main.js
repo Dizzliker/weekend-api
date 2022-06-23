@@ -15,6 +15,8 @@ import Post from '../admin/post';
 import AdminUser from '../admin/user';
 import Notification from '../../services/Notification';
 import News from '../news/news';
+import AdminAudio from '../admin/audio/audio';
+import AdminPhoto from '../admin/photo/photo';
 
 export default class Main extends Component {
     constructor(props) {
@@ -127,6 +129,8 @@ export default class Main extends Component {
                             <Route path="admin" element={<Admin />}/>
                             <Route path="admin/posts" element={<Post />}/>
                             <Route path="admin/users" element={<AdminUser />}/> 
+                            <Route path="admin/audio" element={<AdminAudio/>}/>
+                            <Route path="admin/photos" element={<AdminPhoto />}></Route>
                         </>}
                     </Routes>
                 </div>

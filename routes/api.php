@@ -55,16 +55,19 @@ Route::group(['middleware' => ['auth:sanctum']], function() {
     // Музыка
     Route::get('/getAllAudios', [AudioApiController::class, 'getAllAudios']);
     Route::post('/addAudio', [AudioApiController::class, 'addAudio']);
+    Route::get('/audio/{id}/delete', [AudioApiController::class, 'deleteAudio']);
     // Профиль
     Route::get('/profile/{id}', [ProfileApiController::class, 'profile']);
     Route::post('/changeAvatar', [ProfileApiController::class, 'changeAvatar']);
     Route::get('/profile/{id}/gallery', [GalleryApiController::class, 'getProfileGallery']);
     // Фотографии
+    Route::get('/gallery', [GalleryApiController::class, 'getAll']);
     Route::get('/gallery/{id}', [GalleryApiController::class, 'getGallery']);
     Route::post('/gallery/{id}/addComment', [GalleryApiController::class, 'addComment']);
     Route::get('/gallery/{id}/like', [GalleryApiController::class, 'likePhoto']);
     Route::get('/gallery/{id}/unlike', [GalleryApiController::class, 'unLikePhoto']);
     Route::post('/addPhotos', [GalleryApiController::class, 'addPhotos']);
+    Route::get('/gallery/{id}/delete', [GalleryApiController::class, 'deletePhoto']);
     // Выход
     Route::post('/logout', [AuthApiController::class, 'logout']);
     // Все пользователи

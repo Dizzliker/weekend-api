@@ -48,11 +48,20 @@ export default class Admin extends Component {
                                 <span>{count_posts}</span>
                             </div>
                         </Link>
-                        <div className="adminpanel__category">
-                            <img src="images/music(purple).svg"/>
-                            <span>Audios</span>
-                            <span>{count_audios}</span>
-                        </div>
+                        <Link to="/admin/audio">
+                            <div className="adminpanel__category">
+                                <img src="images/music(purple).svg"/>
+                                <span>Audios</span>
+                                <span>{count_audios}</span>
+                            </div>
+                        </Link>
+                        <Link to="/admin/photos">
+                            <div className="adminpanel__category">
+                                <img src="/images/img(purple).svg"/>
+                                <span>Photos</span>
+                                <span>{30}</span>
+                            </div>
+                        </Link>
                     </div>
                 </div>
                 <RightSide />

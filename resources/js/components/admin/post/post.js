@@ -146,7 +146,19 @@ export default class Post extends Component {
         return(
             <div className="profile flex">
                 <div className="posts">
-                    <h1>Admin post</h1>
+                    <div className="posts__header flex jc_space-between">
+                        <h1>Admin post</h1>
+
+                        <div className="posts__menu">
+                            <ul className="flex jc_space-between" style={{width: 300+'px'}}>
+                                <li><Link to="/admin">Admin home</Link></li>
+                                <li><Link to="/admin/users">All users</Link></li>
+                                <li><Link to="/admin/posts">All posts</Link></li>
+                                <li><Link to="/admin/audio">All audios</Link></li>
+                                <li><Link to="/admin/photos">All photos</Link></li>
+                            </ul>
+                        </div>
+                    </div>
                     {postsList}
                 </div>
             </div>
